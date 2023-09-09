@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
 import EditExpenseForm from './EditExpenseForm.tsx';
-import Expense from '../types/Expense.ts';
+import publicExpenseProps from '../types/PublicExpenseProps.ts';
 
 interface ExpenseListProps {
-  expenses: Expense[];
+  expenses: publicExpenseProps[];
   totalExpenses: number;
-  onSaveExpense: (editedExpense: Expense) => void;
+  onSaveExpense: (editedExpense: publicExpenseProps) => void;
   onDeleteExpense: (expenseId: number) => void;
 }
 
@@ -16,14 +16,14 @@ const ExpenseList: React.FC<ExpenseListProps> = ({
   onDeleteExpense,
 }) => {
   const [isEditing, setIsEditing] = useState(false);
-  const [editedExpense, setEditedExpense] = useState<Expense | null>(null);
+  const [editedExpense, setEditedExpense] = useState<publicExpenseProps | null>(null);
 
-  const handleEdit = (expense: Expense) => {
+  const handleEdit = (expense: publicExpenseProps) => {
     setIsEditing(true);
     setEditedExpense(expense);
   };
 
-  const handleSave = (editedExpense: Expense) => {
+  const handleSave = (editedExpense: publicExpenseProps) => {
     onSaveExpense(editedExpense);
     setIsEditing(false);
     setEditedExpense(null);
