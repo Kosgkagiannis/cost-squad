@@ -2,8 +2,10 @@ import React, { useState, useEffect } from 'react';
 
 interface Expense {
   id: number;
-  description: string;
+  person1: string;
+  person2: string;
   amount: number;
+  description?: string;
 }
 
 interface EditExpenseFormProps {
@@ -19,29 +21,37 @@ const EditExpenseForm: React.FC<EditExpenseFormProps> = ({
   onCancel,
   onDelete,
 }) => {
-  const [editedDescription, setEditedDescription] = useState<string>('');
+  const [editedPerson1, setEditedPerson1] = useState<string>('');
+  const [editedPerson2, setEditedPerson2] = useState<string>('');
   const [editedAmount, setEditedAmount] = useState<number | ''>('');
+  const [editedDescription, setEditedDescription] = useState<string | undefined>(''); // Initialize with existing description
 
   useEffect(() => {
     if (expense) {
-      setEditedDescription(expense.description);
+      setEditedPerson1(expense.person1);
+      setEditedPerson2(expense.person2);
       setEditedAmount(expense.amount);
+      setEditedDescription(expense.description || ''); // Initialize with existing description or an empty string
     } else {
-      setEditedDescription('');
+      setEditedPerson1('');
+      setEditedPerson2('');
       setEditedAmount('');
+      setEditedDescription('');
     }
   }, [expense]);
 
   const handleSave = () => {
     // Validate and save the edited expense
-    if (editedDescription.trim() === '' || editedAmount === '') {
+    if (editedPerson1.trim() === '' || editedPerson2.trim() === '' || editedAmount === '') {
       return;
     }
 
     const editedExpense: Expense = {
       id: expense?.id || 0,
-      description: editedDescription,
+      person1: editedPerson1,
+      person2: editedPerson2,
       amount: typeof editedAmount === 'number' ? editedAmount : parseFloat(editedAmount),
+      description: editedDescription || undefined, // Only set description if it's not an empty string
     };
 
     onSave(editedExpense);
@@ -56,7 +66,21 @@ const EditExpenseForm: React.FC<EditExpenseFormProps> = ({
 
   return (
     <div>
-      <p>Description:</p>
+      <p>Person 1:</p>
+      <input
+        type="text"
+        placeholder="Person 1"
+        value={editedPerson1}
+        onChange={(e) => setEditedPerson1(e.target.value)}
+      />
+      <p>Person 2:</p>
+      <input
+        type="text"
+        placeholder="Person 2"
+        value={editedPerson2}
+        onChange={(e) => setEditedPerson2(e.target.value)}
+      />
+      <p>Description (optional):</p>
       <input
         type="text"
         placeholder="Description"

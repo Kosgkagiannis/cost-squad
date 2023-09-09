@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import './App.css'; 
+import './App.css';
 import Header from './components/Header.tsx';
 import ExpenseForm from './components/ExpenseForm.tsx';
 import ExpenseList from './components/ExpenseList.tsx';
@@ -7,38 +7,44 @@ import GroupList from './components/GroupList.tsx';
 
 interface Expense {
   id: number;
-  description: string;
+  person1: string;
+  person2: string;
+  description?: string; 
   amount: number;
 }
 
 const App: React.FC = () => {
-  const [description, setDescription] = useState<string>('');
+  const [person1, setPerson1] = useState<string>('');
+  const [person2, setPerson2] = useState<string>('');
+  const [description, setDescription] = useState<string>(''); 
   const [amount, setAmount] = useState<number | ''>('');
 
   const [expenses, setExpenses] = useState<Expense[]>([]);
 
   const handleAddExpense = () => {
-    if (description.trim() === '' || amount === '') {
+    if (person1.trim() === '' || person2.trim() === '' || amount === '') {
       return;
     }
 
-    // Parse amount to a number
     const parsedAmount = typeof amount === 'number' ? amount : parseFloat(amount);
 
     if (isNaN(parsedAmount)) {
       return;
     }
 
-    // Generate a unique ID for the new expense
     const newExpense: Expense = {
       id: Date.now(),
+      person1,
+      person2,
       description,
       amount: parsedAmount,
     };
 
     setExpenses([...expenses, newExpense]);
 
-    setDescription('');
+    setPerson1('');
+    setPerson2('');
+    setDescription(''); 
     setAmount('');
   };
 
@@ -55,7 +61,6 @@ const App: React.FC = () => {
   };
 
   const handleDeleteExpense = (expenseId: number) => {
-    // Filter out the expense to be deleted
     const updatedExpenses = expenses.filter((expense) => expense.id !== expenseId);
 
     setExpenses(updatedExpenses);
@@ -67,9 +72,13 @@ const App: React.FC = () => {
     <div className="App">
       <Header />
       <ExpenseForm
-        description={description}
+        person1={person1}
+        person2={person2}
+        description={description} 
         amount={amount}
-        setDescription={setDescription}
+        setPerson1={setPerson1}
+        setPerson2={setPerson2}
+        setDescription={setDescription} 
         setAmount={setAmount}
         handleAddExpense={handleAddExpense}
       />
@@ -77,7 +86,7 @@ const App: React.FC = () => {
         expenses={expenses}
         totalExpenses={totalExpenses}
         onSaveExpense={handleSaveExpense}
-        onDeleteExpense={handleDeleteExpense} 
+        onDeleteExpense={handleDeleteExpense}
       />
       <GroupList groups={[]} />
     </div>
