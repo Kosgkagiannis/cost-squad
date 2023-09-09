@@ -24,14 +24,14 @@ const EditExpenseForm: React.FC<EditExpenseFormProps> = ({
   const [editedPerson1, setEditedPerson1] = useState<string>('');
   const [editedPerson2, setEditedPerson2] = useState<string>('');
   const [editedAmount, setEditedAmount] = useState<number | ''>('');
-  const [editedDescription, setEditedDescription] = useState<string | undefined>(''); // Initialize with existing description
+  const [editedDescription, setEditedDescription] = useState<string | undefined>(''); 
 
   useEffect(() => {
     if (expense) {
       setEditedPerson1(expense.person1);
       setEditedPerson2(expense.person2);
       setEditedAmount(expense.amount);
-      setEditedDescription(expense.description || ''); // Initialize with existing description or an empty string
+      setEditedDescription(expense.description || ''); 
     } else {
       setEditedPerson1('');
       setEditedPerson2('');
@@ -51,7 +51,7 @@ const EditExpenseForm: React.FC<EditExpenseFormProps> = ({
       person1: editedPerson1,
       person2: editedPerson2,
       amount: typeof editedAmount === 'number' ? editedAmount : parseFloat(editedAmount),
-      description: editedDescription || undefined, // Only set description if it's not an empty string
+      description: editedDescription || undefined, 
     };
 
     onSave(editedExpense);

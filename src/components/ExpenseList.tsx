@@ -55,10 +55,6 @@ const ExpenseList: React.FC<ExpenseListProps> = ({
           onCancel={() => setIsEditing(false)}
         />
       )}
-
-      {editedExpense && editedExpense.description && (
-        <p>Description: {editedExpense.description}</p>
-      )}
     </div>
   );
 };
