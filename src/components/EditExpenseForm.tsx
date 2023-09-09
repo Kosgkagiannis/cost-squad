@@ -40,6 +40,7 @@ const EditExpenseForm: React.FC<EditExpenseFormProps> = ({
   const handleDelete = () => {
     if (expense) {
       onDelete(expense.id);
+      onCancel();
     }
   };
 
