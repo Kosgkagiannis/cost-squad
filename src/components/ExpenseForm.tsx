@@ -28,7 +28,7 @@ const ExpenseForm: React.FC<ExpenseFormProps> = ({
       <input
         type="number"
         placeholder="Amount"
-        value={amount === '' ? '' : amount.toString()} 
+        value={amount === '' ? '' : amount.toString()}
         onChange={(e) => setAmount(parseFloat(e.target.value) || '')}
       />
       <button onClick={handleAddExpense}>Add Expense</button>
