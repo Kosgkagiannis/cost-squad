@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
 interface Expense {
   id: number;
@@ -19,8 +19,18 @@ const EditExpenseForm: React.FC<EditExpenseFormProps> = ({
   onCancel,
   onDelete,
 }) => {
-  const [editedDescription, setEditedDescription] = useState<string>(expense?.description || '');
-  const [editedAmount, setEditedAmount] = useState<number | ''>(expense?.amount || '');
+  const [editedDescription, setEditedDescription] = useState<string>('');
+  const [editedAmount, setEditedAmount] = useState<number | ''>('');
+
+  useEffect(() => {
+    if (expense) {
+      setEditedDescription(expense.description);
+      setEditedAmount(expense.amount);
+    } else {
+      setEditedDescription('');
+      setEditedAmount('');
+    }
+  }, [expense]);
 
   const handleSave = () => {
     // Validate and save the edited expense
