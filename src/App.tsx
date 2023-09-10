@@ -1,72 +1,102 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import './App.css';
-import Header from './components/Header.tsx';
-import ExpenseForm from './components/ExpenseForm.tsx';
-import ExpenseList from './components/ExpenseList.tsx';
-import GroupList from './components/GroupList.tsx';
+import { Auth } from './components/auth';
+import { db, auth, storage } from './config/firebase';
+import {
+  getDocs,
+  collection,
+  addDoc,
+  deleteDoc,
+  updateDoc,
+  doc,
+  DocumentData,
+} from 'firebase/firestore';
+import { ref, uploadBytes } from 'firebase/storage';
+import ExpenseForm from './components/ExpenseForm';
+import ExpenseList from './components/ExpenseList';
+import publicExpenseProps from './types/PublicExpenseProps';
+import Header from './components/Header';
 
 interface Expense {
   id: number;
   person1: string;
   person2: string;
-  description?: string; 
+  description?: string;
   amount: number;
 }
 
-const App: React.FC = () => {
-  const [person1, setPerson1] = useState<string>('');
-  const [person2, setPerson2] = useState<string>('');
-  const [description, setDescription] = useState<string>(''); 
-  const [amount, setAmount] = useState<number | ''>('');
+function App() {
+  const [expenseList, setExpenseList] = useState<Expense[]>([]);
+  const [totalExpenses, setTotalExpenses] = useState<number>(0); 
 
-  const [expenses, setExpenses] = useState<Expense[]>([]);
+  const [person1, setPerson1] = useState('');
+  const [person2, setPerson2] = useState('');
+  const [description, setDescription] = useState('');
+  const [amount, setAmount] = useState<number>(0);
 
-  const handleAddExpense = () => {
-    if (person1.trim() === '' || person2.trim() === '' || amount === '') {
-      return;
-    }
+  const expensesCollectionRef = collection(db, 'expenses');
 
-    const parsedAmount = typeof amount === 'number' ? amount : parseFloat(amount);
-
-    if (isNaN(parsedAmount)) {
-      return;
-    }
-
-    const newExpense: Expense = {
-      id: Date.now(),
-      person1,
-      person2,
-      description,
-      amount: parsedAmount,
-    };
-
-    setExpenses([...expenses, newExpense]);
-
-    setPerson1('');
-    setPerson2('');
-    setDescription(''); 
-    setAmount('');
-  };
-
-  const handleSaveExpense = (editedExpense: Expense) => {
-    const editedIndex = expenses.findIndex((expense) => expense.id === editedExpense.id);
-
-    if (editedIndex !== -1) {
-      const updatedExpenses = [...expenses];
-
-      updatedExpenses[editedIndex] = editedExpense;
-
-      setExpenses(updatedExpenses);
+  const getExpenseList = async () => {
+    try {
+      const data = await getDocs(expensesCollectionRef);
+      const filteredData = data.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      })) as any[];
+      setExpenseList(filteredData as Expense[]);
+      const total = calculateTotalExpenses(filteredData as Expense[]);
+      setTotalExpenses(total);
+    } catch (err) {
+      console.error(err);
     }
   };
 
-  const handleDeleteExpense = (expenseId: number) => {
-    const updatedExpenses = expenses.filter((expense) => expense.id !== expenseId);
+  useEffect(() => {
+    getExpenseList();
+  }, []);
 
-    setExpenses(updatedExpenses);
+  const handleAddExpense = async () => {
+    try {
+      await addDoc(expensesCollectionRef, {
+        person1,
+        person2,
+        description,
+        amount,
+        timestamp: new Date().toISOString(),
+      });
+      getExpenseList();
+      setPerson1('');
+      setPerson2('');
+      setDescription('');
+      setAmount(0);
+    } catch (err) {
+      console.error(err);
+    }
   };
 
-  const totalExpenses = expenses.reduce((total, expense) => total + expense.amount, 0);
+  const handleEditExpense = async (editedExpense: Expense) => {
+    try {
+      const expenseDocRef = doc(db, 'expenses', editedExpense.id.toString());
+      await updateDoc(expenseDocRef, editedExpense as DocumentData);
+      getExpenseList();
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const calculateTotalExpenses = (expenses: Expense[]) => {
+    return expenses.reduce((total, expense) => total + expense.amount, 0);
+  };
+
+  const handleDeleteExpense = async (expenseId: number) => {
+    try {
+      const expenseDocRef = doc(db, 'expenses', expenseId.toString());
+      await deleteDoc(expenseDocRef);
+      getExpenseList(); 
+    } catch (err) {
+      console.error(err);
+    }
+  };
 
   return (
     <div className="App">
@@ -74,23 +104,25 @@ const App: React.FC = () => {
       <ExpenseForm
         person1={person1}
         person2={person2}
-        description={description} 
+        description={description}
         amount={amount}
         setPerson1={setPerson1}
         setPerson2={setPerson2}
-        setDescription={setDescription} 
+        setDescription={setDescription}
         setAmount={setAmount}
         handleAddExpense={handleAddExpense}
       />
-      <ExpenseList
-        expenses={expenses}
-        totalExpenses={totalExpenses}
-        onSaveExpense={handleSaveExpense}
-        onDeleteExpense={handleDeleteExpense}
-      />
-      <GroupList groups={[]} />
+
+      <div>
+        <ExpenseList
+          expenses={expenseList}
+          totalExpenses={totalExpenses}
+          onSaveExpense={handleEditExpense}
+          onDeleteExpense={handleDeleteExpense} 
+        />
+      </div>
     </div>
   );
-};
+}
 
 export default App;

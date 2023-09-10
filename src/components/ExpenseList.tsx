@@ -30,7 +30,7 @@ const ExpenseList: React.FC<ExpenseListProps> = ({
   };
 
   const handleDelete = (expenseId: number) => {
-    onDeleteExpense(expenseId);
+      onDeleteExpense(expenseId);
   };
 
   return (
@@ -39,13 +39,15 @@ const ExpenseList: React.FC<ExpenseListProps> = ({
       <ul>
         {expenses.map((expense) => (
           <li key={expense.id}>
-            {expense.person1} owes {expense.person2}: {expense.description && `${expense.description} - `}
-            ${expense.amount.toFixed(2)}
+            <p>
+              {expense.person1} owes {expense.person2}: ${expense.amount} - {expense.description || ''}
+            </p>
             <button onClick={() => handleEdit(expense)}>Edit</button>
+            <button onClick={() => onDeleteExpense(expense.id)}>Delete</button>
           </li>
         ))}
       </ul>
-      <p>Total Expenses: ${totalExpenses.toFixed(2)}</p>
+      <p>Total Expenses: ${typeof totalExpenses === 'number' ? totalExpenses.toFixed(2) : 'N/A'}</p>
 
       {isEditing && editedExpense && (
         <EditExpenseForm

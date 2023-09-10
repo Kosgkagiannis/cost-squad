@@ -12,7 +12,7 @@ interface EditExpenseFormProps {
   expense: Expense | null;
   onSave: (editedExpense: Expense) => void;
   onCancel: () => void;
-  onDelete: (expenseId: number) => void;
+  onDelete?: (expenseId: number) => void;
 }
 
 const EditExpenseForm: React.FC<EditExpenseFormProps> = ({
@@ -58,12 +58,12 @@ const EditExpenseForm: React.FC<EditExpenseFormProps> = ({
   };
 
   const handleDelete = () => {
-    if (expense) {
+    if (expense && onDelete) {
+      console.log('Deleting expense with ID:', expense.id);
       onDelete(expense.id);
       onCancel();
     }
   };
-
   return (
     <div>
       <p>Person 1:</p>
