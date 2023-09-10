@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import './App.css';
-import { Auth } from './components/auth';
-import { db, auth, storage } from './config/firebase';
+import { User } from "firebase/auth";
+import { auth, db } from './config/firebase';
 import {
   getDocs,
   collection,
@@ -11,33 +11,45 @@ import {
   doc,
   DocumentData,
 } from 'firebase/firestore';
-import { ref, uploadBytes } from 'firebase/storage';
 import ExpenseForm from './components/ExpenseForm';
 import ExpenseList from './components/ExpenseList';
-import publicExpenseProps from './types/PublicExpenseProps';
 import Header from './components/Header';
+import LoginRegister from './components/LoginRegister';
+import publicExpenseProps from './types/PublicExpenseProps';
 
 interface Expense {
   id: number;
   person1: string;
   person2: string;
-  description?: string;
+  description: string; 
   amount: number;
 }
 
 function App() {
+  const [user, setUser] = useState<User | null>(null); 
   const [expenseList, setExpenseList] = useState<Expense[]>([]);
-  const [totalExpenses, setTotalExpenses] = useState<number>(0); 
-
+  const [totalExpenses, setTotalExpenses] = useState<number>(0);
   const [person1, setPerson1] = useState('');
   const [person2, setPerson2] = useState('');
-  const [description, setDescription] = useState('');
+  const [description, setDescription] = useState(''); 
   const [amount, setAmount] = useState<number>(0);
 
-  const expensesCollectionRef = collection(db, 'expenses');
+  const handleUserLogin = () => {
+    setUser(auth.currentUser);
+  };
+
+  const handleLogout = async () => {
+    try {
+      await auth.signOut();
+      setUser(null);
+    } catch (err) {
+      console.error(err);
+    }
+  };
 
   const getExpenseList = async () => {
     try {
+      const expensesCollectionRef = collection(db, 'expenses');
       const data = await getDocs(expensesCollectionRef);
       const filteredData = data.docs.map((doc) => ({
         id: doc.id,
@@ -52,11 +64,22 @@ function App() {
   };
 
   useEffect(() => {
-    getExpenseList();
+    // Check if a user is already logged in
+    const unsubscribe = auth.onAuthStateChanged((user) => {
+      if (user) {
+        setUser(user);
+        getExpenseList(); 
+      } else {
+        setUser(null);
+      }
+    });
+
+    return () => unsubscribe();
   }, []);
 
   const handleAddExpense = async () => {
     try {
+      const expensesCollectionRef = collection(db, 'expenses');
       await addDoc(expensesCollectionRef, {
         person1,
         person2,
@@ -74,7 +97,7 @@ function App() {
     }
   };
 
-  const handleEditExpense = async (editedExpense: Expense) => {
+  const handleEditExpense = async (editedExpense: publicExpenseProps) => { 
     try {
       const expenseDocRef = doc(db, 'expenses', editedExpense.id.toString());
       await updateDoc(expenseDocRef, editedExpense as DocumentData);
@@ -92,7 +115,7 @@ function App() {
     try {
       const expenseDocRef = doc(db, 'expenses', expenseId.toString());
       await deleteDoc(expenseDocRef);
-      getExpenseList(); 
+      getExpenseList();
     } catch (err) {
       console.error(err);
     }
@@ -101,26 +124,32 @@ function App() {
   return (
     <div className="App">
       <Header />
-      <ExpenseForm
-        person1={person1}
-        person2={person2}
-        description={description}
-        amount={amount}
-        setPerson1={setPerson1}
-        setPerson2={setPerson2}
-        setDescription={setDescription}
-        setAmount={setAmount}
-        handleAddExpense={handleAddExpense}
-      />
-
-      <div>
-        <ExpenseList
-          expenses={expenseList}
-          totalExpenses={totalExpenses}
-          onSaveExpense={handleEditExpense}
-          onDeleteExpense={handleDeleteExpense} 
-        />
-      </div>
+      {user ? (
+        <div>
+          <button onClick={handleLogout}>Logout</button>
+          <ExpenseForm
+            person1={person1}
+            person2={person2}
+            description={description}
+            amount={amount}
+            setPerson1={setPerson1}
+            setPerson2={setPerson2}
+            setDescription={setDescription}
+            setAmount={setAmount}
+            handleAddExpense={handleAddExpense}
+          />
+          <div>
+            <ExpenseList
+              expenses={expenseList}
+              totalExpenses={totalExpenses}
+              onSaveExpense={handleEditExpense}
+              onDeleteExpense={handleDeleteExpense}
+            />
+          </div>
+        </div>
+      ) : (
+        <LoginRegister onUserLogin={handleUserLogin} />
+      )}
     </div>
   );
 }
