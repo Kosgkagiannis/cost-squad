@@ -21,14 +21,11 @@ const ExpenseForm: React.FC<ExpenseFormProps> = ({
   setPerson2,
   setDescription,
   setAmount,
-  handleAddExpense, // Updated to accept arguments
+  handleAddExpense, 
 }) => {
-  // Function to handle the form submission
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // Call handleAddExpense with the required arguments
     handleAddExpense(person1, person2, description, amount);
-    // Reset form fields or perform any other necessary actions
     setPerson1('');
     setPerson2('');
     setDescription('');
@@ -63,7 +60,7 @@ const ExpenseForm: React.FC<ExpenseFormProps> = ({
         <input
           type="number"
           placeholder="Amount"
-          value={amount}
+          value={amount === 0 ? '' : amount}
           onChange={(e) => setAmount(parseFloat(e.target.value))}
         />
         <button type="submit">Add Expense</button>
