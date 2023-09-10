@@ -49,6 +49,10 @@ li {
   margin: 10px 0;
 }
 
+input{
+  margin-inline: 10px;
+}
+
 .Expenses {
   background-color: #fff;
   padding: 20px;
