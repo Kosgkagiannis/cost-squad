@@ -1,0 +1,13 @@
+{
+  "files": {
+    "main.css": "/cost-squad/static/css/main.62394474.css",
+    "main.js": "/cost-squad/static/js/main.a440ec65.js",
+    "index.html": "/cost-squad/index.html",
+    "main.62394474.css.map": "/cost-squad/static/css/main.62394474.css.map",
+    "main.a440ec65.js.map": "/cost-squad/static/js/main.a440ec65.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.62394474.css",
+    "static/js/main.a440ec65.js"
+  ]
+}
