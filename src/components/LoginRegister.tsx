@@ -80,7 +80,7 @@ const LoginRegister: React.FC<LoginRegisterProps> = ({ onUserLogin }) => {
         type="password"
         onChange={(e) => setPassword(e.target.value)}
       />
-      <button onClick={signInWithEmail}>Log in</button>
+      <button style={{ background: 'red' }} onClick={signInWithEmail}>Log in</button>
       {error && <p className="error-message">{error}</p>}
 
       <h2 style={{marginBlockStart:'10px'}}>Don't have an account? Sign up here</h2>
