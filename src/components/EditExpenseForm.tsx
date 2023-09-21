@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 
 interface Expense {
-  id: number;
+  id: string;
   person1: string;
   person2: string;
   amount: number;
@@ -12,7 +12,7 @@ interface EditExpenseFormProps {
   expense: Expense | null;
   onSave: (editedExpense: Expense) => void;
   onCancel: () => void;
-  onDelete?: (expenseId: number) => void;
+  onDelete?: (expenseId: string) => void;
 }
 
 const EditExpenseForm: React.FC<EditExpenseFormProps> = ({
@@ -24,14 +24,14 @@ const EditExpenseForm: React.FC<EditExpenseFormProps> = ({
   const [editedPerson1, setEditedPerson1] = useState<string>('');
   const [editedPerson2, setEditedPerson2] = useState<string>('');
   const [editedAmount, setEditedAmount] = useState<number | ''>('');
-  const [editedDescription, setEditedDescription] = useState<string | undefined>(''); 
+  const [editedDescription, setEditedDescription] = useState<string | undefined>('');
 
   useEffect(() => {
     if (expense) {
       setEditedPerson1(expense.person1);
       setEditedPerson2(expense.person2);
       setEditedAmount(expense.amount);
-      setEditedDescription(expense.description || ''); 
+      setEditedDescription(expense.description || '');
     } else {
       setEditedPerson1('');
       setEditedPerson2('');
@@ -41,29 +41,34 @@ const EditExpenseForm: React.FC<EditExpenseFormProps> = ({
   }, [expense]);
 
   const handleSave = () => {
-    // Validate and save the edited expense
-    if (editedPerson1.trim() === '' || editedPerson2.trim() === '' || editedAmount === '') {
+    if (
+      editedPerson1.trim() === '' ||
+      editedPerson2.trim() === '' ||
+      isNaN(parseFloat(editedAmount as string)) ||
+      editedDescription === undefined
+    ) {
       return;
     }
-
+  
     const editedExpense: Expense = {
-      id: expense?.id || 0,
+      id: expense ? expense.id : '',
       person1: editedPerson1,
       person2: editedPerson2,
-      amount: typeof editedAmount === 'number' ? editedAmount : parseFloat(editedAmount),
-      description: editedDescription || undefined, 
+      amount: parseFloat(editedAmount as string),
+      description: editedDescription,
     };
-
+  
     onSave(editedExpense);
   };
+  
 
   const handleDelete = () => {
     if (expense && onDelete) {
-      console.log('Deleting expense with ID:', expense.id);
       onDelete(expense.id);
       onCancel();
     }
   };
+
   return (
     <div>
       <p>Person 1:</p>
