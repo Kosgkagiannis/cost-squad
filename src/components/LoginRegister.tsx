@@ -7,6 +7,7 @@ import {
   UserCredential,
   onAuthStateChanged,
 } from 'firebase/auth';
+import googleIcon from '../images/google.jpg' 
 
 interface LoginRegisterProps {
   onUserLogin: () => void;
@@ -69,33 +70,40 @@ const LoginRegister: React.FC<LoginRegisterProps> = ({ onUserLogin }) => {
   };
 
   return (
-    <div>
+    <div className="login-content">
       <h2>Log In</h2>
-      <input
+      <input className='login-input'
         placeholder="Email..."
         onChange={(e) => setEmail(e.target.value)}
       />
-      <input
+      <input className='login-input'
         placeholder="Password..."
         type="password"
         onChange={(e) => setPassword(e.target.value)}
       />
-      <button style={{ background: 'red' }} onClick={signInWithEmail}>Log in</button>
+      <button onClick={signInWithEmail}>Log in</button>
       {error && <p className="error-message">{error}</p>}
 
       <h2 style={{marginBlockStart:'10px'}}>Don't have an account? Sign up here</h2>
       <input
+        className='login-input'
         placeholder="Email..."
         onChange={(e) => setEmail(e.target.value)}
       />
       <input
+        className='login-input'
         placeholder="Password..."
         type="password"
         onChange={(e) => setPassword(e.target.value)}
       />
       <button onClick={signUpWithEmail}>Sign Up</button>
       <h2>Or sign up with Google</h2>
-      <button onClick={signInWithGoogle}>Sign Up With Google</button>
+      <div className="google-signup">
+      <button onClick={signInWithGoogle}>
+      <img src={googleIcon} alt="Google Icon" /> Sign Up With Google
+      </button>
+</div>
+
     </div>
   );
 };

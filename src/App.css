@@ -1,12 +1,29 @@
-.App {
+
+body {
+  background: linear-gradient(135deg, #007bff, #00a5ff);
+  margin: 0;
+  padding: 0;
   font-family: Arial, sans-serif;
+}
+
+.App {
   text-align: center;
-  background-color: #f0f0f0;
   padding: 20px;
   border-radius: 10px;
   box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
   max-width: 600px;
   margin: 0 auto;
+  background-color: #ffffffa8;
+  animation: fadeIn 0.5s ease-in-out; 
+}
+
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
 }
 
 header {
@@ -16,16 +33,17 @@ header {
   border-radius: 10px 10px 0 0;
 }
 
-h1, h2 {
+h1 {
   margin: 0;
+  font-size: 24px;
 }
 
 input[type="text"],
 input[type="number"] {
   width: 100%;
   padding: 10px;
-  margin: 5px 0;
-  border: 1px solid #ccc;
+  margin: 5px -5px;
+  border: none;
   border-radius: 5px;
 }
 
@@ -38,28 +56,53 @@ button {
   margin-top: 10px;
   cursor: pointer;
   margin-inline: 5px;
+  transition: background-color 0.3s ease; 
 }
 
-ul {
-  list-style-type: none;
-  padding: 0;
+button:hover {
+  background-color: #0056b3;
 }
-
-li {
-  margin: 10px 0;
-}
-
-input{
-  margin-inline: 10px;
-}
-
 .Expenses {
-  background-color: #fff;
+  background-color: #ffffffa8;
   padding: 20px;
   border-radius: 0 0 10px 10px;
   box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
+  animation: slideIn 0.5s ease-in-out; 
+}
+
+@keyframes slideIn {
+  0% {
+    transform: translateY(-20px);
+    opacity: 0;
+  }
+  100% {
+    transform: translateY(0);
+    opacity: 1;
+  }
 }
 
 .EditExpenseForm {
   margin-top: 20px;
+}
+
+.error-message {
+  color: #ff0000;
+  margin-top: 10px;
+}
+
+.login-input{
+  margin: 5px;
+}
+
+.google-signup {
+  margin-top: 20px;
+  text-align: center;
+}
+
+.google-signup img {
+  vertical-align: middle;
+  width: 35px;
+  height: 30px;
+  border-radius: 50px;
+  margin-right: 10px; 
 }
