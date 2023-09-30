@@ -106,3 +106,41 @@ button:hover {
   border-radius: 50px;
   margin-right: 10px; 
 }
+
+.header {
+  background-color: #007bff;
+  color: #ffffffde;
+  padding: 20px;
+  border-radius: 0 0 20px 20px;
+  text-align: center;
+  position: relative;
+  animation: headerFadeIn 0.5s ease-in-out;
+}
+
+.header-title {
+  margin: 0;
+  font-size: 36px;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 3px;
+  animation: titleZoomIn 1s ease-in-out;
+}
+
+@keyframes headerFadeIn {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+@keyframes titleZoomIn {
+  0% {
+    transform: scale(0.5);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+

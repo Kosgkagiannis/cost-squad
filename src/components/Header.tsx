@@ -1,9 +1,10 @@
 import React from 'react';
+import '../App.css'; 
 
 const Header: React.FC = () => {
   return (
-    <header>
-      <h1>Expense Sharing App</h1>
+    <header className="header">
+      <h1 className="header-title">CostSquad</h1>
     </header>
   );
 };
