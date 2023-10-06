@@ -85,15 +85,34 @@ function App() {
           where("userId", "==", user.uid)
         );
         const data = await getDocs(query);
-        const filteredData = data.docs.map((doc) => ({
+        const expensesData = data.docs.map((doc) => ({
           id: doc.id,
           ...(doc.data() as Record<string, any>),
-        })) as any[];
+        })) as PublicExpenseProps[];
 
-        setExpenseList(filteredData as PublicExpenseProps[]);
-        const total = calculateTotalExpenses(
-          filteredData as PublicExpenseProps[]
-        );
+        //Here we  merge expenses where both people owe each other
+        const mergedExpenses = [];
+
+        for (const expense of expensesData) {
+          const matchingExpense = expensesData.find(
+            (e) =>
+              e.person1 === expense.person2 &&
+              e.person2 === expense.person1 &&
+              e.description === expense.description &&
+              e.id !== expense.id
+          );
+
+          if (matchingExpense) {
+            expense.amount -= matchingExpense.amount;
+            // Remove the matching expense from the list
+            await deleteDoc(doc(db, "expenses", matchingExpense.id));
+          }
+
+          mergedExpenses.push(expense);
+        }
+
+        setExpenseList(mergedExpenses);
+        const total = calculateTotalExpenses(mergedExpenses);
         setTotalExpenses(total);
       } catch (err) {
         console.error(err);
@@ -120,14 +139,31 @@ function App() {
       }
 
       const expensesCollectionRef = collection(db, "expenses");
-      await addDoc(expensesCollectionRef, {
-        userId: user.uid,
-        person1,
-        person2,
-        description,
-        amount,
-        timestamp: new Date().toISOString(),
-      });
+
+      //Here we check if there's an existing expense
+      const existingExpense = expenseList.find(
+        (expense) =>
+          expense.person1 === person2 &&
+          expense.person2 === person1 &&
+          expense.description === description
+      );
+
+      if (existingExpense) {
+        existingExpense.amount += amount;
+        await updateDoc(doc(db, "expenses", existingExpense.id), {
+          amount: existingExpense.amount,
+        });
+      } else {
+        await addDoc(expensesCollectionRef, {
+          userId: user.uid,
+          person1,
+          person2,
+          description,
+          amount,
+          timestamp: new Date().toISOString(),
+        });
+      }
+
       getExpenseList();
       setPerson1("");
       setPerson2("");
