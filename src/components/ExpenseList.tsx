@@ -1,12 +1,12 @@
-import React, { useState } from 'react';
-import EditExpenseForm from './EditExpenseForm.tsx';
-import publicExpenseProps from '../types/PublicExpenseProps.ts';
+import React, { useState } from "react";
+import EditExpenseForm from "./EditExpenseForm.tsx";
+import publicExpenseProps from "../types/PublicExpenseProps.ts";
 
 interface ExpenseListProps {
   expenses: publicExpenseProps[];
   totalExpenses: number;
   onSaveExpense: (editedExpense: publicExpenseProps) => void;
-  onDeleteExpense: (expenseId: number) => void;
+  onDeleteExpense: (expenseId: string) => void;
 }
 
 const ExpenseList: React.FC<ExpenseListProps> = ({
@@ -16,7 +16,9 @@ const ExpenseList: React.FC<ExpenseListProps> = ({
   onDeleteExpense,
 }) => {
   const [isEditing, setIsEditing] = useState(false);
-  const [editedExpense, setEditedExpense] = useState<publicExpenseProps | null>(null);
+  const [editedExpense, setEditedExpense] = useState<publicExpenseProps | null>(
+    null
+  );
 
   const handleEdit = (expense: publicExpenseProps) => {
     setIsEditing(true);
@@ -29,8 +31,8 @@ const ExpenseList: React.FC<ExpenseListProps> = ({
     setEditedExpense(null);
   };
 
-  const handleDelete = (expenseId: number) => {
-      onDeleteExpense(expenseId);
+  const handleDelete = (expenseId: string) => {
+    onDeleteExpense(expenseId);
   };
 
   return (
@@ -40,14 +42,18 @@ const ExpenseList: React.FC<ExpenseListProps> = ({
         {expenses.map((expense) => (
           <li key={expense.id}>
             <p>
-              {expense.person1} owes {expense.person2}: ${expense.amount} - {expense.description || ''}
+              {expense.person1} owes {expense.person2}: ${expense.amount} -{" "}
+              {expense.description || ""}
             </p>
             <button onClick={() => handleEdit(expense)}>Edit</button>
             <button onClick={() => onDeleteExpense(expense.id)}>Delete</button>
           </li>
         ))}
       </ul>
-      <p>Total Expenses: ${typeof totalExpenses === 'number' ? totalExpenses.toFixed(2) : 'N/A'}</p>
+      <p>
+        Total Expenses: $
+        {typeof totalExpenses === "number" ? totalExpenses.toFixed(2) : "N/A"}
+      </p>
 
       {isEditing && editedExpense && (
         <EditExpenseForm

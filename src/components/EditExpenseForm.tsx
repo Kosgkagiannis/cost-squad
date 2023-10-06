@@ -1,16 +1,9 @@
-import React, { useState, useEffect } from 'react';
-
-interface Expense {
-  id: string;
-  person1: string;
-  person2: string;
-  amount: number;
-  description?: string;
-}
+import React, { useState, useEffect } from "react";
+import PublicExpenseProps from "../types/PublicExpenseProps";
 
 interface EditExpenseFormProps {
-  expense: Expense | null;
-  onSave: (editedExpense: Expense) => void;
+  expense: PublicExpenseProps | null;
+  onSave: (editedExpense: PublicExpenseProps) => void;
   onCancel: () => void;
   onDelete?: (expenseId: string) => void;
 }
@@ -21,50 +14,51 @@ const EditExpenseForm: React.FC<EditExpenseFormProps> = ({
   onCancel,
   onDelete,
 }) => {
-  const [editedPerson1, setEditedPerson1] = useState<string>('');
-  const [editedPerson2, setEditedPerson2] = useState<string>('');
-  const [editedAmount, setEditedAmount] = useState<number | ''>('');
-  const [editedDescription, setEditedDescription] = useState<string | undefined>('');
+  const [editedPerson1, setEditedPerson1] = useState<string>("");
+  const [editedPerson2, setEditedPerson2] = useState<string>("");
+  const [editedAmount, setEditedAmount] = useState<number | "">("");
+  const [editedDescription, setEditedDescription] = useState<
+    string | undefined
+  >("");
 
   useEffect(() => {
     if (expense) {
       setEditedPerson1(expense.person1);
       setEditedPerson2(expense.person2);
       setEditedAmount(expense.amount);
-      setEditedDescription(expense.description || '');
+      setEditedDescription(expense.description || "");
     } else {
-      setEditedPerson1('');
-      setEditedPerson2('');
-      setEditedAmount('');
-      setEditedDescription('');
+      setEditedPerson1("");
+      setEditedPerson2("");
+      setEditedAmount("");
+      setEditedDescription("");
     }
   }, [expense]);
 
   const handleSave = () => {
     if (
-      editedPerson1.trim() === '' ||
-      editedPerson2.trim() === '' ||
+      editedPerson1.trim() === "" ||
+      editedPerson2.trim() === "" ||
       isNaN(parseFloat(editedAmount as string)) ||
       editedDescription === undefined
     ) {
       return;
     }
-  
-    const editedExpense: Expense = {
-      id: expense ? expense.id : '',
+
+    const editedExpense: PublicExpenseProps = {
+      id: expense ? expense.id : "",
       person1: editedPerson1,
       person2: editedPerson2,
       amount: parseFloat(editedAmount as string),
       description: editedDescription,
     };
-  
+
     onSave(editedExpense);
   };
-  
 
   const handleDelete = () => {
     if (expense && onDelete) {
-      onDelete(expense.id);
+      onDelete(expense.id.toString());
       onCancel();
     }
   };
@@ -96,8 +90,12 @@ const EditExpenseForm: React.FC<EditExpenseFormProps> = ({
       <input
         type="number"
         placeholder="Amount"
-        value={editedAmount === '' ? '' : editedAmount.toString()}
-        onChange={(e) => setEditedAmount(e.target.value === '' ? '' : parseFloat(e.target.value))}
+        value={editedAmount === "" ? "" : editedAmount.toString()}
+        onChange={(e) =>
+          setEditedAmount(
+            e.target.value === "" ? "" : parseFloat(e.target.value)
+          )
+        }
       />
       <div>
         <button onClick={handleSave}>Save</button>

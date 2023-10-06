@@ -1,15 +1,20 @@
-import React from 'react';
+import React from "react";
 
 interface ExpenseFormProps {
   person1: string;
   person2: string;
-  description: string; 
+  description: string;
   amount: number;
   setPerson1: React.Dispatch<React.SetStateAction<string>>;
   setPerson2: React.Dispatch<React.SetStateAction<string>>;
-  setDescription: React.Dispatch<React.SetStateAction<string>>; 
-  setAmount: React.Dispatch<React.SetStateAction<number>>; 
-  handleAddExpense: (person1: string, person2: string, description: string, amount: number) => void; // Pass required arguments
+  setDescription: React.Dispatch<React.SetStateAction<string>>;
+  setAmount: React.Dispatch<React.SetStateAction<number>>;
+  handleAddExpense: (
+    person1: string,
+    person2: string,
+    description: string,
+    amount: number
+  ) => void;
 }
 
 const ExpenseForm: React.FC<ExpenseFormProps> = ({
@@ -21,14 +26,14 @@ const ExpenseForm: React.FC<ExpenseFormProps> = ({
   setPerson2,
   setDescription,
   setAmount,
-  handleAddExpense, 
+  handleAddExpense,
 }) => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     handleAddExpense(person1, person2, description, amount);
-    setPerson1('');
-    setPerson2('');
-    setDescription('');
+    setPerson1("");
+    setPerson2("");
+    setDescription("");
     setAmount(0);
   };
 
@@ -60,7 +65,7 @@ const ExpenseForm: React.FC<ExpenseFormProps> = ({
         <input
           type="number"
           placeholder="Amount"
-          value={amount === 0 ? '' : amount}
+          value={amount === 0 ? "" : amount}
           onChange={(e) => setAmount(parseFloat(e.target.value))}
         />
         <button type="submit">Add Expense</button>
