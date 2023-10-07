@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from "react";
-import "./App.css";
-import { User } from "firebase/auth";
-import { auth, db } from "./config/firebase";
+import React, { useEffect, useState } from "react"
+import "./App.css"
+import { User } from "firebase/auth"
+import { auth, db } from "./config/firebase"
 import {
   getDocs,
   collection,
@@ -12,86 +12,115 @@ import {
   query as firestoreQuery,
   where,
   DocumentData,
-} from "firebase/firestore";
-import ExpenseForm from "./components/ExpenseForm";
-import ExpenseList from "./components/ExpenseList";
-import Header from "./components/Header";
-import LoginRegister from "./components/LoginRegister";
-import PublicExpenseProps from "./types/PublicExpenseProps";
+} from "firebase/firestore"
+import ExpenseForm from "./components/ExpenseForm"
+import ExpenseList from "./components/ExpenseList"
+import Header from "./components/Header"
+import LoginRegister from "./components/LoginRegister"
+import PublicExpenseProps from "./types/PublicExpenseProps"
+import GroupCreationForm from "./components/GroupCreationForm"
+import GroupProps from "./types/GroupProps"
 
 function App() {
-  const [user, setUser] = useState<User | null>(null);
-  const [expenseList, setExpenseList] = useState<PublicExpenseProps[]>([]);
-  const [totalExpenses, setTotalExpenses] = useState<number>(0);
-  const [person1, setPerson1] = useState("");
-  const [person2, setPerson2] = useState("");
-  const [description, setDescription] = useState("");
-  const [amount, setAmount] = useState<number>(0);
-  const [isLoading, setIsLoading] = useState(true);
+  const [user, setUser] = useState<User | null>(null)
+  const [expenseList, setExpenseList] = useState<PublicExpenseProps[]>([])
+  const [totalExpenses, setTotalExpenses] = useState<number>(0)
+  const [person1, setPerson1] = useState("")
+  const [person2, setPerson2] = useState("")
+  const [description, setDescription] = useState("")
+  const [amount, setAmount] = useState<number>(0)
+  const [isLoading, setIsLoading] = useState(true)
+  const [userGroups, setUserGroups] = useState<GroupProps[]>([])
+
+  const fetchUserGroups = async (userId: string): Promise<GroupProps[]> => {
+    try {
+      const groupsCollectionRef = collection(db, "groups")
+      const query = firestoreQuery(
+        groupsCollectionRef,
+        where("userId", "==", userId)
+      )
+      const data = await getDocs(query)
+      const userGroups = data.docs.map((doc) => {
+        const groupData = doc.data() as Omit<GroupProps, "id">
+        return {
+          id: doc.id,
+          ...groupData,
+        } as GroupProps
+      })
+
+      return userGroups
+    } catch (err) {
+      console.error("Error fetching user groups:", err)
+      return []
+    }
+  }
 
   const handleUserLogin = async () => {
-    setUser(auth.currentUser);
-    await getExpenseList();
-  };
+    setUser(auth.currentUser)
+    await getExpenseList()
+
+    if (auth.currentUser) {
+      const userGroups = await fetchUserGroups(auth.currentUser.uid)
+      setUserGroups(userGroups)
+    }
+  }
 
   const handleLogout = async () => {
     try {
-      await auth.signOut();
-      setUser(null);
-      setExpenseList([]);
-      setTotalExpenses(0);
+      await auth.signOut()
+      setUser(null)
+      setExpenseList([])
+      setTotalExpenses(0)
     } catch (err) {
-      console.error(err);
+      console.error(err)
     }
-  };
+  }
 
   const getExpenseList = async () => {
     try {
       if (!user) {
-        return;
+        return
       }
 
-      const expensesCollectionRef = collection(db, "expenses");
+      const expensesCollectionRef = collection(db, "expenses")
       const query = firestoreQuery(
         expensesCollectionRef,
         where("userId", "==", user.uid)
-      );
-      const data = await getDocs(query);
+      )
+      const data = await getDocs(query)
       const filteredData = data.docs.map((doc) => ({
         id: doc.id,
         ...(doc.data() as Record<string, any>),
-      })) as any[];
+      })) as any[]
 
-      setExpenseList(filteredData as PublicExpenseProps[]);
-      const total = calculateTotalExpenses(
-        filteredData as PublicExpenseProps[]
-      );
-      setTotalExpenses(total);
+      setExpenseList(filteredData as PublicExpenseProps[])
+      const total = calculateTotalExpenses(filteredData as PublicExpenseProps[])
+      setTotalExpenses(total)
     } catch (err) {
-      console.error(err);
+      console.error(err)
     }
-  };
+  }
 
   useEffect(() => {
     const fetchExpenseList = async () => {
       try {
         if (!user) {
-          return;
+          return
         }
 
-        const expensesCollectionRef = collection(db, "expenses");
+        const expensesCollectionRef = collection(db, "expenses")
         const query = firestoreQuery(
           expensesCollectionRef,
           where("userId", "==", user.uid)
-        );
-        const data = await getDocs(query);
+        )
+        const data = await getDocs(query)
         const expensesData = data.docs.map((doc) => ({
           id: doc.id,
           ...(doc.data() as Record<string, any>),
-        })) as PublicExpenseProps[];
+        })) as PublicExpenseProps[]
 
         //Here we  merge expenses where both people owe each other
-        const mergedExpenses = [];
+        const mergedExpenses = []
 
         for (const expense of expensesData) {
           const matchingExpense = expensesData.find(
@@ -100,45 +129,44 @@ function App() {
               e.person2 === expense.person1 &&
               e.description === expense.description &&
               e.id !== expense.id
-          );
+          )
 
           if (matchingExpense) {
-            expense.amount -= matchingExpense.amount;
-            // Remove the matching expense from the list
-            await deleteDoc(doc(db, "expenses", matchingExpense.id));
+            expense.amount -= matchingExpense.amount
+            await deleteDoc(doc(db, "expenses", matchingExpense.id))
           }
 
-          mergedExpenses.push(expense);
+          mergedExpenses.push(expense)
         }
 
-        setExpenseList(mergedExpenses);
-        const total = calculateTotalExpenses(mergedExpenses);
-        setTotalExpenses(total);
+        setExpenseList(mergedExpenses)
+        const total = calculateTotalExpenses(mergedExpenses)
+        setTotalExpenses(total)
       } catch (err) {
-        console.error(err);
+        console.error(err)
       }
-    };
+    }
 
     // Check if a user is already logged in
     const unsubscribe = auth.onAuthStateChanged(async (authUser) => {
       if (authUser) {
-        setUser(authUser);
-        await fetchExpenseList();
+        setUser(authUser)
+        await fetchExpenseList()
       }
 
-      setIsLoading(false);
-    });
+      setIsLoading(false)
+    })
 
-    return () => unsubscribe();
-  }, [user]);
+    return () => unsubscribe()
+  }, [user])
 
   const handleAddExpense = async () => {
     try {
       if (!user) {
-        return;
+        return
       }
 
-      const expensesCollectionRef = collection(db, "expenses");
+      const expensesCollectionRef = collection(db, "expenses")
 
       //Here we check if there's an existing expense
       const existingExpense = expenseList.find(
@@ -146,13 +174,13 @@ function App() {
           expense.person1 === person2 &&
           expense.person2 === person1 &&
           expense.description === description
-      );
+      )
 
       if (existingExpense) {
-        existingExpense.amount += amount;
+        existingExpense.amount += amount
         await updateDoc(doc(db, "expenses", existingExpense.id), {
           amount: existingExpense.amount,
-        });
+        })
       } else {
         await addDoc(expensesCollectionRef, {
           userId: user.uid,
@@ -161,42 +189,42 @@ function App() {
           description,
           amount,
           timestamp: new Date().toISOString(),
-        });
+        })
       }
 
-      getExpenseList();
-      setPerson1("");
-      setPerson2("");
-      setDescription("");
-      setAmount(0);
+      getExpenseList()
+      setPerson1("")
+      setPerson2("")
+      setDescription("")
+      setAmount(0)
     } catch (err) {
-      console.error(err);
+      console.error(err)
     }
-  };
+  }
 
   const handleEditExpense = async (editedExpense: PublicExpenseProps) => {
     try {
-      const expenseDocRef = doc(db, "expenses", editedExpense.id.toString());
-      await updateDoc(expenseDocRef, editedExpense as DocumentData);
-      getExpenseList();
+      const expenseDocRef = doc(db, "expenses", editedExpense.id.toString())
+      await updateDoc(expenseDocRef, editedExpense as DocumentData)
+      getExpenseList()
     } catch (err) {
-      console.error(err);
+      console.error(err)
     }
-  };
+  }
 
   const calculateTotalExpenses = (expenses: PublicExpenseProps[]) => {
-    return expenses.reduce((total, expense) => total + expense.amount, 0);
-  };
+    return expenses.reduce((total, expense) => total + expense.amount, 0)
+  }
 
   const handleDeleteExpense = async (expenseId: string) => {
     try {
-      const expenseDocRef = doc(db, "expenses", expenseId);
-      await deleteDoc(expenseDocRef);
-      getExpenseList();
+      const expenseDocRef = doc(db, "expenses", expenseId)
+      await deleteDoc(expenseDocRef)
+      getExpenseList()
     } catch (err) {
-      console.error(err);
+      console.error(err)
     }
-  };
+  }
 
   return (
     <div className="App">
@@ -205,6 +233,7 @@ function App() {
         <p>Loading...</p>
       ) : user ? (
         <div>
+          <GroupCreationForm />
           <button onClick={handleLogout}>Logout</button>
           <ExpenseForm
             person1={person1}
@@ -230,7 +259,7 @@ function App() {
         <LoginRegister onUserLogin={handleUserLogin} />
       )}
     </div>
-  );
+  )
 }
 
-export default App;
+export default App

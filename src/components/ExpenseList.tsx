@@ -1,12 +1,12 @@
-import React, { useState } from "react";
-import EditExpenseForm from "./EditExpenseForm.tsx";
-import PublicExpenseProps from "../types/PublicExpenseProps.ts";
+import React, { useState } from "react"
+import EditExpenseForm from "./EditExpenseForm.tsx"
+import PublicExpenseProps from "../types/PublicExpenseProps.ts"
 
 interface ExpenseListProps {
-  expenses: PublicExpenseProps[];
-  totalExpenses: number;
-  onSaveExpense: (editedExpense: PublicExpenseProps) => void;
-  onDeleteExpense: (expenseId: string) => void;
+  expenses: PublicExpenseProps[]
+  totalExpenses: number
+  onSaveExpense: (editedExpense: PublicExpenseProps) => void
+  onDeleteExpense: (expenseId: string) => void
 }
 
 const ExpenseList: React.FC<ExpenseListProps> = ({
@@ -15,62 +15,61 @@ const ExpenseList: React.FC<ExpenseListProps> = ({
   onSaveExpense,
   onDeleteExpense,
 }) => {
-  const [isEditing, setIsEditing] = useState(false);
+  const [isEditing, setIsEditing] = useState(false)
   const [editedExpense, setEditedExpense] = useState<PublicExpenseProps | null>(
     null
-  );
+  )
 
   const handleEdit = (expense: PublicExpenseProps) => {
-    setIsEditing(true);
-    setEditedExpense(expense);
-  };
+    setIsEditing(true)
+    setEditedExpense(expense)
+  }
 
   const handleSave = (editedExpense: PublicExpenseProps) => {
-    onSaveExpense(editedExpense);
-    setIsEditing(false);
-    setEditedExpense(null);
-  };
+    onSaveExpense(editedExpense)
+    setIsEditing(false)
+    setEditedExpense(null)
+  }
 
   const handleDelete = (expenseId: string) => {
-    onDeleteExpense(expenseId);
-  };
+    onDeleteExpense(expenseId)
+  }
 
-  // Helper function to calculate net expenses
   const calculateNetExpenses = (expenses: PublicExpenseProps[]) => {
-    const netExpenses: { [key: string]: number } = {};
+    const netExpenses: { [key: string]: number } = {}
 
     expenses.forEach((expense) => {
-      const person1 = formatName(expense.person1);
-      const person2 = formatName(expense.person2);
-      const key = `${person1}-${person2}`;
+      const person1 = formatName(expense.person1)
+      const person2 = formatName(expense.person2)
+      const key = `${person1}-${person2}`
       if (!(key in netExpenses)) {
-        netExpenses[key] = 0;
+        netExpenses[key] = 0
       }
 
       if (person1 === person2) {
-        netExpenses[key] += expense.amount;
+        netExpenses[key] += expense.amount
       } else {
-        netExpenses[key] += expense.amount;
-        const reverseKey = `${person2}-${person1}`;
+        netExpenses[key] += expense.amount
+        const reverseKey = `${person2}-${person1}`
         if (reverseKey in netExpenses) {
-          netExpenses[key] -= netExpenses[reverseKey];
-          delete netExpenses[reverseKey];
+          netExpenses[key] -= netExpenses[reverseKey]
+          delete netExpenses[reverseKey]
         }
       }
-    });
+    })
 
-    return netExpenses;
-  };
+    return netExpenses
+  }
 
   const formatName = (name: string) => {
     return name
       .toLowerCase()
       .split(" ")
       .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-      .join(" ");
-  };
+      .join(" ")
+  }
 
-  const netExpenses = calculateNetExpenses(expenses);
+  const netExpenses = calculateNetExpenses(expenses)
 
   return (
     <div className="Expenses">
@@ -104,9 +103,9 @@ const ExpenseList: React.FC<ExpenseListProps> = ({
       <h2>Net Expenses</h2>
       <ul>
         {Object.entries(netExpenses).map(([key, netAmount]) => {
-          const [person1, person2] = key.split("-");
-          const isOwed = netAmount < 0;
-          const displayAmount = Math.abs(netAmount).toFixed(2);
+          const [person1, person2] = key.split("-")
+          const isOwed = netAmount < 0
+          const displayAmount = Math.abs(netAmount).toFixed(2)
 
           return (
             <li key={key}>
@@ -116,11 +115,11 @@ const ExpenseList: React.FC<ExpenseListProps> = ({
                 {displayAmount}
               </p>
             </li>
-          );
+          )
         })}
       </ul>
     </div>
-  );
-};
+  )
+}
 
-export default ExpenseList;
+export default ExpenseList
