@@ -73,7 +73,7 @@ const ExpenseList: React.FC<ExpenseListProps> = ({
 
   return (
     <div className="Expenses">
-      <h2>Expenses</h2>
+      <h2>Expenses History</h2>
       <ul>
         {expenses.map((expense) => (
           <li key={expense.id}>

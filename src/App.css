@@ -7,12 +7,12 @@ body {
 
 .App {
   text-align: center;
-  padding: 20px;
+  padding: 0px 20px 20px 20px;
   border-radius: 10px;
   box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
   max-width: 600px;
   margin: 0 auto;
-  background-color: #ffffffa8;
+  background-color: #ffffff47;
   animation: fadeIn 0.5s ease-in-out;
 }
 
@@ -116,15 +116,6 @@ button:hover {
   animation: headerFadeIn 0.5s ease-in-out;
 }
 
-.header-title {
-  margin: 0;
-  font-size: 36px;
-  font-weight: bold;
-  text-transform: uppercase;
-  letter-spacing: 3px;
-  animation: titleZoomIn 1s ease-in-out;
-}
-
 @keyframes headerFadeIn {
   0% {
     opacity: 0;
@@ -146,4 +137,59 @@ button:hover {
 button:disabled {
   background-color: #ccc;
   cursor: not-allowed;
+}
+
+.header-title {
+  margin: 10px 0;
+  color: white;
+  background-color: #007bff;
+  border-radius: 0 0 20px 20px;
+  font-size: 36px;
+  font-weight: bold;
+  letter-spacing: 3px;
+  animation: titleZoomIn 1s ease-in-out;
+}
+
+.header a {
+  color: white;
+  text-decoration: none;
+  margin-right: 10px;
+}
+
+.header a:hover {
+  color: #00f;
+}
+
+.nav-right {
+  float: right;
+}
+
+.questions {
+  color: #f5f5f5;
+  font-size: 24px;
+  font-weight: bold;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+  margin: 10px 0;
+}
+
+.divider {
+  border: none;
+  height: 4px;
+  background-color: white;
+  margin: 20px 0;
+  opacity: 0.7;
+}
+
+.questions-form {
+  margin-block: 5rem;
+}
+
+.login-content {
+  display: flex;
+  flex-wrap: wrap;
+  flex-direction: column;
+
+  @media (min-width: 426px) {
+    display: block;
+  }
 }
