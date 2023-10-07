@@ -68,7 +68,7 @@ function App() {
         {user && <Header user={user} handleLogout={handleLogout} />}
         <Routes>
           <Route
-            path="/"
+            path="/cost-squad"
             element={
               user ? (
                 <div className="questions-form">

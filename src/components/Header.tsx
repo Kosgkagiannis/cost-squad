@@ -14,14 +14,14 @@ function Header({ user, handleLogout }: HeaderProps) {
     <>
       <div className="header">
         <div className="navigation">
-          <Link to="/">Home</Link>
+          <Link to="/cost-squad">Home</Link>
           <Link to="/create-group">Group Creation</Link>
           <Link to="/quick-expense">Quick Expense</Link>
           <span className="nav-right">
             <Link to="#" onClick={handleGoBack}>
               Back
             </Link>
-            <a href="/" onClick={handleLogout}>
+            <a href="/cost-squad" onClick={handleLogout}>
               Logout
             </a>
           </span>
