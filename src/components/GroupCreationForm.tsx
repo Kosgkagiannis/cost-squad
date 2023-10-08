@@ -1,8 +1,17 @@
 import React, { useState, useEffect } from "react"
-import { addDoc, collection, getDocs, where, query } from "firebase/firestore"
+import {
+  addDoc,
+  collection,
+  getDocs,
+  where,
+  query,
+  deleteDoc,
+  doc,
+} from "firebase/firestore"
 import { auth, db } from "../config/firebase"
 import { User, onAuthStateChanged } from "firebase/auth"
 import GroupProps from "../types/GroupProps"
+import { Link } from "react-router-dom"
 
 const GroupCreationForm = () => {
   const [groupName, setGroupName] = useState("")
@@ -39,6 +48,20 @@ const GroupCreationForm = () => {
       await fetchUserGroups(user.uid)
     } catch (error) {
       console.error("Error creating group:", error)
+    }
+  }
+
+  const handleDeleteGroup = async (groupId: string) => {
+    try {
+      const groupDocRef = doc(db, "groups", groupId)
+      await deleteDoc(groupDocRef)
+
+      //Here UI needs to be updated after removing a group
+      setUserGroups((prevGroups) =>
+        prevGroups.filter((group) => group.id !== groupId)
+      )
+    } catch (error) {
+      console.error("Error deleting group:", error)
     }
   }
 
@@ -97,7 +120,16 @@ const GroupCreationForm = () => {
       ) : (
         <ul>
           {userGroups.map((group) => (
-            <li key={group.id}>{group.groupName}</li>
+            <li key={group.id}>
+              {group.groupName}
+              <Link to={`/edit-group/${group.id}`} className="edit-button">
+                Edit
+              </Link>
+
+              <button onClick={() => handleDeleteGroup(group.id)}>
+                Delete
+              </button>
+            </li>
           ))}
         </ul>
       )}

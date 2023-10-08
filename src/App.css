@@ -193,3 +193,27 @@ button:disabled {
     display: block;
   }
 }
+
+.edit-button {
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  padding: 10px 20px;
+  margin-top: 10px;
+  inline-size: 78.4px;
+  block-size: 35.2px;
+  cursor: pointer;
+  margin-inline: 5px;
+  transition: background-color 0.3s ease;
+  text-decoration: none;
+}
+
+.edit-button:hover {
+  background-color: #0056b3;
+}
+
+.edit-button a {
+  color: #fff;
+  text-decoration: none;
+}

@@ -14,6 +14,7 @@ import LoginRegister from "./components/LoginRegister"
 import GroupProps from "./types/GroupProps"
 import QuickExpenseComponent from "./components/QuickExpense"
 import CreateGroupPage from "./components/CreateGroupPage"
+import EditGroupPage from "./components/EditGroupPage"
 
 function App() {
   const [user, setUser] = useState<User | null>(null)
@@ -124,6 +125,7 @@ function App() {
           />
           <Route path="/quick-expense" element={<QuickExpenseComponent />} />
           <Route path="/create-group" element={<CreateGroupPage />} />
+          <Route path="/edit-group/:groupId" element={<EditGroupPage />} />
         </Routes>
       </div>
     </Router>
