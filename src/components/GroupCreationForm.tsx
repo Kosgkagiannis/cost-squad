@@ -7,6 +7,7 @@ import {
   query,
   deleteDoc,
   doc,
+  setDoc,
 } from "firebase/firestore"
 import { auth, db } from "../config/firebase"
 import { User, onAuthStateChanged } from "firebase/auth"
@@ -37,10 +38,20 @@ const GroupCreationForm = () => {
 
     try {
       const groupsCollection = collection(db, "groups")
-      await addDoc(groupsCollection, {
+      const groupDocRef = doc(groupsCollection)
+
+      await setDoc(groupDocRef, {
         groupName,
         userId: user.uid,
-        members: [],
+      })
+
+      const membersCollectionRef = collection(groupDocRef, "members")
+
+      const memberDocRef = doc(membersCollectionRef, user.uid)
+      await setDoc(memberDocRef, {
+        memberId: user.uid,
+        name: user.displayName,
+        profilePicture: "",
       })
 
       setCreatedGroupName(groupName)
@@ -57,7 +68,7 @@ const GroupCreationForm = () => {
       const groupDocRef = doc(db, "groups", groupId)
       await deleteDoc(groupDocRef)
 
-      //Here UI needs to be updated after removing a group
+      // Here UI needs to be updated after removing a group
       setUserGroups((prevGroups) =>
         prevGroups.filter((group) => group.id !== groupId)
       )
