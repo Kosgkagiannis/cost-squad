@@ -40,6 +40,7 @@ const GroupCreationForm = () => {
       await addDoc(groupsCollection, {
         groupName,
         userId: user.uid,
+        members: [],
       })
 
       setCreatedGroupName(groupName)
