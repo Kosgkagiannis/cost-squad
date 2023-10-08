@@ -1,7 +1,7 @@
-import React, { useState } from "react"
-import { BrowserRouter as Router, Route, Link, Routes } from "react-router-dom"
+import React, { useState, useEffect } from "react"
+import { BrowserRouter as Router, Route, Link, Routes } from "react-router-dom" // Import useHistory
 import "./App.css"
-import { User } from "firebase/auth"
+import { User, onAuthStateChanged } from "firebase/auth"
 import { auth, db } from "./config/firebase"
 import {
   getDocs,
@@ -18,6 +18,7 @@ import CreateGroupPage from "./components/CreateGroupPage"
 function App() {
   const [user, setUser] = useState<User | null>(null)
   const [isLoading, setIsLoading] = useState(true)
+  const [userGroups, setUserGroups] = useState<GroupProps[]>([])
 
   const fetchUserGroups = async (userId: string): Promise<GroupProps[]> => {
     try {
@@ -47,6 +48,7 @@ function App() {
 
     if (auth.currentUser) {
       const userGroups = await fetchUserGroups(auth.currentUser.uid)
+      setUserGroups(userGroups)
       setIsLoading(false)
     } else {
       setIsLoading(false)
@@ -57,10 +59,36 @@ function App() {
     try {
       await auth.signOut()
       setUser(null)
+      setUserGroups([])
     } catch (err) {
       console.error(err)
     }
   }
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (user) {
+        setUser(user)
+        fetchUserGroups(user.uid).then((userGroups) => {
+          setUserGroups(userGroups)
+        })
+      } else {
+        setUser(null)
+        setUserGroups([])
+      }
+      setIsLoading(false)
+    })
+
+    if (auth.currentUser) {
+      fetchUserGroups(auth.currentUser.uid).then((userGroups) => {
+        setUserGroups(userGroups)
+      })
+    }
+
+    return () => {
+      unsubscribe()
+    }
+  }, [])
 
   return (
     <Router>
@@ -95,7 +123,7 @@ function App() {
             }
           />
           <Route path="/quick-expense" element={<QuickExpenseComponent />} />
-          <Route path="/create-group" element={<CreateGroupPage />} />{" "}
+          <Route path="/create-group" element={<CreateGroupPage />} />
         </Routes>
       </div>
     </Router>
