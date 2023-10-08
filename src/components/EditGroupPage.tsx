@@ -70,7 +70,8 @@ const EditGroupPage = () => {
     }
   }
 
-  const isButtonDisabled = newGroupName.trim() === "" || newMember.trim() === ""
+  const isButtonDisabled = newGroupName.trim() === ""
+  const isMemberButtonDisabled = newMember.trim() === ""
 
   return (
     <div>
@@ -92,7 +93,7 @@ const EditGroupPage = () => {
         value={newMember}
         onChange={handleMemberInputChange}
       />
-      <button onClick={handleAddMember} disabled={newMember.trim() === ""}>
+      <button onClick={handleAddMember} disabled={isMemberButtonDisabled}>
         Add Member
       </button>
     </div>
