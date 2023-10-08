@@ -1,13 +1,14 @@
 import React, { useState, useEffect } from "react"
 import { addDoc, collection, getDocs, where, query } from "firebase/firestore"
 import { auth, db } from "../config/firebase"
-import { User } from "firebase/auth"
+import { User, onAuthStateChanged } from "firebase/auth"
 import GroupProps from "../types/GroupProps"
 
 const GroupCreationForm = () => {
   const [groupName, setGroupName] = useState("")
   const [createdGroupName, setCreatedGroupName] = useState<string | null>(null)
   const [userGroups, setUserGroups] = useState<GroupProps[]>([])
+  const [isLoading, setIsLoading] = useState(true)
 
   const handleGroupNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setGroupName(e.target.value)
@@ -35,7 +36,6 @@ const GroupCreationForm = () => {
       setCreatedGroupName(groupName)
       setGroupName("")
 
-      // Fetch and update the user's groups after creating a new group
       await fetchUserGroups(user.uid)
     } catch (error) {
       console.error("Error creating group:", error)
@@ -56,16 +56,24 @@ const GroupCreationForm = () => {
       })
 
       setUserGroups(userGroups)
+      setIsLoading(false)
     } catch (err) {
       console.error("Error fetching user groups:", err)
     }
   }
 
   useEffect(() => {
-    const user: User | null = auth.currentUser
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (user) {
+        fetchUserGroups(user.uid)
+      } else {
+        setUserGroups([])
+        setIsLoading(false)
+      }
+    })
 
-    if (user) {
-      fetchUserGroups(user.uid)
+    return () => {
+      unsubscribe()
     }
   }, [])
 
@@ -84,11 +92,15 @@ const GroupCreationForm = () => {
       </button>
 
       <h3>Your Groups</h3>
-      <ul>
-        {userGroups.map((group) => (
-          <li key={group.id}>{group.groupName}</li>
-        ))}
-      </ul>
+      {isLoading ? (
+        <p>Loading...</p>
+      ) : (
+        <ul>
+          {userGroups.map((group) => (
+            <li key={group.id}>{group.groupName}</li>
+          ))}
+        </ul>
+      )}
     </div>
   )
 }

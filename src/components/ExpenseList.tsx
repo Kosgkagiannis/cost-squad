@@ -73,6 +73,24 @@ const ExpenseList: React.FC<ExpenseListProps> = ({
 
   return (
     <div className="Expenses">
+      <h2>Net Expenses</h2>
+      <ul>
+        {Object.entries(netExpenses).map(([key, netAmount]) => {
+          const [person1, person2] = key.split("-")
+          const isOwed = netAmount < 0
+          const displayAmount = Math.abs(netAmount).toFixed(2)
+
+          return (
+            <li key={key}>
+              <p>
+                {isOwed ? formatName(person2) : formatName(person1)} owes{" "}
+                {isOwed ? formatName(person1) : formatName(person2)}: $
+                {displayAmount}
+              </p>
+            </li>
+          )
+        })}
+      </ul>
       <h2>Expenses History</h2>
       <ul>
         {expenses.map((expense) => (
@@ -99,25 +117,6 @@ const ExpenseList: React.FC<ExpenseListProps> = ({
           onCancel={() => setIsEditing(false)}
         />
       )}
-
-      <h2>Net Expenses</h2>
-      <ul>
-        {Object.entries(netExpenses).map(([key, netAmount]) => {
-          const [person1, person2] = key.split("-")
-          const isOwed = netAmount < 0
-          const displayAmount = Math.abs(netAmount).toFixed(2)
-
-          return (
-            <li key={key}>
-              <p>
-                {isOwed ? formatName(person2) : formatName(person1)} owes{" "}
-                {isOwed ? formatName(person1) : formatName(person2)}: $
-                {displayAmount}
-              </p>
-            </li>
-          )
-        })}
-      </ul>
     </div>
   )
 }
