@@ -12,9 +12,11 @@ import {
   where,
   Timestamp,
 } from "firebase/firestore"
-import { db, auth } from "../config/firebase"
+import { db, auth } from "../../config/firebase"
 import { v4 as uuidv4 } from "uuid"
 import { User, onAuthStateChanged } from "firebase/auth"
+import GroupHeader from "./GroupHeader"
+import GroupMemberList from "./GroupMemberList"
 
 const EditGroupPage = () => {
   const { groupId }: { groupId?: string } = useParams()
@@ -313,46 +315,22 @@ const EditGroupPage = () => {
 
   return (
     <div>
-      <h1>{groupTitle || "Group Name"}</h1>
-      <h2>Edit Group Name</h2>
-      <input
-        type="text"
-        placeholder="Enter New Group Name"
-        value={newGroupName}
-        onChange={handleGroupNameChange}
+      <GroupHeader
+        groupTitle={groupTitle}
+        newGroupName={newGroupName}
+        onGroupNameChange={handleGroupNameChange}
+        handleUpdateGroupName={handleUpdateGroupName}
       />
-      <button onClick={handleUpdateGroupName} disabled={isButtonDisabled}>
-        Update Group Name
-      </button>
-      <h2>Add Members</h2>
-      <input
-        type="text"
-        placeholder="Enter Member's Name"
-        value={newMember}
-        onChange={handleMemberInputChange}
-      />
-      <button onClick={handleAddMember} disabled={isMemberButtonDisabled}>
-        Add Member
-      </button>
-      <h2>Members</h2>
-      <ul>
-        {groupMembers
-          .filter((member) => member.name && member.name.trim() !== "")
-          .map((member) => (
-            <li key={member.id}>
-              {member.name}
-              <Link
-                className="edit-button"
-                to={`/edit-member/${groupId}/${member.id}`}
-              >
-                Edit
-              </Link>
-              <button onClick={() => handleDeleteMember(member.id)}>
-                Delete
-              </button>
-            </li>
-          ))}
-      </ul>
+      {groupId && (
+        <GroupMemberList
+          groupMembers={groupMembers}
+          newMember={newMember}
+          onMemberInputChange={handleMemberInputChange}
+          handleAddMember={handleAddMember}
+          handleDeleteMember={handleDeleteMember}
+          groupId={groupId}
+        />
+      )}
       <h2>Add Expense</h2>
       <input
         type="text"

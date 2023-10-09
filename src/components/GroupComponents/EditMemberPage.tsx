@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react"
 import { useParams } from "react-router-dom"
 import { doc, getDoc, updateDoc } from "firebase/firestore"
-import { db } from "../config/firebase"
+import { db } from "../../config/firebase"
 import { useNavigate } from "react-router-dom"
 
 const EditMemberPage = () => {

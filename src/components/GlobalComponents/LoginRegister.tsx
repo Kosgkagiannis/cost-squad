@@ -1,5 +1,5 @@
 import React, { useState } from "react"
-import { auth, googleProvider } from "../config/firebase"
+import { auth, googleProvider } from "../../config/firebase"
 import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
@@ -7,7 +7,7 @@ import {
   UserCredential,
   onAuthStateChanged,
 } from "firebase/auth"
-import googleIcon from "../images/google.jpg"
+import googleIcon from "../../images/google.jpg"
 
 interface LoginRegisterProps {
   onUserLogin: () => void

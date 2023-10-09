@@ -1,7 +1,7 @@
 import React from "react"
 import { Link, useNavigate } from "react-router-dom"
-import { auth } from "../config/firebase"
-import HeaderProps from "../types/HeaderProps"
+import { auth } from "../../config/firebase"
+import HeaderProps from "../../types/HeaderProps"
 
 function Header({ user, handleLogout }: HeaderProps) {
   const navigate = useNavigate()

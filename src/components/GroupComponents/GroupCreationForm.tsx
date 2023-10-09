@@ -9,9 +9,9 @@ import {
   doc,
   setDoc,
 } from "firebase/firestore"
-import { auth, db } from "../config/firebase"
+import { auth, db } from "../../config/firebase"
 import { User, onAuthStateChanged } from "firebase/auth"
-import GroupProps from "../types/GroupProps"
+import GroupProps from "../../types/GroupProps"
 import { Link } from "react-router-dom"
 
 const GroupCreationForm = () => {

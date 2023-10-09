@@ -6,9 +6,9 @@ import {
   Routes,
   useNavigate,
 } from "react-router-dom"
-import "../App.css"
+import "../../App.css"
 import { User } from "firebase/auth"
-import { auth, db } from "../config/firebase"
+import { auth, db } from "../../config/firebase"
 import {
   getDocs,
   collection,
@@ -20,13 +20,10 @@ import {
   where,
   DocumentData,
 } from "firebase/firestore"
-import ExpenseForm from "../components/ExpenseForm"
-import ExpenseList from "../components/ExpenseList"
-import Header from "../components/Header"
-import LoginRegister from "../components/LoginRegister"
-import PublicExpenseProps from "../types/PublicExpenseProps"
-import GroupCreationForm from "../components/GroupCreationForm"
-import GroupProps from "../types/GroupProps"
+import ExpenseForm from "./ExpenseForm"
+import ExpenseList from "./ExpenseList"
+import PublicExpenseProps from "../../types/PublicExpenseProps"
+import GroupProps from "../../types/GroupProps"
 
 function QuickExpenseComponent() {
   const [user, setUser] = useState<User | null>(null)

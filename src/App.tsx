@@ -9,13 +9,13 @@ import {
   query as firestoreQuery,
   where,
 } from "firebase/firestore"
-import Header from "./components/Header"
-import LoginRegister from "./components/LoginRegister"
+import Header from "./components/GlobalComponents/Header"
+import LoginRegister from "./components/GlobalComponents/LoginRegister"
 import GroupProps from "./types/GroupProps"
-import QuickExpenseComponent from "./components/QuickExpense"
-import CreateGroupPage from "./components/CreateGroupPage"
-import EditGroupPage from "./components/EditGroupPage"
-import EditMemberPage from "./components/EditMemberPage"
+import QuickExpenseComponent from "./components/QuickExpenseComponents/QuickExpense"
+import CreateGroupPage from "./components/GroupComponents/CreateGroupPage"
+import EditGroupPage from "./components/GroupComponents/EditGroupPage"
+import EditMemberPage from "./components/GroupComponents/EditMemberPage"
 
 function App() {
   const [user, setUser] = useState<User | null>(null)

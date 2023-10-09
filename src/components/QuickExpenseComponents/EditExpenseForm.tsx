@@ -1,11 +1,11 @@
-import React, { useState, useEffect } from "react";
-import PublicExpenseProps from "../types/PublicExpenseProps";
+import React, { useState, useEffect } from "react"
+import PublicExpenseProps from "../../types/PublicExpenseProps"
 
 interface EditExpenseFormProps {
-  expense: PublicExpenseProps | null;
-  onSave: (editedExpense: PublicExpenseProps) => void;
-  onCancel: () => void;
-  onDelete?: (expenseId: string) => void;
+  expense: PublicExpenseProps | null
+  onSave: (editedExpense: PublicExpenseProps) => void
+  onCancel: () => void
+  onDelete?: (expenseId: string) => void
 }
 
 const EditExpenseForm: React.FC<EditExpenseFormProps> = ({
@@ -14,26 +14,26 @@ const EditExpenseForm: React.FC<EditExpenseFormProps> = ({
   onCancel,
   onDelete,
 }) => {
-  const [editedPerson1, setEditedPerson1] = useState<string>("");
-  const [editedPerson2, setEditedPerson2] = useState<string>("");
-  const [editedAmount, setEditedAmount] = useState<number | "">("");
+  const [editedPerson1, setEditedPerson1] = useState<string>("")
+  const [editedPerson2, setEditedPerson2] = useState<string>("")
+  const [editedAmount, setEditedAmount] = useState<number | "">("")
   const [editedDescription, setEditedDescription] = useState<
     string | undefined
-  >("");
+  >("")
 
   useEffect(() => {
     if (expense) {
-      setEditedPerson1(expense.person1);
-      setEditedPerson2(expense.person2);
-      setEditedAmount(expense.amount);
-      setEditedDescription(expense.description || "");
+      setEditedPerson1(expense.person1)
+      setEditedPerson2(expense.person2)
+      setEditedAmount(expense.amount)
+      setEditedDescription(expense.description || "")
     } else {
-      setEditedPerson1("");
-      setEditedPerson2("");
-      setEditedAmount("");
-      setEditedDescription("");
+      setEditedPerson1("")
+      setEditedPerson2("")
+      setEditedAmount("")
+      setEditedDescription("")
     }
-  }, [expense]);
+  }, [expense])
 
   const handleSave = () => {
     if (
@@ -42,7 +42,7 @@ const EditExpenseForm: React.FC<EditExpenseFormProps> = ({
       isNaN(parseFloat(editedAmount as string)) ||
       editedDescription === undefined
     ) {
-      return;
+      return
     }
 
     const editedExpense: PublicExpenseProps = {
@@ -51,17 +51,17 @@ const EditExpenseForm: React.FC<EditExpenseFormProps> = ({
       person2: editedPerson2,
       amount: parseFloat(editedAmount as string),
       description: editedDescription,
-    };
+    }
 
-    onSave(editedExpense);
-  };
+    onSave(editedExpense)
+  }
 
   const handleDelete = () => {
     if (expense && onDelete) {
-      onDelete(expense.id.toString());
-      onCancel();
+      onDelete(expense.id.toString())
+      onCancel()
     }
-  };
+  }
 
   return (
     <div>
@@ -103,7 +103,7 @@ const EditExpenseForm: React.FC<EditExpenseFormProps> = ({
         <button onClick={handleDelete}>Delete</button>
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default EditExpenseForm;
+export default EditExpenseForm

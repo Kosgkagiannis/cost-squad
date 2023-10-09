@@ -1,6 +1,6 @@
 import React, { useState } from "react"
 import EditExpenseForm from "./EditExpenseForm.tsx"
-import PublicExpenseProps from "../types/PublicExpenseProps.ts"
+import PublicExpenseProps from "../../types/PublicExpenseProps.ts"
 
 interface ExpenseListProps {
   expenses: PublicExpenseProps[]
