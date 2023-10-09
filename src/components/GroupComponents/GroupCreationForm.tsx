@@ -11,7 +11,7 @@ import {
 } from "firebase/firestore"
 import { auth, db } from "../../config/firebase"
 import { User, onAuthStateChanged } from "firebase/auth"
-import GroupProps from "../../types/GroupProps"
+import GroupProps from "../../types/GroupTypes/GroupProps"
 import { Link } from "react-router-dom"
 
 const GroupCreationForm = () => {

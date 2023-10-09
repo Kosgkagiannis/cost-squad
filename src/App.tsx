@@ -11,7 +11,7 @@ import {
 } from "firebase/firestore"
 import Header from "./components/GlobalComponents/Header"
 import LoginRegister from "./components/GlobalComponents/LoginRegister"
-import GroupProps from "./types/GroupProps"
+import GroupProps from "./types/GroupTypes/GroupProps"
 import QuickExpenseComponent from "./components/QuickExpenseComponents/QuickExpense"
 import CreateGroupPage from "./components/GroupComponents/CreateGroupPage"
 import EditGroupPage from "./components/GroupComponents/EditGroupPage"

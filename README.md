@@ -2,36 +2,34 @@
 
 CostSquad is a simple and efficient expense sharing app that allows you to keep track of expenses between individuals and within groups. Whether you're splitting the bill with a friend or managing expenses within a shared household or team, CostSquad has you covered.
 
-## Table of Contents
+**Table of Contents**
 
 Features
 Usage
 
 In the project directory, you can run:
 
-### Features
+**Features**
 
-### Quick Expense Sharing
+**Quick Expense Sharing**
 
-Easily split expenses between two people.
-Keep a record of who owes what to whom.
+-Easily split expenses between two people.
+-Keep a record of who owes what to whom.
 
-### Group Expenses
+**Group Expenses**
 
-Create and manage groups for shared expenses.
-Track expenses collectively within a group.
-Get an overview of each member's contributions and outstanding balances.
+-Create and manage groups for shared expenses.
+-Track expenses collectively within a group.
+-Get an overview of each member's contributions and outstanding balances.
 
-### Getting Started
-
-### Prerequisites
+**Getting Started**
 
 Before you begin using CostSquad, make sure you have the following:
 
 Node.js installed on your local machine.
 A Firebase project for database and authentication setup.
 
-### Installation
+**Installation**
 
 1. Clone the repository to your local machine
 

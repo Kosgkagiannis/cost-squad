@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react"
-import PublicExpenseProps from "../../types/PublicExpenseProps"
+import PublicExpenseProps from "../../types/QuickExpenseTypes/PublicExpenseProps"
 
 interface EditExpenseFormProps {
   expense: PublicExpenseProps | null

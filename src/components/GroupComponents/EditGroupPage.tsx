@@ -17,6 +17,7 @@ import { v4 as uuidv4 } from "uuid"
 import { User, onAuthStateChanged } from "firebase/auth"
 import GroupHeader from "./GroupHeader"
 import GroupMemberList from "./GroupMemberList"
+import GroupExpenseForm from "./GroupExpenseForm"
 
 const EditGroupPage = () => {
   const { groupId }: { groupId?: string } = useParams()
@@ -331,60 +332,20 @@ const EditGroupPage = () => {
           groupId={groupId}
         />
       )}
-      <h2>Add Expense</h2>
-      <input
-        type="text"
-        placeholder="Description"
-        value={description}
-        onChange={handleDescriptionChange}
+      <GroupExpenseForm
+        description={description}
+        amount={amount}
+        shared={shared}
+        selectedMember={selectedMember}
+        selectedMemberId={selectedMemberId}
+        groupMembers={groupMembers}
+        groupExpenses={groupExpenses}
+        handleDescriptionChange={handleDescriptionChange}
+        handleAmountChange={handleAmountChange}
+        handleSharedChange={handleSharedChange}
+        handleSelectedMemberChange={handleSelectedMemberChange}
+        handleAddExpense={handleAddExpense}
       />
-      <input
-        type="number"
-        placeholder="Amount"
-        value={amount}
-        onChange={handleAmountChange}
-      />
-      <label>
-        Shared:
-        <input type="checkbox" checked={shared} onChange={handleSharedChange} />
-      </label>
-      <div>
-        <label style={{ marginRight: "10px" }}>Paid By: {selectedMember}</label>
-        <select value={selectedMemberId} onChange={handleSelectedMemberChange}>
-          <option value=""></option>
-          {groupMembers
-            .filter((member) => member.name && member.name.trim() !== "")
-            .map((member) => (
-              <option key={member.id} value={member.id}>
-                {member.name}
-              </option>
-            ))}
-        </select>
-      </div>
-      <button
-        disabled={
-          description.trim() === "" ||
-          amount.trim() === "" ||
-          selectedMemberId === ""
-        }
-        onClick={handleAddExpense}
-      >
-        Add Expense
-      </button>
-      <div>
-        <h2>Group Expenses</h2>
-        <ul>
-          {groupExpenses.map((expense) => (
-            <li key={expense.id}>
-              <p>Description: {expense.description}</p>
-              <p>Amount: {expense.amount}</p>
-              <p>Timestamp: {expense.timestamp.toDate().toLocaleString()}</p>
-              <p>Paid By: {expense.payerName}</p>
-              <p>Shared: {expense.shared ? "Yes" : "No"}</p>
-            </li>
-          ))}
-        </ul>
-      </div>
     </div>
   )
 }

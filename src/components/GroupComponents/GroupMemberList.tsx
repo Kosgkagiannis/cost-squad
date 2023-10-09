@@ -1,16 +1,8 @@
 import React from "react"
 import { Link } from "react-router-dom"
+import GroupMemberListProps from "../../types/GroupTypes/GroupMemberListProps"
 
-interface MemberListProps {
-  groupMembers: any[]
-  newMember: string
-  onMemberInputChange: (e: React.ChangeEvent<HTMLInputElement>) => void
-  handleAddMember: () => void
-  handleDeleteMember: (memberId: string) => void
-  groupId: string
-}
-
-const GroupMemberList: React.FC<MemberListProps> = ({
+const GroupMemberList: React.FC<GroupMemberListProps> = ({
   groupMembers,
   newMember,
   onMemberInputChange,

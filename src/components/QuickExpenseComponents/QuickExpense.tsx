@@ -22,8 +22,8 @@ import {
 } from "firebase/firestore"
 import ExpenseForm from "./ExpenseForm"
 import ExpenseList from "./ExpenseList"
-import PublicExpenseProps from "../../types/PublicExpenseProps"
-import GroupProps from "../../types/GroupProps"
+import PublicExpenseProps from "../../types/QuickExpenseTypes/PublicExpenseProps"
+import GroupProps from "../../types/GroupTypes/GroupProps"
 
 function QuickExpenseComponent() {
   const [user, setUser] = useState<User | null>(null)
