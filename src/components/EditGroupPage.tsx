@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react"
-import { useParams } from "react-router-dom"
+import { useParams, Link } from "react-router-dom"
 import {
   doc,
   getDoc,
@@ -9,9 +9,12 @@ import {
   deleteDoc,
   query,
   getDocs,
+  where,
+  Timestamp,
 } from "firebase/firestore"
-import { db } from "../config/firebase"
+import { db, auth } from "../config/firebase"
 import { v4 as uuidv4 } from "uuid"
+import { User, onAuthStateChanged } from "firebase/auth"
 
 const EditGroupPage = () => {
   const { groupId }: { groupId?: string } = useParams()
@@ -19,6 +22,48 @@ const EditGroupPage = () => {
   const [newMember, setNewMember] = useState("")
   const [groupMembers, setGroupMembers] = useState<any[]>([])
   const [groupTitle, setGroupTitle] = useState<string | null>(null)
+  const [description, setDescription] = useState("")
+  const [amount, setAmount] = useState("")
+  const [shared, setShared] = useState(true)
+  const [expenses, setExpenses] = useState<any[]>([])
+  const [userId, setUserId] = useState<string | null>(null)
+  const [selectedMember, setSelectedMember] = useState<string>("")
+  const [addedMemberId, setAddedMemberId] = useState<string>("")
+  const [selectedMemberId, setSelectedMemberId] = useState<string>("")
+  const [addedExpense, setAddedExpense] = useState<any | null>(null)
+  const [groupExpenses, setGroupExpenses] = useState<any[]>([])
+
+  const handleSelectedMemberChange = async (
+    e: React.ChangeEvent<HTMLSelectElement>
+  ) => {
+    const selectedMemberId = e.target.value
+
+    try {
+      if (!groupId || !selectedMemberId) {
+        console.error("groupId or selectedMemberId is undefined")
+        return
+      }
+
+      const memberDocRef = doc(
+        db,
+        "groups",
+        groupId,
+        "members",
+        selectedMemberId
+      )
+      const memberDocSnapshot = await getDoc(memberDocRef)
+
+      if (memberDocSnapshot.exists()) {
+        const memberData = memberDocSnapshot.data()
+        setSelectedMemberId(memberData.memberId)
+        setSelectedMember(memberData.name)
+      } else {
+        console.error("Selected member document does not exist.")
+      }
+    } catch (error) {
+      console.error("Error fetching selected member:", error)
+    }
+  }
 
   const handleGroupNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setNewGroupName(e.target.value)
@@ -26,6 +71,72 @@ const EditGroupPage = () => {
 
   const handleMemberInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setNewMember(e.target.value)
+  }
+
+  const handleDescriptionChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setDescription(e.target.value)
+  }
+
+  const handleAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setAmount(e.target.value)
+  }
+
+  const handleSharedChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setShared(e.target.checked)
+  }
+
+  useEffect(() => {
+    const fetchExpenses = async () => {
+      try {
+        if (!groupId) {
+          console.error("groupId is undefined")
+          return
+        }
+
+        const expensesCollectionRef = collection(db, "expenses2")
+        const expensesQuery = query(
+          expensesCollectionRef,
+          where("groupId", "==", groupId)
+        )
+        const querySnapshot = await getDocs(expensesQuery)
+
+        const expensesData = querySnapshot.docs.map((doc) => ({
+          id: doc.id,
+          ...doc.data(),
+        }))
+
+        setGroupExpenses(expensesData)
+      } catch (error) {
+        console.error("Error fetching expenses:", error)
+      }
+    }
+
+    fetchExpenses()
+  }, [groupId])
+
+  const fetchExpenses = async () => {
+    try {
+      if (!groupId) {
+        console.error("groupId is undefined")
+        return
+      }
+
+      const expensesCollectionRef = collection(db, "expenses2")
+      const expensesQuery = query(
+        expensesCollectionRef,
+        where("groupId", "==", groupId)
+      )
+      const querySnapshot = await getDocs(expensesQuery)
+
+      const expensesData = querySnapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }))
+
+      setExpenses(expensesData)
+    } catch (error) {
+      console.error("Error fetching expenses:", error)
+    }
   }
 
   const handleAddMember = async () => {
@@ -36,10 +147,12 @@ const EditGroupPage = () => {
           return
         }
 
+        const memberId = uuidv4()
+
         const memberDocRef = await addDoc(
           collection(db, "groups", groupId, "members"),
           {
-            memberId: uuidv4(),
+            memberId,
             name: newMember,
             profilePicture: "",
           }
@@ -53,6 +166,7 @@ const EditGroupPage = () => {
             { id: memberDocRef.id, ...memberData },
           ])
           setNewMember("")
+          setAddedMemberId(memberId)
         }
       } catch (error) {
         console.error("Error adding group member:", error)
@@ -102,9 +216,6 @@ const EditGroupPage = () => {
     }
   }
 
-  const isButtonDisabled = newGroupName.trim() === ""
-  const isMemberButtonDisabled = newMember.trim() === ""
-
   // Fetch group members when we load the page
   useEffect(() => {
     const fetchGroupMembers = async () => {
@@ -140,6 +251,66 @@ const EditGroupPage = () => {
     fetchGroupMembers()
   }, [groupId])
 
+  useEffect(() => {
+    fetchExpenses()
+  }, [groupId, groupExpenses])
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (user: User | null) => {
+      if (user) {
+        setUserId(user.uid)
+      } else {
+        setUserId(null)
+      }
+    })
+
+    return () => {
+      unsubscribe()
+    }
+  }, [])
+
+  const handleAddExpense = async () => {
+    try {
+      if (!groupId) {
+        console.error("groupId is undefined")
+        return
+      }
+
+      const expenseId = uuidv4()
+
+      const newExpenseData = {
+        expenseId,
+        description,
+        amount: parseFloat(amount),
+        groupId,
+        timestamp: Timestamp.now(),
+        userId: userId || "",
+        payerId: selectedMemberId,
+        payerName: selectedMember,
+        shared,
+      }
+
+      setGroupExpenses((prevExpenses) => [...prevExpenses, newExpenseData])
+
+      await addDoc(collection(db, "expenses2"), newExpenseData)
+
+      fetchExpenses()
+
+      setDescription("")
+      setAmount("")
+      setShared(true)
+      setSelectedMemberId("")
+      setSelectedMember("")
+      setAddedExpense(newExpenseData)
+    } catch (error) {
+      console.error("Error adding expense:", error)
+    }
+  }
+
+  // Disable buttons if no input is given
+  const isButtonDisabled = newGroupName.trim() === ""
+  const isMemberButtonDisabled = newMember.trim() === ""
+
   return (
     <div>
       <h1>{groupTitle || "Group Name"}</h1>
@@ -153,7 +324,6 @@ const EditGroupPage = () => {
       <button onClick={handleUpdateGroupName} disabled={isButtonDisabled}>
         Update Group Name
       </button>
-
       <h2>Add Members</h2>
       <input
         type="text"
@@ -164,7 +334,6 @@ const EditGroupPage = () => {
       <button onClick={handleAddMember} disabled={isMemberButtonDisabled}>
         Add Member
       </button>
-
       <h2>Members</h2>
       <ul>
         {groupMembers
@@ -172,12 +341,72 @@ const EditGroupPage = () => {
           .map((member) => (
             <li key={member.id}>
               {member.name}
+              <Link
+                className="edit-button"
+                to={`/edit-member/${groupId}/${member.id}`}
+              >
+                Edit
+              </Link>
               <button onClick={() => handleDeleteMember(member.id)}>
                 Delete
               </button>
             </li>
           ))}
       </ul>
+      <h2>Add Expense</h2>
+      <input
+        type="text"
+        placeholder="Description"
+        value={description}
+        onChange={handleDescriptionChange}
+      />
+      <input
+        type="number"
+        placeholder="Amount"
+        value={amount}
+        onChange={handleAmountChange}
+      />
+      <label>
+        Shared:
+        <input type="checkbox" checked={shared} onChange={handleSharedChange} />
+      </label>
+      <div>
+        <label style={{ marginRight: "10px" }}>Paid By: {selectedMember}</label>
+        <select value={selectedMemberId} onChange={handleSelectedMemberChange}>
+          <option value=""></option>
+          {groupMembers
+            .filter((member) => member.name && member.name.trim() !== "")
+            .map((member) => (
+              <option key={member.id} value={member.id}>
+                {member.name}
+              </option>
+            ))}
+        </select>
+      </div>
+      <button
+        disabled={
+          description.trim() === "" ||
+          amount.trim() === "" ||
+          selectedMemberId === ""
+        }
+        onClick={handleAddExpense}
+      >
+        Add Expense
+      </button>
+      <div>
+        <h2>Group Expenses</h2>
+        <ul>
+          {groupExpenses.map((expense) => (
+            <li key={expense.id}>
+              <p>Description: {expense.description}</p>
+              <p>Amount: {expense.amount}</p>
+              <p>Timestamp: {expense.timestamp.toDate().toLocaleString()}</p>
+              <p>Paid By: {expense.payerName}</p>
+              <p>Shared: {expense.shared ? "Yes" : "No"}</p>
+            </li>
+          ))}
+        </ul>
+      </div>
     </div>
   )
 }
