@@ -19,8 +19,7 @@ import EditMemberPage from "./components/GroupComponents/EditMemberPage"
 
 function App() {
   const [user, setUser] = useState<User | null>(null)
-  const [isLoading, setIsLoading] = useState(true)
-  const [userGroups, setUserGroups] = useState<GroupProps[]>([])
+
 
   const fetchUserGroups = async (userId: string): Promise<GroupProps[]> => {
     try {
@@ -47,21 +46,12 @@ function App() {
 
   const handleUserLogin = async () => {
     setUser(auth.currentUser)
-
-    if (auth.currentUser) {
-      const userGroups = await fetchUserGroups(auth.currentUser.uid)
-      setUserGroups(userGroups)
-      setIsLoading(false)
-    } else {
-      setIsLoading(false)
-    }
   }
 
   const handleLogout = async () => {
     try {
       await auth.signOut()
       setUser(null)
-      setUserGroups([])
     } catch (err) {
       console.error(err)
     }
@@ -71,20 +61,14 @@ function App() {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (user) {
         setUser(user)
-        fetchUserGroups(user.uid).then((userGroups) => {
-          setUserGroups(userGroups)
-        })
+        fetchUserGroups(user.uid).then((userGroups) => {})
       } else {
         setUser(null)
-        setUserGroups([])
       }
-      setIsLoading(false)
     })
 
     if (auth.currentUser) {
-      fetchUserGroups(auth.currentUser.uid).then((userGroups) => {
-        setUserGroups(userGroups)
-      })
+      fetchUserGroups(auth.currentUser.uid).then((userGroups) => {})
     }
 
     return () => {

@@ -1,11 +1,4 @@
 import React, { useEffect, useState } from "react"
-import {
-  BrowserRouter as Router,
-  Route,
-  Link,
-  Routes,
-  useNavigate,
-} from "react-router-dom"
 import "../../App.css"
 import { User } from "firebase/auth"
 import { auth, db } from "../../config/firebase"
@@ -23,7 +16,6 @@ import {
 import ExpenseForm from "./ExpenseForm"
 import ExpenseList from "./ExpenseList"
 import PublicExpenseProps from "../../types/QuickExpenseTypes/PublicExpenseProps"
-import GroupProps from "../../types/GroupTypes/GroupProps"
 
 function QuickExpenseComponent() {
   const [user, setUser] = useState<User | null>(null)
@@ -33,24 +25,6 @@ function QuickExpenseComponent() {
   const [person2, setPerson2] = useState("")
   const [description, setDescription] = useState("")
   const [amount, setAmount] = useState<number>(0)
-  const [isLoading, setIsLoading] = useState(true)
-  const [userGroups, setUserGroups] = useState<GroupProps[]>([])
-
-  const handleUserLogin = async () => {
-    setUser(auth.currentUser)
-    await getExpenseList()
-  }
-
-  const handleLogout = async () => {
-    try {
-      await auth.signOut()
-      setUser(null)
-      setExpenseList([])
-      setTotalExpenses(0)
-    } catch (err) {
-      console.error(err)
-    }
-  }
 
   const getExpenseList = async () => {
     try {
@@ -128,8 +102,6 @@ function QuickExpenseComponent() {
         setUser(authUser)
         await fetchExpenseList()
       }
-
-      setIsLoading(false)
     })
 
     return () => unsubscribe()
@@ -138,12 +110,13 @@ function QuickExpenseComponent() {
   const handleAddExpense = async () => {
     try {
       if (!user) {
+        console.error("User is not authenticated.")
         return
       }
 
       const expensesCollectionRef = collection(db, "expenses")
 
-      //Here we check if there's an existing expense
+      // Check if there's an existing expense
       const existingExpense = expenseList.find(
         (expense) =>
           expense.person1 === person2 &&
@@ -153,11 +126,14 @@ function QuickExpenseComponent() {
 
       if (existingExpense) {
         existingExpense.amount += amount
+        // Update the existing expense in Firestore
         await updateDoc(doc(db, "expenses", existingExpense.id), {
           amount: existingExpense.amount,
         })
+        console.log("Expense updated in Firestore:", existingExpense)
       } else {
-        await addDoc(expensesCollectionRef, {
+        // Add a new expense to Firestore
+        const newExpenseDocRef = await addDoc(expensesCollectionRef, {
           userId: user.uid,
           person1,
           person2,
@@ -165,15 +141,23 @@ function QuickExpenseComponent() {
           amount,
           timestamp: new Date().toISOString(),
         })
+        console.log(
+          "New expense added to Firestore with ID:",
+          newExpenseDocRef.id
+        )
       }
 
-      getExpenseList()
+      // Fetch the updated expense list from Firestore
+      await getExpenseList()
+      console.log("Expense list updated from Firestore.")
+
+      // Clear form fields
       setPerson1("")
       setPerson2("")
       setDescription("")
       setAmount(0)
     } catch (err) {
-      console.error(err)
+      console.error("Error adding/updating expense:", err)
     }
   }
 
@@ -199,12 +183,6 @@ function QuickExpenseComponent() {
     } catch (err) {
       console.error(err)
     }
-  }
-
-  const navigate = useNavigate()
-
-  const handleGoBack = () => {
-    navigate("/")
   }
 
   return (

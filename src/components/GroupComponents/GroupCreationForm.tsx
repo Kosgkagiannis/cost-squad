@@ -1,11 +1,9 @@
 import React, { useState, useEffect } from "react"
 import {
-  addDoc,
   collection,
   getDocs,
   where,
   query,
-  deleteDoc,
   doc,
   setDoc,
 } from "firebase/firestore"
@@ -45,15 +43,6 @@ const GroupCreationForm = () => {
         userId: user.uid,
       })
 
-      const membersCollectionRef = collection(groupDocRef, "members")
-
-      const memberDocRef = doc(membersCollectionRef, user.uid)
-      await setDoc(memberDocRef, {
-        memberId: user.uid,
-        name: user.displayName,
-        profilePicture: "",
-      })
-
       setCreatedGroupName(groupName)
       setGroupName("")
 
@@ -62,21 +51,6 @@ const GroupCreationForm = () => {
       console.error("Error creating group:", error)
     }
   }
-
-  const handleDeleteGroup = async (groupId: string) => {
-    try {
-      const groupDocRef = doc(db, "groups", groupId)
-      await deleteDoc(groupDocRef)
-
-      // Here UI needs to be updated after removing a group
-      setUserGroups((prevGroups) =>
-        prevGroups.filter((group) => group.id !== groupId)
-      )
-    } catch (error) {
-      console.error("Error deleting group:", error)
-    }
-  }
-
   const fetchUserGroups = async (userId: string) => {
     try {
       const groupsCollectionRef = collection(db, "groups")
@@ -137,10 +111,6 @@ const GroupCreationForm = () => {
               <Link to={`/edit-group/${group.id}`} className="edit-button">
                 Edit
               </Link>
-
-              <button onClick={() => handleDeleteGroup(group.id)}>
-                Delete
-              </button>
             </li>
           ))}
         </ul>

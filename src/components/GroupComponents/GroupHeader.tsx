@@ -5,6 +5,7 @@ interface GroupHeaderProps {
   newGroupName: string
   onGroupNameChange: (e: React.ChangeEvent<HTMLInputElement>) => void
   handleUpdateGroupName: () => void
+  onDeleteGroup: () => void
 }
 
 const GroupHeader: React.FC<GroupHeaderProps> = ({
@@ -12,10 +13,17 @@ const GroupHeader: React.FC<GroupHeaderProps> = ({
   newGroupName,
   onGroupNameChange,
   handleUpdateGroupName,
+  onDeleteGroup,
 }) => {
   return (
     <div>
       <h1>{groupTitle || "Group Name"}</h1>
+      <button
+        onClick={onDeleteGroup}
+        style={{ backgroundColor: "red", color: "white" }}
+      >
+        Delete Group
+      </button>
       <h2>Edit Group Name</h2>
       <input
         type="text"

@@ -6,6 +6,7 @@ export default interface GroupExpenseFormProps {
   selectedMemberId: string
   groupMembers: any[]
   groupExpenses: any[]
+  debts: any[]
   handleDescriptionChange: (e: React.ChangeEvent<HTMLInputElement>) => void
   handleAmountChange: (e: React.ChangeEvent<HTMLInputElement>) => void
   handleSharedChange: (e: React.ChangeEvent<HTMLInputElement>) => void

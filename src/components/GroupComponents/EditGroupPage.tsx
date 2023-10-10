@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react"
-import { useParams, Link } from "react-router-dom"
+import { useParams, useNavigate } from "react-router-dom"
 import {
   doc,
   getDoc,
@@ -18,6 +18,8 @@ import { User, onAuthStateChanged } from "firebase/auth"
 import GroupHeader from "./GroupHeader"
 import GroupMemberList from "./GroupMemberList"
 import GroupExpenseForm from "./GroupExpenseForm"
+import DebtList from "./GroupDebtList"
+import GroupDebtProps from "../../types/GroupTypes/GroupDebtProps"
 
 const EditGroupPage = () => {
   const { groupId }: { groupId?: string } = useParams()
@@ -28,13 +30,12 @@ const EditGroupPage = () => {
   const [description, setDescription] = useState("")
   const [amount, setAmount] = useState("")
   const [shared, setShared] = useState(true)
-  const [expenses, setExpenses] = useState<any[]>([])
   const [userId, setUserId] = useState<string | null>(null)
   const [selectedMember, setSelectedMember] = useState<string>("")
-  const [addedMemberId, setAddedMemberId] = useState<string>("")
   const [selectedMemberId, setSelectedMemberId] = useState<string>("")
-  const [addedExpense, setAddedExpense] = useState<any | null>(null)
   const [groupExpenses, setGroupExpenses] = useState<any[]>([])
+  const [debts, setDebts] = useState<GroupDebtProps[]>([])
+  const navigate = useNavigate()
 
   const handleSelectedMemberChange = async (
     e: React.ChangeEvent<HTMLSelectElement>
@@ -123,20 +124,6 @@ const EditGroupPage = () => {
         console.error("groupId is undefined")
         return
       }
-
-      const expensesCollectionRef = collection(db, "expenses2")
-      const expensesQuery = query(
-        expensesCollectionRef,
-        where("groupId", "==", groupId)
-      )
-      const querySnapshot = await getDocs(expensesQuery)
-
-      const expensesData = querySnapshot.docs.map((doc) => ({
-        id: doc.id,
-        ...doc.data(),
-      }))
-
-      setExpenses(expensesData)
     } catch (error) {
       console.error("Error fetching expenses:", error)
     }
@@ -169,7 +156,6 @@ const EditGroupPage = () => {
             { id: memberDocRef.id, ...memberData },
           ])
           setNewMember("")
-          setAddedMemberId(memberId)
         }
       } catch (error) {
         console.error("Error adding group member:", error)
@@ -255,10 +241,6 @@ const EditGroupPage = () => {
   }, [groupId])
 
   useEffect(() => {
-    fetchExpenses()
-  }, [groupId, groupExpenses])
-
-  useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user: User | null) => {
       if (user) {
         setUserId(user.uid)
@@ -293,9 +275,39 @@ const EditGroupPage = () => {
         shared,
       }
 
+      const debtsToAdd: GroupDebtProps[] = []
+      if (shared) {
+        const membersCount = groupMembers.length
+        const shareAmount = newExpenseData.amount / membersCount
+
+        groupMembers.forEach((member) => {
+          if (member.id !== selectedMemberId) {
+            const debt: GroupDebtProps = {
+              debtorId: member.id,
+              debtorName: member.name,
+              creditorId: selectedMemberId,
+              creditorName: selectedMember,
+              amount: shareAmount,
+            }
+
+            debtsToAdd.push(debt)
+          }
+        })
+      }
+
+      setDebts((prevDebts) => [...prevDebts, ...debtsToAdd])
       setGroupExpenses((prevExpenses) => [...prevExpenses, newExpenseData])
 
-      await addDoc(collection(db, "expenses2"), newExpenseData)
+      const expenseDocRef = await addDoc(
+        collection(db, "expenses2"),
+        newExpenseData
+      )
+
+      const debtsCollectionRef = collection(expenseDocRef, "debts")
+
+      for (const debt of debtsToAdd) {
+        await addDoc(debtsCollectionRef, debt)
+      }
 
       fetchExpenses()
 
@@ -304,15 +316,32 @@ const EditGroupPage = () => {
       setShared(true)
       setSelectedMemberId("")
       setSelectedMember("")
-      setAddedExpense(newExpenseData)
     } catch (error) {
       console.error("Error adding expense:", error)
     }
   }
 
-  // Disable buttons if no input is given
-  const isButtonDisabled = newGroupName.trim() === ""
-  const isMemberButtonDisabled = newMember.trim() === ""
+  const onDeleteGroup = async () => {
+    try {
+      if (!groupId) {
+        console.error("groupId is undefined")
+        return
+      }
+
+      const confirmed = window.confirm(
+        "Are you sure you want to delete this group?"
+      )
+
+      if (confirmed) {
+        const groupDocRef = doc(db, "groups", groupId)
+        await deleteDoc(groupDocRef)
+
+        navigate("/create-group")
+      }
+    } catch (error) {
+      console.error("Error deleting group:", error)
+    }
+  }
 
   return (
     <div>
@@ -321,6 +350,7 @@ const EditGroupPage = () => {
         newGroupName={newGroupName}
         onGroupNameChange={handleGroupNameChange}
         handleUpdateGroupName={handleUpdateGroupName}
+        onDeleteGroup={onDeleteGroup}
       />
       {groupId && (
         <GroupMemberList
@@ -345,7 +375,9 @@ const EditGroupPage = () => {
         handleSharedChange={handleSharedChange}
         handleSelectedMemberChange={handleSelectedMemberChange}
         handleAddExpense={handleAddExpense}
+        debts={debts}
       />
+      <DebtList debts={debts} />
     </div>
   )
 }

@@ -4,7 +4,6 @@ import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
   signInWithPopup,
-  UserCredential,
   onAuthStateChanged,
 } from "firebase/auth"
 import googleIcon from "../../images/google.jpg"
@@ -25,46 +24,40 @@ const LoginRegister: React.FC<LoginRegisterProps> = ({ onUserLogin }) => {
   const signInWithEmail = async () => {
     try {
       clearError()
-      const userCredential: UserCredential = await signInWithEmailAndPassword(
-        auth,
-        email,
-        password
-      )
+      await signInWithEmailAndPassword(auth, email, password)
       onUserLogin()
     } catch (err: any) {
       setError(err.message)
     }
   }
 
-  const signInWithGoogle = async () => {
-    try {
-      clearError()
-      await signInWithPopup(auth, googleProvider)
-      onUserLogin()
-    } catch (err: any) {
-      setError(err.message)
-    }
-  }
+ const signInWithGoogle = async () => {
+   try {
+     clearError()
+     await signInWithPopup(auth, googleProvider)
+     onUserLogin()
+   } catch (err: any) {
+     setError(err.message)
+   }
+ }
 
-  // Check here if the user is already authenticated on page load
-  onAuthStateChanged(auth, (user) => {
-    if (user) {
-      onUserLogin()
-    } else {
-    }
-  })
+ // Check here if the user is already authenticated on page load
+ onAuthStateChanged(auth, (user) => {
+   if (user) {
+     onUserLogin()
+   } else {
+   }
+ })
 
-  const signUpWithEmail = async () => {
-    try {
-      clearError()
-      const userCredential: UserCredential =
-        await createUserWithEmailAndPassword(auth, email, password)
-      onUserLogin()
-    } catch (err: any) {
-      setError(err.message)
-    }
-  }
-
+ const signUpWithEmail = async () => {
+   try {
+     clearError()
+     await createUserWithEmailAndPassword(auth, email, password)
+     onUserLogin()
+   } catch (err: any) {
+     setError(err.message)
+   }
+ }
   return (
     <div className="login-content">
       <h1 className="header-title">CostSquad</h1>
