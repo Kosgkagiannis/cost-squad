@@ -4,4 +4,5 @@ export default interface GroupDebtProps {
   creditorId: string
   creditorName: string
   amount: number
+  expenseId: string
 }
