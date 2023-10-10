@@ -14,6 +14,7 @@ const GroupExpenseForm: React.FC<GroupExpenseFormProps> = ({
   handleSharedChange,
   handleSelectedMemberChange,
   handleAddExpense,
+  handleDeleteExpense,
 }) => {
   return (
     <div>
@@ -67,6 +68,9 @@ const GroupExpenseForm: React.FC<GroupExpenseFormProps> = ({
               <p>Timestamp: {expense.timestamp.toDate().toLocaleString()}</p>
               <p>Paid By: {expense.payerName}</p>
               <p>Shared: {expense.shared ? "Yes" : "No"}</p>
+              <button onClick={() => handleDeleteExpense(expense.id)}>
+                Delete
+              </button>
             </li>
           ))}
         </ul>

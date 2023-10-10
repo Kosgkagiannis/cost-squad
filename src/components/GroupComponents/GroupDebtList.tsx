@@ -16,7 +16,7 @@ const DebtList: React.FC<DebtListProps> = ({ debts }) => {
       <ul>
         {filteredDebts.map((debt, index) => (
           <li key={index}>
-            {debt.debtorName} owes {debt.creditorName} ${debt.amount}
+            {debt.debtorName} owes {debt.creditorName} ${debt.amount.toFixed(2)}
           </li>
         ))}
       </ul>

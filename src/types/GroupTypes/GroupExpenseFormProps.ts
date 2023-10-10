@@ -12,4 +12,5 @@ export default interface GroupExpenseFormProps {
   handleSharedChange: (e: React.ChangeEvent<HTMLInputElement>) => void
   handleSelectedMemberChange: (e: React.ChangeEvent<HTMLSelectElement>) => void
   handleAddExpense: () => void
+  handleDeleteExpense: (expenseId: string) => void
 }
