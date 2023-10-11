@@ -65,7 +65,12 @@ const GroupExpenseForm: React.FC<GroupExpenseFormProps> = ({
             <li key={expense.id}>
               <p>Description: {expense.description}</p>
               <p>Amount: {expense.amount}</p>
-              <p>Timestamp: {expense.timestamp.toDate().toLocaleString()}</p>
+              <p>
+                Timestamp:
+                {expense.timestamp
+                  ? expense.timestamp.toDate().toLocaleString()
+                  : "N/A"}
+              </p>
               <p>Paid By: {expense.payerName}</p>
               <p>Shared: {expense.shared ? "Yes" : "No"}</p>
               <button onClick={() => handleDeleteExpense(expense.id)}>

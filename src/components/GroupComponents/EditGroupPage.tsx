@@ -9,9 +9,9 @@ import {
   deleteDoc,
   query,
   getDocs,
-  where,
   Timestamp,
   writeBatch,
+  onSnapshot,
 } from "firebase/firestore"
 import { db, auth } from "../../config/firebase"
 import { v4 as uuidv4 } from "uuid"
@@ -90,35 +90,6 @@ const EditGroupPage = () => {
     setShared(e.target.checked)
   }
 
-  useEffect(() => {
-    const fetchExpenses = async () => {
-      try {
-        if (!groupId) {
-          console.error("groupId is undefined")
-          return
-        }
-
-        const expensesCollectionRef = collection(db, "expenses2")
-        const expensesQuery = query(
-          expensesCollectionRef,
-          where("groupId", "==", groupId)
-        )
-        const querySnapshot = await getDocs(expensesQuery)
-
-        const expensesData = querySnapshot.docs.map((doc) => ({
-          id: doc.id,
-          ...doc.data(),
-        }))
-
-        setGroupExpenses(expensesData)
-      } catch (error) {
-        console.error("Error fetching expenses:", error)
-      }
-    }
-
-    fetchExpenses()
-  }, [groupId])
-
   const handleAddMember = async () => {
     if (newMember.trim() !== "") {
       try {
@@ -194,44 +165,6 @@ const EditGroupPage = () => {
     }
 
     fetchExpensesAndDebts()
-  }, [groupId])
-
-  useEffect(() => {
-    if (groupId) {
-      const fetchDebts = async () => {
-        try {
-          const expensesCollectionRef = collection(db, "expenses2")
-          const expensesQuery = query(expensesCollectionRef)
-
-          const querySnapshot = await getDocs(expensesQuery)
-
-          const allDebtsData = []
-
-          for (const doc of querySnapshot.docs) {
-            const debtsCollectionRef = collection(
-              db,
-              "expenses2",
-              doc.id,
-              "debts"
-            )
-
-            const debtsQuery = query(debtsCollectionRef)
-            const debtsQuerySnapshot = await getDocs(debtsQuery)
-
-            const debtsData = debtsQuerySnapshot.docs.map(
-              (debtDoc) => debtDoc.data() as GroupDebtProps
-            )
-
-            allDebtsData.push(...debtsData)
-          }
-
-          setDebts(allDebtsData)
-        } catch (error) {
-          console.error("Error fetching debts:", error)
-        }
-      }
-      fetchDebts()
-    }
   }, [groupId])
 
   const handleDeleteMember = async (memberId: string) => {
@@ -324,6 +257,25 @@ const EditGroupPage = () => {
     }
   }, [])
 
+  useEffect(() => {
+    if (!groupId) {
+      return
+    }
+
+    const expensesCollectionRef = collection(db, "groups", groupId, "expenses")
+    const unsubscribe = onSnapshot(expensesCollectionRef, (querySnapshot) => {
+      const updatedExpenses = querySnapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }))
+      setGroupExpenses(updatedExpenses)
+    })
+
+    return () => {
+      unsubscribe()
+    }
+  }, [groupId])
+
   const handleAddExpense = async () => {
     try {
       if (!groupId) {
@@ -344,29 +296,10 @@ const EditGroupPage = () => {
         shared,
       }
 
-      const totalAmountExcludingPayer = shared
+      // Calculate the share per member
+      const sharePerMember = shared
         ? newExpenseData.amount / groupMembers.length
         : newExpenseData.amount
-
-      const debtsToAdd: GroupDebtProps[] = []
-
-      groupMembers.forEach((member) => {
-        if (member.id !== selectedMemberId) {
-          const debt: GroupDebtProps = {
-            debtorId: member.id,
-            debtorName: member.name,
-            creditorId: selectedMemberId,
-            creditorName: selectedMember,
-            amount: totalAmountExcludingPayer,
-            expenseId,
-          }
-
-          debtsToAdd.push(debt)
-        }
-      })
-
-      setDebts((prevDebts) => [...prevDebts, ...debtsToAdd])
-      setGroupExpenses((prevExpenses) => [...prevExpenses, newExpenseData])
 
       const expensesCollectionRef = collection(
         db,
@@ -374,13 +307,46 @@ const EditGroupPage = () => {
         groupId,
         "expenses"
       )
+
       const expenseDocRef = await addDoc(expensesCollectionRef, newExpenseData)
 
       const debtsCollectionRef = collection(expenseDocRef, "debts")
 
-      for (const debt of debtsToAdd) {
-        await addDoc(debtsCollectionRef, debt)
+      const updatedDebts = [...debts]
+
+      groupMembers.forEach((member) => {
+        if (member.id !== selectedMemberId) {
+          const creditorId = selectedMemberId
+          const debtorId = member.id
+
+          // Check if a debt entry already exists for this combination
+          const existingDebtIndex = updatedDebts.findIndex(
+            (debt) =>
+              debt.creditorId === creditorId && debt.debtorId === debtorId
+          )
+
+          if (existingDebtIndex !== -1) {
+            updatedDebts[existingDebtIndex].amount += sharePerMember
+          } else {
+            const debt: GroupDebtProps = {
+              creditorId,
+              creditorName: selectedMember,
+              debtorId,
+              debtorName: member.name,
+              amount: sharePerMember,
+              expenseId,
+            }
+            updatedDebts.push(debt)
+          }
+        }
+      })
+
+      for (const debt of updatedDebts) {
+        const debtDocRef = await addDoc(debtsCollectionRef, debt)
       }
+
+      // Update the debts state with the new debts
+      setDebts(updatedDebts)
 
       setDescription("")
       setAmount("")

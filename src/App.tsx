@@ -93,7 +93,7 @@ function App() {
                     You can do that by creating a group:
                   </h3>
                   <Link to="/create-group">
-                    <button>Create Group</button>
+                    <button>Go to Groups</button>
                   </Link>
                   <div className="divider" />
                   <h2 className="questions">
