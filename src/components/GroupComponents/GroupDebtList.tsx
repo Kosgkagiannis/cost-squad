@@ -41,12 +41,17 @@ const DebtList: React.FC<DebtListProps> = ({ debts }) => {
           const formattedAmount = amount.toFixed(2)
 
           const direction = amount > 0 ? true : false
+          const formattedAmountNumber = parseFloat(formattedAmount)
 
           return (
             <li key={index}>
               {!direction
-                ? `${debtor} owes ${creditor} $${Math.abs(formattedAmount)}`
-                : `${creditor} owes ${debtor} $${Math.abs(formattedAmount)}`}
+                ? `${debtor} owes ${creditor} $${Math.abs(
+                    formattedAmountNumber
+                  )}`
+                : `${creditor} owes ${debtor} $${Math.abs(
+                    formattedAmountNumber
+                  )}`}
             </li>
           )
         })}

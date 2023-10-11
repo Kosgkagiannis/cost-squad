@@ -310,8 +310,7 @@ const EditGroupPage = () => {
 
       const expenseDocRef = await addDoc(expensesCollectionRef, newExpenseData)
 
-      const debtsCollectionRef = collection(expenseDocRef, "debts")
-
+      // Calculate and update debts
       const updatedDebts = [...debts]
 
       groupMembers.forEach((member) => {
@@ -338,12 +337,18 @@ const EditGroupPage = () => {
             }
             updatedDebts.push(debt)
           }
+
+          // Update the debt in Firestore too
+          const debtCollectionRef = collection(expenseDocRef, "debts")
+          addDoc(debtCollectionRef, {
+            creditorId,
+            creditorName: selectedMember,
+            debtorId,
+            debtorName: member.name,
+            amount: sharePerMember,
+          })
         }
       })
-      for (const debt of updatedDebts) {
-        // eslint-disable-next-line
-        const debtDocRef = await addDoc(debtsCollectionRef, debt)
-      }
 
       setDebts(updatedDebts)
       setDescription("")
