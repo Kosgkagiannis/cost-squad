@@ -340,14 +340,12 @@ const EditGroupPage = () => {
           }
         }
       })
-
       for (const debt of updatedDebts) {
+        // eslint-disable-next-line
         const debtDocRef = await addDoc(debtsCollectionRef, debt)
       }
 
-      // Update the debts state with the new debts
       setDebts(updatedDebts)
-
       setDescription("")
       setAmount("")
       setShared(true)
@@ -405,9 +403,42 @@ const EditGroupPage = () => {
         prevExpenses.filter((expense) => expense.id !== expenseId)
       )
 
-      setDebts((prevDebts) =>
-        prevDebts.filter((debt) => debt.expenseId !== expenseId)
-      )
+      const updatedDebts: GroupDebtProps[] = []
+      groupExpenses
+        .filter((expense) => expense.id !== expenseId)
+        .forEach((expense) => {
+          const sharePerMember = expense.shared
+            ? expense.amount / groupMembers.length
+            : expense.amount
+
+          groupMembers.forEach((member) => {
+            if (member.id !== expense.payerId) {
+              const creditorId = expense.payerId
+              const debtorId = member.id
+
+              const existingDebtIndex = updatedDebts.findIndex(
+                (debt) =>
+                  debt.creditorId === creditorId && debt.debtorId === debtorId
+              )
+
+              if (existingDebtIndex !== -1) {
+                updatedDebts[existingDebtIndex].amount += sharePerMember
+              } else {
+                const debt: GroupDebtProps = {
+                  creditorId,
+                  creditorName: expense.payerName,
+                  debtorId,
+                  debtorName: member.name,
+                  amount: sharePerMember,
+                  expenseId: expense.id,
+                }
+                updatedDebts.push(debt)
+              }
+            }
+          })
+        })
+
+      setDebts(updatedDebts)
     } catch (error) {
       console.error("Error deleting expense:", error)
     }

@@ -32,7 +32,7 @@ const GroupExpenseForm: React.FC<GroupExpenseFormProps> = ({
         onChange={handleAmountChange}
       />
       <label>
-        Shared:
+        Shared equally:
         <input type="checkbox" checked={shared} onChange={handleSharedChange} />
       </label>
       <div>
