@@ -15,6 +15,7 @@ const GroupExpenseForm: React.FC<GroupExpenseFormProps> = ({
   handleSelectedMemberChange,
   handleAddExpense,
   handleDeleteExpense,
+  handleImageChange,
 }) => {
   return (
     <div>
@@ -35,6 +36,7 @@ const GroupExpenseForm: React.FC<GroupExpenseFormProps> = ({
         Shared equally:
         <input type="checkbox" checked={shared} onChange={handleSharedChange} />
       </label>
+      <input type="file" accept="image/*" onChange={handleImageChange} />
       <div>
         <label style={{ marginRight: "10px" }}>Paid By: {selectedMember}</label>
         <select value={selectedMemberId} onChange={handleSelectedMemberChange}>
@@ -73,6 +75,13 @@ const GroupExpenseForm: React.FC<GroupExpenseFormProps> = ({
               </p>
               <p>Paid By: {expense.payerName}</p>
               <p>Shared: {expense.shared ? "Yes" : "No"}</p>
+              {expense.imageUrl && (
+                <img
+                  src={expense.imageUrl}
+                  alt="Expense Image"
+                  style={{ maxWidth: "10%" }}
+                />
+              )}
               <button onClick={() => handleDeleteExpense(expense.id)}>
                 Delete
               </button>

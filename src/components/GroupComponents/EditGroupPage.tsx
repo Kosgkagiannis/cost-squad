@@ -14,6 +14,7 @@ import {
   onSnapshot,
 } from "firebase/firestore"
 import { db, auth } from "../../config/firebase"
+import { ref, uploadBytes, getDownloadURL, getStorage } from "firebase/storage"
 import { v4 as uuidv4 } from "uuid"
 import { User, onAuthStateChanged } from "firebase/auth"
 import GroupHeader from "./GroupHeader"
@@ -36,7 +37,28 @@ const EditGroupPage = () => {
   const [selectedMemberId, setSelectedMemberId] = useState<string>("")
   const [groupExpenses, setGroupExpenses] = useState<any[]>([])
   const [debts, setDebts] = useState<GroupDebtProps[]>([])
+  const [imageFile, setImageFile] = useState<null | File>(null)
   const navigate = useNavigate()
+  const storage = getStorage()
+
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files.length > 0) {
+      const file = e.target.files[0]
+
+      if (imageFile === null) {
+        setImageFile(null)
+      }
+      setImageFile(file)
+
+      if (file) {
+        const reader = new FileReader()
+        reader.onload = (e) => {
+          const imagePreviewUrl = e.target?.result
+        }
+        reader.readAsDataURL(file)
+      }
+    }
+  }
 
   const handleSelectedMemberChange = async (
     e: React.ChangeEvent<HTMLSelectElement>
@@ -284,6 +306,19 @@ const EditGroupPage = () => {
       }
 
       const expenseId = uuidv4()
+      let imageUrl = ""
+
+      if (imageFile) {
+        const storageRef = ref(
+          storage,
+          `expenseImages/${expenseId}-${imageFile.name}`
+        )
+
+        const imageSnapshot = await uploadBytes(storageRef, imageFile)
+        imageUrl = await getDownloadURL(imageSnapshot.ref)
+      } else {
+        console.error("Image file doesn;t exist")
+      }
 
       const newExpenseData = {
         expenseId,
@@ -294,6 +329,7 @@ const EditGroupPage = () => {
         payerId: selectedMemberId,
         payerName: selectedMember,
         shared,
+        imageUrl,
       }
 
       // Calculate the share per member
@@ -482,6 +518,8 @@ const EditGroupPage = () => {
         handleSelectedMemberChange={handleSelectedMemberChange}
         handleAddExpense={handleAddExpense}
         handleDeleteExpense={handleDeleteExpense}
+        imageFile={imageFile}
+        handleImageChange={handleImageChange}
         debts={debts}
       />
       <DebtList debts={debts} />
