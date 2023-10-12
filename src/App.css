@@ -1,19 +1,35 @@
+html {
+  height: 100%;
+}
+
+#root {
+  height: 100%;
+  background: #007bff;
+}
+
 body {
-  background: linear-gradient(135deg, #007bff, #00a5ff);
+  background: #007bff;
   margin: 0;
   padding: 0;
+  height: 100%;
   font-family: Arial, sans-serif;
 }
 
 .App {
   text-align: center;
-  padding: 0px 20px 20px 20px;
+  padding: 0 20px 20px 20px;
   border-radius: 10px;
   box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
   max-width: 600px;
   margin: 0 auto;
   background-color: #ffffff47;
   animation: fadeIn 0.5s ease-in-out;
+}
+
+@media (max-width: 768px) {
+  .App {
+    max-width: 100%;
+  }
 }
 
 @keyframes fadeIn {
@@ -230,4 +246,89 @@ button:disabled {
 
 .custom-upload-button:hover {
   background-color: #0056b3;
+}
+
+.image-gallery {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: center;
+}
+
+.image-item {
+  flex: 1;
+  max-width: 200px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  overflow: hidden;
+}
+
+.image-item img {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.image-item:hover,
+.image-item:active {
+  background-color: rgba(0, 123, 255, 0.1);
+  opacity: 0.8;
+  border: 2px solid #007bff;
+}
+
+.image-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.7);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.image-modal-content {
+  position: relative;
+  background: #fff;
+  max-width: 80%;
+  max-height: 80%;
+  overflow: auto;
+  padding: 20px;
+  border-radius: 5px;
+}
+
+.close {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  cursor: pointer;
+}
+
+.delete-button {
+  display: flex;
+  justify-content: center;
+}
+
+@media (min-width: 768px) {
+  .image-modal-content {
+    max-width: 40%;
+    max-height: 80%;
+  }
+  .delete-button {
+    margin-top: 5px;
+  }
+}
+
+.close {
+  position: absolute;
+  top: 3px;
+  right: 3px;
+  cursor: pointer;
+  background-color: #007bff;
+  color: #fff;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 50%;
 }

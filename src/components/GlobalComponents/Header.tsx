@@ -14,7 +14,7 @@ function Header({ handleLogout }: HeaderProps) {
       <div className="header">
         <div className="navigation">
           <Link to="/">Home</Link>
-          <Link to="/create-group">Group Creation</Link>
+          <Link to="/create-group">Groups</Link>
           <Link to="/quick-expense">Quick Expense</Link>
           <span className="nav-right">
             <Link to="#" onClick={handleGoBack}>

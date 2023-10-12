@@ -309,7 +309,7 @@ const EditGroupPage = () => {
       if (imageFile) {
         const storageRef = ref(
           storage,
-          `expenseImages/${expenseId}-${imageFile.name}`
+          `expenses/${groupId}/${expenseId}/${imageFile.name}`
         )
 
         const imageSnapshot = await uploadBytes(storageRef, imageFile)
