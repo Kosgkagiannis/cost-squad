@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react"
-import { BrowserRouter as Router, Route, Link, Routes } from "react-router-dom" // Import useHistory
+import { HashRouter as Router, Route, Link, Routes } from "react-router-dom" // Import useHistory
 import "./App.css"
 import { User, onAuthStateChanged } from "firebase/auth"
 import { auth, db } from "./config/firebase"
@@ -77,12 +77,12 @@ function App() {
   }, [])
 
   return (
-    <Router>
+    <Router basename="/">
       <div className="App">
         {user && <Header user={user} handleLogout={handleLogout} />}
         <Routes>
           <Route
-            path="/cost-squad"
+            path="/"
             element={
               user ? (
                 <div className="questions-form">
