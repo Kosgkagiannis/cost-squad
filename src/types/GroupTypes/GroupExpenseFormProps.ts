@@ -8,6 +8,8 @@ export default interface GroupExpenseFormProps {
   groupExpenses: any[]
   debts: any[]
   imageFile: File | null
+  groupId: string
+  imageFileName: string | null
   handleDescriptionChange: (e: React.ChangeEvent<HTMLInputElement>) => void
   handleAmountChange: (e: React.ChangeEvent<HTMLInputElement>) => void
   handleSharedChange: (e: React.ChangeEvent<HTMLInputElement>) => void

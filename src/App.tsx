@@ -16,10 +16,10 @@ import QuickExpenseComponent from "./components/QuickExpenseComponents/QuickExpe
 import CreateGroupPage from "./components/GroupComponents/CreateGroupPage"
 import EditGroupPage from "./components/GroupComponents/EditGroupPage"
 import EditMemberPage from "./components/GroupComponents/EditMemberPage"
+import GroupExpenseDetails from "./components/GroupComponents/GroupExpenseDetails"
 
 function App() {
   const [user, setUser] = useState<User | null>(null)
-
 
   const fetchUserGroups = async (userId: string): Promise<GroupProps[]> => {
     try {
@@ -114,6 +114,10 @@ function App() {
           <Route
             path="/edit-member/:groupId/:memberId"
             element={<EditMemberPage />}
+          />
+          <Route
+            path="/expense-details/:groupId/:expenseId"
+            element={<GroupExpenseDetails />}
           />
         </Routes>
       </div>

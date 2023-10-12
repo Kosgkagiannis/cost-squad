@@ -1,4 +1,5 @@
 import React from "react"
+import { Link } from "react-router-dom"
 import GroupExpenseFormProps from "../../types/GroupTypes/GroupExpenseFormProps"
 
 const GroupExpenseForm: React.FC<GroupExpenseFormProps> = ({
@@ -7,8 +8,10 @@ const GroupExpenseForm: React.FC<GroupExpenseFormProps> = ({
   shared,
   selectedMember,
   selectedMemberId,
+  groupId,
   groupMembers,
   groupExpenses,
+  imageFileName,
   handleDescriptionChange,
   handleAmountChange,
   handleSharedChange,
@@ -17,6 +20,9 @@ const GroupExpenseForm: React.FC<GroupExpenseFormProps> = ({
   handleDeleteExpense,
   handleImageChange,
 }) => {
+  const handleCustomUploadClick = () => {
+    document.getElementById("fileInput")?.click()
+  }
   return (
     <div>
       <h2>Add Expense</h2>
@@ -36,7 +42,19 @@ const GroupExpenseForm: React.FC<GroupExpenseFormProps> = ({
         Shared equally:
         <input type="checkbox" checked={shared} onChange={handleSharedChange} />
       </label>
-      <input type="file" accept="image/*" onChange={handleImageChange} />
+      <div className="custom-upload-button" onClick={handleCustomUploadClick}>
+        <span>Upload Image</span>
+        <input
+          type="file"
+          accept="image/*"
+          id="fileInput"
+          style={{ display: "none" }}
+          onChange={handleImageChange}
+        />
+      </div>
+      {imageFileName && (
+        <p>Selected Image: {imageFileName || "No image selected"}</p>
+      )}
       <div>
         <label style={{ marginRight: "10px" }}>Paid By: {selectedMember}</label>
         <select value={selectedMemberId} onChange={handleSelectedMemberChange}>
@@ -67,21 +85,13 @@ const GroupExpenseForm: React.FC<GroupExpenseFormProps> = ({
             <li key={expense.id}>
               <p>Description: {expense.description}</p>
               <p>Amount: {expense.amount}</p>
-              <p>
-                Timestamp:
-                {expense.timestamp
-                  ? expense.timestamp.toDate().toLocaleString()
-                  : "N/A"}
-              </p>
               <p>Paid By: {expense.payerName}</p>
-              <p>Shared: {expense.shared ? "Yes" : "No"}</p>
-              {expense.imageUrl && (
-                <img
-                  src={expense.imageUrl}
-                  alt="Expense Image"
-                  style={{ maxWidth: "10%" }}
-                />
-              )}
+              <Link
+                className="edit-button"
+                to={`/expense-details/${groupId}/${expense.id}`}
+              >
+                View Expense Details
+              </Link>
               <button onClick={() => handleDeleteExpense(expense.id)}>
                 Delete
               </button>

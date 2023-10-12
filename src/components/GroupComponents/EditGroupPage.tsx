@@ -37,6 +37,7 @@ const EditGroupPage = () => {
   const [selectedMemberId, setSelectedMemberId] = useState<string>("")
   const [groupExpenses, setGroupExpenses] = useState<any[]>([])
   const [debts, setDebts] = useState<GroupDebtProps[]>([])
+  const [imageFileName, setImageFileName] = useState<string | null>(null)
   const [imageFile, setImageFile] = useState<null | File>(null)
   const navigate = useNavigate()
   const storage = getStorage()
@@ -45,18 +46,15 @@ const EditGroupPage = () => {
     if (e.target.files && e.target.files.length > 0) {
       const file = e.target.files[0]
 
-      if (imageFile === null) {
-        setImageFile(null)
-      }
-      setImageFile(file)
-
       if (file) {
         const reader = new FileReader()
         reader.onload = (e) => {
-          const imagePreviewUrl = e.target?.result
+          setImageFileName(file.name)
         }
         reader.readAsDataURL(file)
       }
+
+      setImageFile(file)
     }
   }
 
@@ -306,7 +304,7 @@ const EditGroupPage = () => {
       }
 
       const expenseId = uuidv4()
-      let imageUrl = ""
+      let imageUrls = ""
 
       if (imageFile) {
         const storageRef = ref(
@@ -315,7 +313,7 @@ const EditGroupPage = () => {
         )
 
         const imageSnapshot = await uploadBytes(storageRef, imageFile)
-        imageUrl = await getDownloadURL(imageSnapshot.ref)
+        imageUrls = await getDownloadURL(imageSnapshot.ref)
       } else {
         console.error("Image file doesn;t exist")
       }
@@ -329,7 +327,7 @@ const EditGroupPage = () => {
         payerId: selectedMemberId,
         payerName: selectedMember,
         shared,
-        imageUrl,
+        imageUrls: [imageUrls],
       }
 
       // Calculate the share per member
@@ -354,7 +352,7 @@ const EditGroupPage = () => {
           const creditorId = selectedMemberId
           const debtorId = member.id
 
-          // Check if a debt entry already exists for this combination
+          // Check if a debt entryR already exists for this combination
           const existingDebtIndex = updatedDebts.findIndex(
             (debt) =>
               debt.creditorId === creditorId && debt.debtorId === debtorId
@@ -392,6 +390,7 @@ const EditGroupPage = () => {
       setShared(true)
       setSelectedMemberId("")
       setSelectedMember("")
+      setImageFileName("")
     } catch (error) {
       console.error("Error adding expense:", error)
     }
@@ -504,24 +503,28 @@ const EditGroupPage = () => {
           groupId={groupId}
         />
       )}
-      <GroupExpenseForm
-        description={description}
-        amount={amount}
-        shared={shared}
-        selectedMember={selectedMember}
-        selectedMemberId={selectedMemberId}
-        groupMembers={groupMembers}
-        groupExpenses={groupExpenses}
-        handleDescriptionChange={handleDescriptionChange}
-        handleAmountChange={handleAmountChange}
-        handleSharedChange={handleSharedChange}
-        handleSelectedMemberChange={handleSelectedMemberChange}
-        handleAddExpense={handleAddExpense}
-        handleDeleteExpense={handleDeleteExpense}
-        imageFile={imageFile}
-        handleImageChange={handleImageChange}
-        debts={debts}
-      />
+      {groupId && (
+        <GroupExpenseForm
+          description={description}
+          amount={amount}
+          shared={shared}
+          selectedMember={selectedMember}
+          selectedMemberId={selectedMemberId}
+          groupMembers={groupMembers}
+          groupId={groupId}
+          groupExpenses={groupExpenses}
+          handleDescriptionChange={handleDescriptionChange}
+          handleAmountChange={handleAmountChange}
+          handleSharedChange={handleSharedChange}
+          handleSelectedMemberChange={handleSelectedMemberChange}
+          handleAddExpense={handleAddExpense}
+          handleDeleteExpense={handleDeleteExpense}
+          imageFile={imageFile}
+          imageFileName={imageFileName}
+          handleImageChange={handleImageChange}
+          debts={debts}
+        />
+      )}
       <DebtList debts={debts} />
     </div>
   )
