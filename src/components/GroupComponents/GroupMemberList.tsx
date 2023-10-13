@@ -7,7 +7,6 @@ const GroupMemberList: React.FC<GroupMemberListProps> = ({
   newMember,
   onMemberInputChange,
   handleAddMember,
-  handleDeleteMember,
   groupId,
 }) => {
   return (
@@ -18,6 +17,7 @@ const GroupMemberList: React.FC<GroupMemberListProps> = ({
         placeholder="Enter Member's Name"
         value={newMember}
         onChange={onMemberInputChange}
+        maxLength={15}
       />
       <button onClick={handleAddMember} disabled={newMember.trim() === ""}>
         Add Member
@@ -27,17 +27,23 @@ const GroupMemberList: React.FC<GroupMemberListProps> = ({
         {groupMembers
           .filter((member) => member.name && member.name.trim() !== "")
           .map((member) => (
-            <li key={member.id}>
-              {member.name}
-              <Link
-                className="edit-button"
-                to={`/edit-member/${groupId}/${member.id}`}
-              >
-                Edit
-              </Link>
-              <button onClick={() => handleDeleteMember(member.id)}>
-                Delete
-              </button>
+            <li key={member.id} className="member-list-item">
+              <div className="mobile-profile">
+                <img
+                  src={member.profilePicture}
+                  alt={member.name}
+                  className="member-profile-image"
+                />
+                <span className="member-name">{member.name}</span>
+              </div>
+              <div className="mobile-actions">
+                <Link
+                  className="edit-button"
+                  to={`/edit-member/${groupId}/${member.id}`}
+                >
+                  Edit
+                </Link>
+              </div>
             </li>
           ))}
       </ul>

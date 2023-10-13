@@ -51,6 +51,7 @@ header {
 h1 {
   margin: 0;
   font-size: 24px;
+  word-wrap: break-word;
 }
 
 input[type="text"],
@@ -217,8 +218,8 @@ button:disabled {
   border-radius: 5px;
   padding: 10px 20px;
   margin-top: 10px;
-  inline-size: 78.4px;
-  block-size: 35.2px;
+  inline-size: 48.4px;
+  block-size: 100%;
   cursor: pointer;
   margin-inline: 5px;
   transition: background-color 0.3s ease;
@@ -258,6 +259,8 @@ button:disabled {
 .image-item {
   flex: 1;
   max-width: 200px;
+  height: fit-content;
+  max-height: 100px;
   border: 1px solid #ccc;
   border-radius: 5px;
   overflow: hidden;
@@ -331,4 +334,42 @@ button:disabled {
   padding: 10px 20px;
   border: none;
   border-radius: 50%;
+}
+
+.member-list-item {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 8px 0;
+  gap: 1rem;
+}
+
+.mobile-profile {
+  display: flex;
+  align-items: center;
+}
+
+.mobile-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.member-profile-image {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin-right: 1rem;
+}
+
+.member-name {
+  flex-grow: 1;
+}
+
+.rounded-image {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  object-fit: cover;
 }

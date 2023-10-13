@@ -85,6 +85,7 @@ const EditExpenseForm: React.FC<EditExpenseFormProps> = ({
         placeholder="Description"
         value={editedDescription}
         onChange={(e) => setEditedDescription(e.target.value)}
+        maxLength={20}
       />
       <p>Amount:</p>
       <input

@@ -14,7 +14,13 @@ import {
   onSnapshot,
 } from "firebase/firestore"
 import { db, auth } from "../../config/firebase"
-import { ref, uploadBytes, getDownloadURL, getStorage } from "firebase/storage"
+import {
+  ref,
+  uploadBytes,
+  getDownloadURL,
+  getStorage,
+  deleteObject,
+} from "firebase/storage"
 import { v4 as uuidv4 } from "uuid"
 import { User, onAuthStateChanged } from "firebase/auth"
 import GroupHeader from "./GroupHeader"
@@ -119,13 +125,23 @@ const EditGroupPage = () => {
         }
 
         const memberId = uuidv4()
+        let defaultProfilePictureUrl = ""
+
+        // Get the download URL for the default profile picture
+        const defaultProfilePictureRef = ref(
+          storage,
+          "avatars/default-avatar.png"
+        )
+        defaultProfilePictureUrl = await getDownloadURL(
+          defaultProfilePictureRef
+        )
 
         const memberDocRef = await addDoc(
           collection(db, "groups", groupId, "members"),
           {
             memberId,
             name: newMember,
-            profilePicture: "",
+            profilePicture: defaultProfilePictureUrl,
           }
         )
 
@@ -186,24 +202,6 @@ const EditGroupPage = () => {
 
     fetchExpensesAndDebts()
   }, [groupId])
-
-  const handleDeleteMember = async (memberId: string) => {
-    try {
-      if (!groupId) {
-        console.error("groupId is undefined")
-        return
-      }
-
-      const memberDocRef = doc(db, "groups", groupId, "members", memberId)
-      await deleteDoc(memberDocRef)
-
-      setGroupMembers((prevMembers) =>
-        prevMembers.filter((member) => member.id !== memberId)
-      )
-    } catch (error) {
-      console.error("Error deleting group member:", error)
-    }
-  }
 
   const handleUpdateGroupName = async () => {
     try {
@@ -304,7 +302,7 @@ const EditGroupPage = () => {
       }
 
       const expenseId = uuidv4()
-      let imageUrls = ""
+      let imageUrls: string[] = []
 
       if (imageFile) {
         const storageRef = ref(
@@ -313,9 +311,9 @@ const EditGroupPage = () => {
         )
 
         const imageSnapshot = await uploadBytes(storageRef, imageFile)
-        imageUrls = await getDownloadURL(imageSnapshot.ref)
+        imageUrls = [await getDownloadURL(imageSnapshot.ref)]
       } else {
-        console.error("Image file doesn;t exist")
+        console.error("Image file doesn't exist")
       }
 
       const newExpenseData = {
@@ -327,7 +325,7 @@ const EditGroupPage = () => {
         payerId: selectedMemberId,
         payerName: selectedMember,
         shared,
-        imageUrls: [imageUrls],
+        imageUrls: imageUrls,
       }
 
       // Calculate the share per member
@@ -409,6 +407,23 @@ const EditGroupPage = () => {
 
       if (confirmed) {
         const groupDocRef = doc(db, "groups", groupId)
+
+        const expensesCollectionRef = collection(groupDocRef, "expenses")
+        const expensesQuery = query(expensesCollectionRef)
+
+        const membersCollectionRef = collection(groupDocRef, "members")
+        const membersQuery = query(membersCollectionRef)
+
+        const expensesQuerySnapshot = await getDocs(expensesQuery)
+        expensesQuerySnapshot.forEach(async (expenseDoc) => {
+          await deleteDoc(expenseDoc.ref)
+        })
+
+        const membersQuerySnapshot = await getDocs(membersQuery)
+        membersQuerySnapshot.forEach(async (memberDoc) => {
+          await deleteDoc(memberDoc.ref)
+        })
+
         await deleteDoc(groupDocRef)
 
         navigate("/create-group")
@@ -419,68 +434,87 @@ const EditGroupPage = () => {
   }
 
   const handleDeleteExpense = async (expenseId: string) => {
-    try {
-      if (!groupId) {
-        console.error("groupId is undefined")
-        return
-      }
+    const confirmDelete = window.confirm(
+      "Are you sure you want to delete this expense?"
+    )
+    if (confirmDelete) {
+      try {
+        if (!groupId) {
+          console.error("groupId is undefined")
+          return
+        }
 
-      const expenseRef = doc(db, "groups", groupId, "expenses", expenseId)
-      const debtsCollectionRef = collection(expenseRef, "debts")
-      const debtsQuerySnapshot = await getDocs(debtsCollectionRef)
+        const expenseRef = doc(db, "groups", groupId, "expenses", expenseId)
 
-      const batch = writeBatch(db)
+        // Get the expense data to access imageUrls
+        const expenseDocSnapshot = await getDoc(expenseRef)
+        if (expenseDocSnapshot.exists()) {
+          const expenseData = expenseDocSnapshot.data()
 
-      debtsQuerySnapshot.forEach((debtDoc) => {
-        batch.delete(debtDoc.ref)
-      })
+          // Delete associated images
+          for (const imageUrlToDelete of expenseData.imageUrls) {
+            const storage = getStorage()
+            const imageRef = ref(storage, imageUrlToDelete)
+            await deleteObject(imageRef)
+          }
+        }
 
-      await batch.commit()
+        const debtsCollectionRef = collection(expenseRef, "debts")
+        const debtsQuerySnapshot = await getDocs(debtsCollectionRef)
 
-      await deleteDoc(expenseRef)
+        const batch = writeBatch(db)
 
-      setGroupExpenses((prevExpenses) =>
-        prevExpenses.filter((expense) => expense.id !== expenseId)
-      )
-
-      const updatedDebts: GroupDebtProps[] = []
-      groupExpenses
-        .filter((expense) => expense.id !== expenseId)
-        .forEach((expense) => {
-          const sharePerMember = expense.shared
-            ? expense.amount / groupMembers.length
-            : expense.amount
-
-          groupMembers.forEach((member) => {
-            if (member.id !== expense.payerId) {
-              const creditorId = expense.payerId
-              const debtorId = member.id
-
-              const existingDebtIndex = updatedDebts.findIndex(
-                (debt) =>
-                  debt.creditorId === creditorId && debt.debtorId === debtorId
-              )
-
-              if (existingDebtIndex !== -1) {
-                updatedDebts[existingDebtIndex].amount += sharePerMember
-              } else {
-                const debt: GroupDebtProps = {
-                  creditorId,
-                  creditorName: expense.payerName,
-                  debtorId,
-                  debtorName: member.name,
-                  amount: sharePerMember,
-                  expenseId: expense.id,
-                }
-                updatedDebts.push(debt)
-              }
-            }
-          })
+        debtsQuerySnapshot.forEach((debtDoc) => {
+          batch.delete(debtDoc.ref)
         })
 
-      setDebts(updatedDebts)
-    } catch (error) {
-      console.error("Error deleting expense:", error)
+        await batch.commit()
+
+        await deleteDoc(expenseRef)
+
+        setGroupExpenses((prevExpenses) =>
+          prevExpenses.filter((expense) => expense.id !== expenseId)
+        )
+
+        const updatedDebts: GroupDebtProps[] = []
+        groupExpenses
+          .filter((expense) => expense.id !== expenseId)
+          .forEach((expense) => {
+            const sharePerMember = expense.shared
+              ? expense.amount / groupMembers.length
+              : expense.amount
+
+            groupMembers.forEach((member) => {
+              if (member.id !== expense.payerId) {
+                const creditorId = expense.payerId
+                const debtorId = member.id
+
+                const existingDebtIndex = updatedDebts.findIndex(
+                  (debt) =>
+                    debt.creditorId === creditorId && debt.debtorId === debtorId
+                )
+
+                if (existingDebtIndex !== -1) {
+                  updatedDebts[existingDebtIndex].amount += sharePerMember
+                } else {
+                  const debt: GroupDebtProps = {
+                    creditorId,
+                    creditorName: expense.payerName,
+                    debtorId,
+                    debtorName: member.name,
+                    amount: sharePerMember,
+                    expenseId: expense.id,
+                  }
+                  updatedDebts.push(debt)
+                }
+              }
+            })
+          })
+
+        setDebts(updatedDebts)
+      } catch (error) {
+        console.error("Error deleting expense:", error)
+      }
     }
   }
 
@@ -499,7 +533,6 @@ const EditGroupPage = () => {
           newMember={newMember}
           onMemberInputChange={handleMemberInputChange}
           handleAddMember={handleAddMember}
-          handleDeleteMember={handleDeleteMember}
           groupId={groupId}
         />
       )}

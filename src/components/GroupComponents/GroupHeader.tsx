@@ -30,6 +30,7 @@ const GroupHeader: React.FC<GroupHeaderProps> = ({
         placeholder="Enter New Group Name"
         value={newGroupName}
         onChange={onGroupNameChange}
+        maxLength={20}
       />
       <button
         onClick={handleUpdateGroupName}

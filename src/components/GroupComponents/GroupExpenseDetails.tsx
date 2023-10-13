@@ -1,6 +1,14 @@
 import React, { useState, useEffect } from "react"
 import { useParams } from "react-router-dom"
-import { doc, getDoc, updateDoc, deleteDoc } from "firebase/firestore"
+import {
+  doc,
+  getDoc,
+  updateDoc,
+  deleteDoc,
+  collection,
+  getDocs,
+  writeBatch,
+} from "firebase/firestore"
 import {
   getStorage,
   ref,
@@ -44,6 +52,31 @@ const GroupExpenseDetails = () => {
     if (confirmDelete) {
       try {
         const expenseRef = doc(db, "groups", groupId, "expenses", expenseId)
+
+        const expenseDocSnapshot = await getDoc(expenseRef)
+        if (expenseDocSnapshot.exists()) {
+          const expenseData = expenseDocSnapshot.data()
+
+          for (const imageUrlToDelete of expenseData.imageUrls) {
+            const storage = getStorage()
+            const imageRef = ref(storage, imageUrlToDelete)
+            await deleteObject(imageRef)
+          }
+        }
+
+        const debtsCollectionRef = collection(expenseRef, "debts")
+        const debtsQuerySnapshot = await getDocs(debtsCollectionRef)
+
+        const batch = writeBatch(db)
+
+        debtsQuerySnapshot.forEach((debtDoc) => {
+          batch.delete(debtDoc.ref)
+        })
+
+        await batch.commit()
+
+        await deleteDoc(expenseRef)
+        // need to delete firestore document too with this
         await deleteDoc(expenseRef)
         navigate(`/edit-group/${groupId}`)
       } catch (error) {
@@ -51,6 +84,7 @@ const GroupExpenseDetails = () => {
       }
     }
   }
+
 
   const addComment = (comment: string) => {
     if (comment) {
