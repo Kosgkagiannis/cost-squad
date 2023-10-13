@@ -85,7 +85,6 @@ const GroupExpenseDetails = () => {
     }
   }
 
-
   const addComment = (comment: string) => {
     if (comment) {
       const updatedComments = [...expenseData.comments, comment]
@@ -223,6 +222,9 @@ const GroupExpenseDetails = () => {
 
   return (
     <div>
+      <button style={{ background: "red" }} onClick={deleteExpense}>
+        Delete Expense
+      </button>
       <h2>Expense Details</h2>
       <p>Description: {expenseData.description}</p>
       <p>Amount: {expenseData.amount}</p>
@@ -260,7 +262,7 @@ const GroupExpenseDetails = () => {
       <button onClick={() => addComment(commentInput)}>Add Comment</button>
       <br></br>
       <div className="custom-upload-button" onClick={handleCustomUploadClick}>
-        <span>Upload Image</span>
+        <span>Upload Receipt</span>
         <input
           type="file"
           accept="image/*"
@@ -292,7 +294,6 @@ const GroupExpenseDetails = () => {
           ))}
         </div>
       )}
-      <button onClick={deleteExpense}>Delete Expense</button>
     </div>
   )
 }

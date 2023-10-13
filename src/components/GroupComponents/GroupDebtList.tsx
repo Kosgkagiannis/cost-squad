@@ -1,14 +1,45 @@
-import React from "react"
+import React, { useEffect, useState } from "react"
 import GroupDebtProps from "../../types/GroupTypes/GroupDebtProps"
+import { db } from "../../config/firebase"
+import {
+  doc,
+  getDoc,
+  collection,
+  query,
+  where,
+  getDocs,
+} from "firebase/firestore"
 
 interface DebtListProps {
   debts: GroupDebtProps[]
+  groupId: string
 }
 
-const DebtList: React.FC<DebtListProps> = ({ debts }) => {
+const GroupDebtList: React.FC<DebtListProps> = ({ debts, groupId }) => {
+  const [members, setMembers] = useState<{ [key: string]: string }>({})
+
+  // Fetch and store member profile pictures
+  useEffect(() => {
+    const fetchMembers = async () => {
+      const memberCollectionRef = collection(db, "groups", groupId, "members")
+      const memberQuerySnapshot = await getDocs(memberCollectionRef)
+
+      const memberData: { [key: string]: string } = {}
+
+      memberQuerySnapshot.forEach((doc) => {
+        const data = doc.data()
+        memberData[data.name] = data.profilePicture
+      })
+
+      setMembers(memberData)
+    }
+
+    fetchMembers()
+  }, [groupId])
+
   const netDebtsMap = new Map<string, number>()
 
-  // Calculate net debts(if 2 people owe each other we should calculate the net)
+  // Calculate net debts (if 2 people owe each other we should calculate the net)
   debts.forEach((debt) => {
     const creditorKey = `${debt.creditorName}-${debt.debtorName}`
     const debtorKey = `${debt.debtorName}-${debt.creditorName}`
@@ -43,15 +74,42 @@ const DebtList: React.FC<DebtListProps> = ({ debts }) => {
           const direction = amount > 0 ? true : false
           const formattedAmountNumber = parseFloat(formattedAmount)
 
+          const debtorProfileImage = members[debtor] || ""
+          const creditorProfileImage = members[creditor] || ""
+
           return (
             <li key={index}>
-              {!direction
-                ? `${debtor} owes ${creditor} $${Math.abs(
-                    formattedAmountNumber
-                  )}`
-                : `${creditor} owes ${debtor} $${Math.abs(
-                    formattedAmountNumber
-                  )}`}
+              {direction ? (
+                <>
+                  <img
+                    src={creditorProfileImage}
+                    alt={`${creditor}'s Profile`}
+                    className="member-profile-image"
+                  />
+                  {`${creditor} owes ${debtor} `}
+                  <img
+                    src={debtorProfileImage}
+                    alt={`${debtor}'s Profile`}
+                    className="member-profile-image"
+                  />
+                  {"->"} ${Math.abs(formattedAmountNumber)}
+                </>
+              ) : (
+                <>
+                  <img
+                    src={debtorProfileImage}
+                    alt={`${debtor}'s Profile`}
+                    className="member-profile-image"
+                  />
+                  {`${debtor} owes ${creditor} `}
+                  <img
+                    src={creditorProfileImage}
+                    alt={`${creditor}'s Profile`}
+                    className="member-profile-image"
+                  />
+                  {"->"} ${Math.abs(formattedAmountNumber)}
+                </>
+              )}
             </li>
           )
         })}
@@ -60,4 +118,4 @@ const DebtList: React.FC<DebtListProps> = ({ debts }) => {
   )
 }
 
-export default DebtList
+export default GroupDebtList

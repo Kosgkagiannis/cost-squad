@@ -26,7 +26,7 @@ import { User, onAuthStateChanged } from "firebase/auth"
 import GroupHeader from "./GroupHeader"
 import GroupMemberList from "./GroupMemberList"
 import GroupExpenseForm from "./GroupExpenseForm"
-import DebtList from "./GroupDebtList"
+import GroupDebtList from "./GroupDebtList"
 import GroupDebtProps from "../../types/GroupTypes/GroupDebtProps"
 
 const EditGroupPage = () => {
@@ -558,7 +558,7 @@ const EditGroupPage = () => {
           debts={debts}
         />
       )}
-      <DebtList debts={debts} />
+      <GroupDebtList groupId={groupId} debts={debts} />
     </div>
   )
 }
