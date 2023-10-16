@@ -28,6 +28,7 @@ import GroupMemberList from "./GroupMemberList"
 import GroupExpenseForm from "./GroupExpenseForm"
 import GroupDebtList from "./GroupDebtList"
 import GroupDebtProps from "../../types/GroupTypes/GroupDebtProps"
+import GroupUnequalExpenses from "./GroupUnequalDebts"
 
 const EditGroupPage = () => {
   const { groupId }: { groupId?: string } = useParams()
@@ -559,6 +560,8 @@ const EditGroupPage = () => {
         />
       )}
       <GroupDebtList groupId={groupId} debts={debts} />
+
+      <GroupUnequalExpenses />
     </div>
   )
 }

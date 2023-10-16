@@ -1,14 +1,7 @@
 import React, { useEffect, useState } from "react"
 import GroupDebtProps from "../../types/GroupTypes/GroupDebtProps"
 import { db } from "../../config/firebase"
-import {
-  doc,
-  getDoc,
-  collection,
-  query,
-  where,
-  getDocs,
-} from "firebase/firestore"
+import { collection, getDocs } from "firebase/firestore"
 
 interface DebtListProps {
   debts: GroupDebtProps[]
