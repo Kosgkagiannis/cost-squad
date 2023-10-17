@@ -20,11 +20,7 @@ const EditMemberPage = () => {
   const [memberName, setMemberName] = useState("")
   const [profilePicture, setProfilePicture] = useState("")
   const [loading, setLoading] = useState(false)
-  const [imageFile, setImageFile] = useState(null)
 
-  const handleMemberNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setMemberName(e.target.value)
-  }
 
   const handleUpdateMemberName = async () => {
     try {
@@ -176,11 +172,7 @@ const EditMemberPage = () => {
         <>
           <div>
             <h3>{memberName}</h3>
-            <img
-              src={profilePicture}
-              alt="Profile Picture"
-              className="rounded-image"
-            />
+            <img src={profilePicture} alt="Profile" className="rounded-image" />
           </div>
 
           <label className="custom-upload-button">

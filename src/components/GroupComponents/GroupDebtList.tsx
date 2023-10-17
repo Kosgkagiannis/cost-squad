@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react"
+import { VictoryChart, VictoryBar, VictoryAxis, VictoryTheme } from "victory"
 import GroupDebtProps from "../../types/GroupTypes/GroupDebtProps"
 import { db } from "../../config/firebase"
 import { collection, getDocs } from "firebase/firestore"
@@ -56,9 +57,69 @@ const GroupDebtList: React.FC<DebtListProps> = ({ debts, groupId }) => {
     ([, amount]) => amount !== 0
   )
 
+  // calculate total debt for each member after filtering
+  const memberDebts = new Map<string, number>()
+
+  filteredNetDebts.forEach(([debtKey, amount]) => {
+    const [debtor, creditor] = debtKey.split("-")
+    const isCreditor = amount > 0
+    const member = isCreditor ? creditor : debtor
+
+    if (memberDebts.has(member)) {
+      memberDebts.set(member, memberDebts.get(member)! + Math.abs(amount))
+    } else {
+      memberDebts.set(member, Math.abs(amount))
+    }
+  })
+
+  const memberDebtsArray = Array.from(memberDebts).map(
+    ([member, totalDebt]) => ({
+      member,
+      totalDebt,
+    })
+  )
+
+  // need the member names for the X axis
+  const memberNames = Object.keys(members)
+
   return (
     <div>
       <h2>Debts</h2>
+      <VictoryChart
+        domainPadding={20}
+        theme={VictoryTheme.material}
+        width={600}
+        height={400}
+        padding={{ left: 50, top: 30, right: 10, bottom: 40 }}
+      >
+        <VictoryBar
+          data={memberDebtsArray}
+          x="member"
+          y="totalDebt"
+          labels={({ datum }) => `$${datum.totalDebt}`}
+          style={{
+            data: {
+              fill: "#ffffff47",
+              fontWeight: "bold",
+            },
+          }}
+          barWidth={40}
+        />
+        <VictoryAxis
+          tickValues={memberNames}
+          label="Members"
+          style={{
+            axisLabel: { padding: 25, fontWeight: "bold" },
+          }}
+        />
+        <VictoryAxis
+          dependentAxis
+          label="Total Debt"
+          style={{
+            axisLabel: { padding: 40, fontWeight: "bold" },
+          }}
+        />
+      </VictoryChart>
       <ul>
         {filteredNetDebts.map(([debtKey, amount], index) => {
           const [debtor, creditor] = debtKey.split("-")
@@ -66,7 +127,6 @@ const GroupDebtList: React.FC<DebtListProps> = ({ debts, groupId }) => {
 
           const direction = amount > 0 ? true : false
           const formattedAmountNumber = parseFloat(formattedAmount)
-
           const debtorProfileImage = members[debtor] || ""
           const creditorProfileImage = members[creditor] || ""
 
@@ -112,3 +172,23 @@ const GroupDebtList: React.FC<DebtListProps> = ({ debts, groupId }) => {
 }
 
 export default GroupDebtList
+/*
+e2 owes e3 10
+e1 owes e1 10
+-
+300 by e1
+e3 owes e1 90
+e2 owes e3 10
+e2 owes e1 100
+-
+3000 by e2
+e3 owes e2 990
+e3 owes e1 90
+e1 owes e2 900
+/graph 1080 e3,e1 900
+-
+30 by e3
+e3 owes e2 980
+e3 owes e1 80
+e1 owes e2 900
+*/
