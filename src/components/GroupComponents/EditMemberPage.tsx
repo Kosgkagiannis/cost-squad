@@ -12,6 +12,7 @@ import {
 import { db } from "../../config/firebase"
 import { useNavigate } from "react-router-dom"
 import { ref, uploadBytes, getDownloadURL, getStorage } from "firebase/storage"
+import LoadingSpinner from "../GlobalComponents/LoadingSpinner"
 
 const EditMemberPage = () => {
   const navigate = useNavigate()
@@ -20,7 +21,6 @@ const EditMemberPage = () => {
   const [memberName, setMemberName] = useState("")
   const [profilePicture, setProfilePicture] = useState("")
   const [loading, setLoading] = useState(false)
-
 
   const handleUpdateMemberName = async () => {
     try {
@@ -63,12 +63,12 @@ const EditMemberPage = () => {
             const debtData = debtDoc.data()
             if (debtData.creditorId === memberId) {
               debtData.creditorName = memberName
+              await updateDoc(debtDoc.ref, debtData)
             }
             if (debtData.debtorId === memberId) {
               debtData.debtorName = memberName
+              await updateDoc(debtDoc.ref, debtData)
             }
-
-            await updateDoc(debtDoc.ref, debtData)
           })
         })
 
@@ -141,8 +141,10 @@ const EditMemberPage = () => {
 
   const handleDeleteMember = async (memberId: string) => {
     const confirmed = window.confirm(
-      "Are you sure you want to delete this member?"
+      "Are you sure you want to delete this member?\nNote: All debts from and to this member will also be cleared."
     )
+    console.log("memberId: ", memberId)
+
     if (confirmed) {
       try {
         if (!groupId) {
@@ -152,11 +154,39 @@ const EditMemberPage = () => {
 
         const memberDocRef = doc(db, "groups", groupId, "members", memberId)
         await deleteDoc(memberDocRef)
+
+        const expensesCollectionRef = collection(
+          db,
+          "groups",
+          groupId,
+          "expenses"
+        )
+        const expensesQuery = query(expensesCollectionRef)
+        const querySnapshot = await getDocs(expensesQuery)
+
+        querySnapshot.forEach(async (doc) => {
+          const expenseData = doc.data()
+          const debtsCollectionRef = collection(doc.ref, "debts")
+          const debtsQuery = query(debtsCollectionRef)
+          const debtsQuerySnapshot = await getDocs(debtsQuery)
+
+          debtsQuerySnapshot.forEach(async (debtDoc) => {
+            const debtData = debtDoc.data()
+            console.log("debtdata: ", debtData)
+
+            if (
+              debtData.creditorId === memberId ||
+              debtData.debtorId === memberId
+            ) {
+              await deleteDoc(debtDoc.ref)
+            }
+          })
+        })
+
+        navigate(`/edit-group/${groupId}`)
       } catch (error) {
         console.error("Error deleting group member:", error)
       }
-
-      navigate(`/edit-group/${groupId}`)
     }
   }
 
@@ -167,7 +197,7 @@ const EditMemberPage = () => {
       </button>{" "}
       <h2>Edit Member Info</h2>
       {loading ? (
-        <p>Loading...</p>
+        <LoadingSpinner />
       ) : (
         <>
           <div>

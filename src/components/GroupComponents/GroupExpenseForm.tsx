@@ -79,7 +79,7 @@ const GroupExpenseForm: React.FC<GroupExpenseFormProps> = ({
         Add Expense
       </button>
       <div>
-        <h2>Group Expenses</h2>
+        <h2>Expenses History</h2>
         <ul>
           {groupExpenses.map((expense) => (
             <li key={expense.id}>

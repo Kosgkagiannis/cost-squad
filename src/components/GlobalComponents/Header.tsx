@@ -13,19 +13,24 @@ function Header({ handleLogout }: HeaderProps) {
     <>
       <div className="header">
         <div className="navigation">
-          <Link to="/">Home</Link>
-          <Link to="/create-group">Groups</Link>
-          <Link to="/quick-expense">Quick Expense</Link>
-          <span className="nav-right">
+          <Link to="/">
+            <h1 className="header-title">CostSquad</h1>
+          </Link>
+        </div>
+        <div>
+          <div className="header-items">
+            <Link to="/create-group">Groups</Link>
+            <Link to="/quick-expense">Quick Expense</Link>
             <Link to="#" onClick={handleGoBack}>
               Back
             </Link>
+          </div>
+          <div className="header-items">
             <a href="/cost-squad" onClick={handleLogout}>
               Logout
             </a>
-          </span>
+          </div>
         </div>
-        <h1 className="header-title">CostSquad</h1>
       </div>
     </>
   )

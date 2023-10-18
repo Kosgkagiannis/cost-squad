@@ -81,26 +81,47 @@ const GroupDebtList: React.FC<DebtListProps> = ({ debts, groupId }) => {
 
   // need the member names for the X axis
   const memberNames = Object.keys(members)
+  memberNames.unshift("")
 
   return (
     <div>
       <h2>Debts</h2>
       <VictoryChart
         domainPadding={20}
-        theme={VictoryTheme.material}
         width={600}
         height={400}
-        padding={{ left: 50, top: 30, right: 10, bottom: 40 }}
+        padding={{ left: 75, top: 75, right: 75, bottom: 75 }}
       >
         <VictoryBar
           data={memberDebtsArray}
           x="member"
           y="totalDebt"
-          labels={({ datum }) => `$${datum.totalDebt}`}
+          labels={({ datum }) => {
+            const label = `$${
+              datum.totalDebt % 1 === 0
+                ? datum.totalDebt.toFixed(0)
+                : datum.totalDebt.toFixed(2)
+            }`
+            const maxLabelLength = 8
+            return label.length > maxLabelLength
+              ? label.substring(0, maxLabelLength) +
+                  "\n" +
+                  label.substring(maxLabelLength)
+              : label
+          }}
           style={{
             data: {
-              fill: "#ffffff47",
+              fill: "#007bff",
+              fillOpacity: 0.7,
+              strokeWidth: 2,
+            },
+            labels: {
               fontWeight: "bold",
+              fontSize: "14px",
+              fill: "black",
+              padding: 8,
+              background: "rgba(255, 255, 255, 0.7)",
+              borderRadius: 4,
             },
           }}
           barWidth={40}
@@ -109,14 +130,22 @@ const GroupDebtList: React.FC<DebtListProps> = ({ debts, groupId }) => {
           tickValues={memberNames}
           label="Members"
           style={{
-            axisLabel: { padding: 25, fontWeight: "bold" },
+            axis: { stroke: "#ccc", strokeWidth: 2 },
+            axisLabel: { padding: 35, fontWeight: "bold" },
+            tickLabels: {
+              fontWeight: "bold",
+            },
           }}
         />
         <VictoryAxis
           dependentAxis
           label="Total Debt"
           style={{
-            axisLabel: { padding: 40, fontWeight: "bold" },
+            axis: { stroke: "#ccc", strokeWidth: 2 },
+            axisLabel: { padding: 50, fontWeight: "bold" },
+            tickLabels: {
+              fontWeight: "bold",
+            },
           }}
         />
       </VictoryChart>

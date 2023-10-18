@@ -11,6 +11,8 @@ import { auth, db } from "../../config/firebase"
 import { User, onAuthStateChanged } from "firebase/auth"
 import GroupProps from "../../types/GroupTypes/GroupProps"
 import { Link } from "react-router-dom"
+import LoadingSpinner from "../GlobalComponents/LoadingSpinner"
+
 
 const GroupCreationForm = () => {
   const [groupName, setGroupName] = useState("")
@@ -102,7 +104,7 @@ const GroupCreationForm = () => {
 
       <h3>Your Groups</h3>
       {isLoading ? (
-        <p>Loading...</p>
+        <LoadingSpinner />
       ) : (
         <ul>
           {userGroups.map((group) => (

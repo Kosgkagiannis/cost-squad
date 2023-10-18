@@ -28,6 +28,7 @@ import GroupMemberList from "./GroupMemberList"
 import GroupExpenseForm from "./GroupExpenseForm"
 import GroupDebtList from "./GroupDebtList"
 import GroupDebtProps from "../../types/GroupTypes/GroupDebtProps"
+import LoadingSpinner from "../GlobalComponents/LoadingSpinner"
 
 const EditGroupPage = () => {
   const { groupId }: { groupId?: string } = useParams()
@@ -45,6 +46,7 @@ const EditGroupPage = () => {
   const [debts, setDebts] = useState<GroupDebtProps[]>([])
   const [imageFileName, setImageFileName] = useState<string | null>(null)
   const [imageFile, setImageFile] = useState<null | File>(null)
+  const [loading, setLoading] = useState(true)
   const navigate = useNavigate()
   const storage = getStorage()
 
@@ -86,7 +88,7 @@ const EditGroupPage = () => {
 
       if (memberDocSnapshot.exists()) {
         const memberData = memberDocSnapshot.data()
-        setSelectedMemberId(memberData.memberId)
+        setSelectedMemberId(memberDocSnapshot.id)
         setSelectedMember(memberData.name)
       } else {
         console.error("Selected member document does not exist.")
@@ -108,8 +110,13 @@ const EditGroupPage = () => {
     setDescription(e.target.value)
   }
 
-  const handleAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setAmount(e.target.value)
+  const handleAmountChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const inputValue = event.target.value
+    const maxAmountLength = 11
+
+    if (inputValue.length <= maxAmountLength) {
+      setAmount(inputValue)
+    }
   }
 
   const handleSharedChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -167,6 +174,7 @@ const EditGroupPage = () => {
           console.error("groupId is undefined")
           return
         }
+        setLoading(true)
 
         const expensesCollectionRef = collection(
           db,
@@ -195,6 +203,7 @@ const EditGroupPage = () => {
         }
 
         setDebts(allDebtsData)
+        setLoading(false)
       } catch (error) {
         console.error("Error fetching expenses and debts:", error)
       }
@@ -233,7 +242,7 @@ const EditGroupPage = () => {
         console.error("groupId is undefined")
         return
       }
-
+      setLoading(true)
       const groupDocRef = doc(db, "groups", groupId)
       const groupDocSnapshot = await getDoc(groupDocRef)
 
@@ -251,8 +260,8 @@ const EditGroupPage = () => {
           id: doc.id,
           ...doc.data(),
         }))
-
         setGroupMembers(membersData)
+        setLoading(false)
       } catch (error) {
         console.error("Error fetching group members:", error)
       }
@@ -520,45 +529,51 @@ const EditGroupPage = () => {
 
   return (
     <div>
-      <GroupHeader
-        groupTitle={groupTitle}
-        newGroupName={newGroupName}
-        onGroupNameChange={handleGroupNameChange}
-        handleUpdateGroupName={handleUpdateGroupName}
-        onDeleteGroup={onDeleteGroup}
-      />
-      {groupId && (
-        <GroupMemberList
-          groupMembers={groupMembers}
-          newMember={newMember}
-          onMemberInputChange={handleMemberInputChange}
-          handleAddMember={handleAddMember}
-          groupId={groupId}
-        />
+      {loading ? (
+        <LoadingSpinner />
+      ) : (
+        <>
+          <GroupHeader
+            groupTitle={groupTitle}
+            newGroupName={newGroupName}
+            onGroupNameChange={handleGroupNameChange}
+            handleUpdateGroupName={handleUpdateGroupName}
+            onDeleteGroup={onDeleteGroup}
+          />
+          {groupId && (
+            <GroupMemberList
+              groupMembers={groupMembers}
+              newMember={newMember}
+              onMemberInputChange={handleMemberInputChange}
+              handleAddMember={handleAddMember}
+              groupId={groupId}
+            />
+          )}
+          {groupId && (
+            <GroupExpenseForm
+              description={description}
+              amount={amount}
+              shared={shared}
+              selectedMember={selectedMember}
+              selectedMemberId={selectedMemberId}
+              groupMembers={groupMembers}
+              groupId={groupId}
+              groupExpenses={groupExpenses}
+              handleDescriptionChange={handleDescriptionChange}
+              handleAmountChange={handleAmountChange}
+              handleSharedChange={handleSharedChange}
+              handleSelectedMemberChange={handleSelectedMemberChange}
+              handleAddExpense={handleAddExpense}
+              handleDeleteExpense={handleDeleteExpense}
+              imageFile={imageFile}
+              imageFileName={imageFileName}
+              handleImageChange={handleImageChange}
+              debts={debts}
+            />
+          )}
+          <GroupDebtList groupId={groupId} debts={debts} />
+        </>
       )}
-      {groupId && (
-        <GroupExpenseForm
-          description={description}
-          amount={amount}
-          shared={shared}
-          selectedMember={selectedMember}
-          selectedMemberId={selectedMemberId}
-          groupMembers={groupMembers}
-          groupId={groupId}
-          groupExpenses={groupExpenses}
-          handleDescriptionChange={handleDescriptionChange}
-          handleAmountChange={handleAmountChange}
-          handleSharedChange={handleSharedChange}
-          handleSelectedMemberChange={handleSelectedMemberChange}
-          handleAddExpense={handleAddExpense}
-          handleDeleteExpense={handleDeleteExpense}
-          imageFile={imageFile}
-          imageFileName={imageFileName}
-          handleImageChange={handleImageChange}
-          debts={debts}
-        />
-      )}
-      <GroupDebtList groupId={groupId} debts={debts} />
     </div>
   )
 }
