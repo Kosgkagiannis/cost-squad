@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react"
-import { HashRouter as Router, Route, Link, Routes } from "react-router-dom" // Import useHistory
+import { HashRouter as Router, Route, Link, Routes } from "react-router-dom"
 import "./App.css"
 import { User, onAuthStateChanged } from "firebase/auth"
 import { auth, db } from "./config/firebase"
@@ -17,6 +17,8 @@ import CreateGroupPage from "./components/GroupComponents/CreateGroupPage"
 import EditGroupPage from "./components/GroupComponents/EditGroupPage"
 import EditMemberPage from "./components/GroupComponents/EditMemberPage"
 import GroupExpenseDetails from "./components/GroupComponents/GroupExpenseDetails"
+import Groups from "./images/groups.png"
+import QuickExpense from "./images/quick-expense.png"
 
 function App() {
   const [user, setUser] = useState<User | null>(null)
@@ -92,15 +94,27 @@ function App() {
                   <h3 className="questions">
                     You can do that by creating a group:
                   </h3>
-                  <Link to="/create-group">
-                    <button>Go to Groups</button>
+                  <Link to="/create-group" style={{ textDecoration: "none" }}>
+                    <button className="button-content">
+                      Go to Groups
+                      <img src={Groups} height={30} width={30} alt="Groups" />
+                    </button>
                   </Link>
+
                   <div className="divider" />
                   <h2 className="questions">
                     Want to add a quick expense between 2 people?
                   </h2>
-                  <Link to="/quick-expense">
-                    <button>Go to QuickExpense</button>
+                  <Link to="/quick-expense" style={{ textDecoration: "none" }}>
+                    <button className="button-content">
+                      Go to QuickExpense
+                      <img
+                        src={QuickExpense}
+                        height={30}
+                        width={30}
+                        alt="Groups"
+                      />
+                    </button>
                   </Link>
                 </div>
               ) : (

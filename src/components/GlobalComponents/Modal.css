@@ -1,0 +1,36 @@
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0, 0, 0, 0.7);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .modal-content {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    margin-inline: 10px;
+    background-color: #00a3ff;
+    padding: 20px;
+    border: 1px solid #888;
+    max-width: 400px;
+    border-radius: 5px;
+    position: relative;
+  }
+
+  .close {
+    position: absolute;
+    right: 10px;
+    top: 5px;
+    color: white;
+    font-size: 24px;
+    cursor: pointer;
+  }

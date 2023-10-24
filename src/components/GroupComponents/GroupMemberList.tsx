@@ -23,30 +23,31 @@ const GroupMemberList: React.FC<GroupMemberListProps> = ({
         Add Member
       </button>
       <h2>Members</h2>
-      <ul>
-        {groupMembers
-          .filter((member) => member.name && member.name.trim() !== "")
-          .map((member) => (
-            <li key={member.id} className="member-list-item">
-              <div className="mobile-profile">
-                <img
-                  src={member.profilePicture}
-                  alt={member.name}
-                  className="member-profile-image"
-                />
-                <span className="member-name">{member.name}</span>
-              </div>
-              <div className="mobile-actions">
+      <div>
+        <ul className="ul-members">
+          {groupMembers
+            .filter((member) => member.name && member.name.trim() !== "")
+            .map((member) => (
+              <li key={member.id} className="member-list-item">
                 <Link
-                  className="edit-button"
+                  style={{ textDecoration: "none", color: "black" }}
                   to={`/edit-member/${groupId}/${member.id}`}
                 >
-                  Edit
+                  <div className="mobile-profile">
+                    <div className="member-box">
+                      <img
+                        src={member.profilePicture}
+                        alt={member.name}
+                        className="member-profile-image"
+                      />
+                      <span className="member-name">{member.name}</span>
+                    </div>
+                  </div>
                 </Link>
-              </div>
-            </li>
-          ))}
-      </ul>
+              </li>
+            ))}
+        </ul>
+      </div>
     </div>
   )
 }

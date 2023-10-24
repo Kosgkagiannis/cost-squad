@@ -6,7 +6,8 @@ import {
   signInWithPopup,
   onAuthStateChanged,
 } from "firebase/auth"
-import googleIcon from "../../images/google.jpg"
+import "./Login-Register.css"
+import SignupForm from "./SignUpForm"
 
 interface LoginRegisterProps {
   onUserLogin: () => void
@@ -16,9 +17,14 @@ const LoginRegister: React.FC<LoginRegisterProps> = ({ onUserLogin }) => {
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [error, setError] = useState<string | null>(null)
+  const [showModal, setShowModal] = useState(false)
 
   const clearError = () => {
     setError(null)
+  }
+
+  const toggleModal = () => {
+    setShowModal(!showModal)
   }
 
   const signInWithEmail = async () => {
@@ -31,36 +37,18 @@ const LoginRegister: React.FC<LoginRegisterProps> = ({ onUserLogin }) => {
     }
   }
 
- const signInWithGoogle = async () => {
-   try {
-     clearError()
-     await signInWithPopup(auth, googleProvider)
-     onUserLogin()
-   } catch (err: any) {
-     setError(err.message)
-   }
- }
+  onAuthStateChanged(auth, (user) => {
+    if (user) {
+      onUserLogin()
+    } else {
+    }
+  })
 
- // Check here if the user is already authenticated on page load
- onAuthStateChanged(auth, (user) => {
-   if (user) {
-     onUserLogin()
-   } else {
-   }
- })
-
- const signUpWithEmail = async () => {
-   try {
-     clearError()
-     await createUserWithEmailAndPassword(auth, email, password)
-     onUserLogin()
-   } catch (err: any) {
-     setError(err.message)
-   }
- }
   return (
     <div className="login-content">
-      <h1 className="header-title">CostSquad</h1>
+      <div className="header">
+        <h1 className="header-title">CostSquad</h1>
+      </div>
       <h2>Log In</h2>
       <input
         className="login-input"
@@ -77,26 +65,28 @@ const LoginRegister: React.FC<LoginRegisterProps> = ({ onUserLogin }) => {
       {error && <p className="error-message">{error}</p>}
 
       <h2 style={{ marginBlockStart: "10px" }}>
-        Don't have an account? Sign up here
+        Don't have an account? Sign up{" "}
+        <span
+          className="signup-link"
+          onClick={toggleModal}
+          style={{
+            textDecoration: "underline",
+            color: "blue",
+            cursor: "pointer",
+          }}
+        >
+          here
+        </span>
       </h2>
-      <input
-        className="login-input"
-        placeholder="Email..."
-        onChange={(e) => setEmail(e.target.value)}
-      />
-      <input
-        className="login-input"
-        placeholder="Password..."
-        type="password"
-        onChange={(e) => setPassword(e.target.value)}
-      />
-      <button onClick={signUpWithEmail}>Sign Up</button>
-      <h2>Or sign up with Google</h2>
-      <div className="google-signup">
-        <button onClick={signInWithGoogle}>
-          <img src={googleIcon} alt="Google Icon" /> Sign Up With Google
-        </button>
-      </div>
+      {showModal && (
+        <SignupForm
+          onClose={toggleModal}
+          onSignup={() => {
+            toggleModal()
+          }}
+          onUserLogin={onUserLogin}
+        />
+      )}
     </div>
   )
 }
