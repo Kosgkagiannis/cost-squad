@@ -31,6 +31,7 @@ const GroupExpenseForm: React.FC<GroupExpenseFormProps> = ({
         placeholder="Description"
         value={description}
         onChange={handleDescriptionChange}
+        maxLength={20}
       />
       <input
         type="number"
@@ -80,21 +81,15 @@ const GroupExpenseForm: React.FC<GroupExpenseFormProps> = ({
       </button>
       <div>
         <h2>Expenses History</h2>
-        <ul>
+        <ul className="expense-list">
           {groupExpenses.map((expense) => (
-            <li key={expense.id}>
+            <li key={expense.id} className="expense-item">
               <p>Description: {expense.description}</p>
               <p>Amount: {expense.amount}</p>
               <p>Paid By: {expense.payerName}</p>
-              <Link
-                className="edit-button"
-                to={`/expense-details/${groupId}/${expense.id}`}
-              >
-                View Expense Details
+              <Link to={`/expense-details/${groupId}/${expense.id}`}>
+                Details
               </Link>
-              <button onClick={() => handleDeleteExpense(expense.id)}>
-                Delete
-              </button>
             </li>
           ))}
         </ul>

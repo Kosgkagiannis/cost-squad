@@ -90,7 +90,7 @@ const GroupDebtList: React.FC<DebtListProps> = ({ debts, groupId }) => {
         domainPadding={20}
         width={600}
         height={400}
-        padding={{ left: 75, top: 75, right: 75, bottom: 75 }}
+        padding={{ left: 100, top: 55, right: 45, bottom: 105 }}
       >
         <VictoryBar
           data={memberDebtsArray}
@@ -112,28 +112,29 @@ const GroupDebtList: React.FC<DebtListProps> = ({ debts, groupId }) => {
           style={{
             data: {
               fill: "#007bff",
-              fillOpacity: 0.7,
+              fillOpacity: 0.6,
               strokeWidth: 2,
             },
             labels: {
-              fontWeight: "bold",
-              fontSize: "14px",
+              fontSize: "12px",
               fill: "black",
+              angle: -45,
+              textAnchor: "start",
               padding: 8,
-              background: "rgba(255, 255, 255, 0.7)",
-              borderRadius: 4,
             },
           }}
           barWidth={40}
         />
         <VictoryAxis
           tickValues={memberNames}
-          label="Members"
+          label=""
           style={{
             axis: { stroke: "#ccc", strokeWidth: 2 },
             axisLabel: { padding: 35, fontWeight: "bold" },
             tickLabels: {
-              fontWeight: "bold",
+              fontSize: 12,
+              angle: -45,
+              textAnchor: "end",
             },
           }}
         />
@@ -142,14 +143,16 @@ const GroupDebtList: React.FC<DebtListProps> = ({ debts, groupId }) => {
           label="Total Debt"
           style={{
             axis: { stroke: "#ccc", strokeWidth: 2 },
-            axisLabel: { padding: 50, fontWeight: "bold" },
+            axisLabel: { padding: 5, fontWeight: "bold" },
             tickLabels: {
-              fontWeight: "bold",
+              fontWeight: "",
+              padding: 30,
+              fontSize: 11,
             },
           }}
         />
       </VictoryChart>
-      <ul>
+      <ul className="styled-list">
         {filteredNetDebts.map(([debtKey, amount], index) => {
           const [debtor, creditor] = debtKey.split("-")
           const formattedAmount = amount.toFixed(2)
@@ -160,36 +163,54 @@ const GroupDebtList: React.FC<DebtListProps> = ({ debts, groupId }) => {
           const creditorProfileImage = members[creditor] || ""
 
           return (
-            <li key={index}>
+            <li key={index} className="styled-list-item">
               {direction ? (
                 <>
-                  <img
-                    src={creditorProfileImage}
-                    alt={`${creditor}'s Profile`}
-                    className="member-profile-image"
-                  />
-                  {`${creditor} owes ${debtor} `}
-                  <img
-                    src={debtorProfileImage}
-                    alt={`${debtor}'s Profile`}
-                    className="member-profile-image"
-                  />
-                  {"->"} ${Math.abs(formattedAmountNumber)}
+                  <div className="image-container">
+                    <img
+                      src={creditorProfileImage}
+                      alt={`${creditor}'s Profile`}
+                      className="member-profile-image"
+                    />
+                    {creditor}
+                  </div>
+                  <div className="text-debt-container">owes</div>
+                  <div className="image-container">
+                    <img
+                      src={debtorProfileImage}
+                      alt={`${debtor}'s Profile`}
+                      className="member-profile-image"
+                    />
+                    {debtor}
+                  </div>
+                  <div className="text-debt-container">
+                    <div className="custom-arrow"></div> $
+                    {Math.abs(formattedAmountNumber)}
+                  </div>
                 </>
               ) : (
                 <>
-                  <img
-                    src={debtorProfileImage}
-                    alt={`${debtor}'s Profile`}
-                    className="member-profile-image"
-                  />
-                  {`${debtor} owes ${creditor} `}
-                  <img
-                    src={creditorProfileImage}
-                    alt={`${creditor}'s Profile`}
-                    className="member-profile-image"
-                  />
-                  {"->"} ${Math.abs(formattedAmountNumber)}
+                  <div className="image-container">
+                    <img
+                      src={debtorProfileImage}
+                      alt={`${debtor}'s Profile`}
+                      className="member-profile-image"
+                    />
+                    {debtor}
+                  </div>
+                  <div className="text-debt-container">owes</div>
+                  <div className="image-container">
+                    <img
+                      src={creditorProfileImage}
+                      alt={`${creditor}'s Profile`}
+                      className="member-profile-image"
+                    />
+                    {creditor}
+                  </div>
+                  <div className="text-debt-container">
+                    <div className="custom-arrow"></div>$
+                    {Math.abs(formattedAmountNumber)}
+                  </div>
                 </>
               )}
             </li>

@@ -64,7 +64,7 @@ const LoginRegister: React.FC<LoginRegisterProps> = ({ onUserLogin }) => {
       <button onClick={signInWithEmail}>Log in</button>
       {error && <p className="error-message">{error}</p>}
 
-      <h2 style={{ marginBlockStart: "10px" }}>
+      <p style={{ marginBlockStart: "20px" }}>
         Don't have an account? Sign up{" "}
         <span
           className="signup-link"
@@ -77,7 +77,7 @@ const LoginRegister: React.FC<LoginRegisterProps> = ({ onUserLogin }) => {
         >
           here
         </span>
-      </h2>
+      </p>
       {showModal && (
         <SignupForm
           onClose={toggleModal}
