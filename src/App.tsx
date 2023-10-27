@@ -19,6 +19,7 @@ import EditMemberPage from "./components/GroupComponents/EditMemberPage"
 import GroupExpenseDetails from "./components/GroupComponents/GroupExpenseDetails"
 import Groups from "./images/groups.png"
 import QuickExpense from "./images/quick-expense.png"
+import QuickExpenseDetails from "./components/QuickExpenseComponents/QuickExpenseDetails"
 
 function App() {
   const [user, setUser] = useState<User | null>(null)
@@ -123,6 +124,10 @@ function App() {
             }
           />
           <Route path="/quick-expense" element={<QuickExpenseComponent />} />
+          <Route
+            path="/quick-expense/:expenseId"
+            element={<QuickExpenseDetails />}
+          />
           <Route path="/create-group" element={<CreateGroupPage />} />
           <Route path="/edit-group/:groupId" element={<EditGroupPage />} />
           <Route
