@@ -4,20 +4,23 @@ import {
   addDoc,
   deleteDoc,
   getDocs,
-  query,
   doc,
+  query,
+  where,
 } from "firebase/firestore"
-import { db } from "../../config/firebase"
+import { auth, db } from "../../config/firebase"
 import { allCurrencies } from "../GlobalComponents/currencies"
 import { useNavigate } from "react-router-dom"
+import LoadingSpinner from "../GlobalComponents/LoadingSpinner"
 
 interface Expense {
-  id: string
+  id?: string
   person1: string
   person2: string
   description: string
   amount: number
   currency: string
+  userId: string
 }
 
 const QuickExpense: React.FC = () => {
@@ -32,6 +35,7 @@ const QuickExpense: React.FC = () => {
   const [amountError, setAmountError] = useState<string>("")
   const [errorMessage, setErrorMessage] = useState<string>("")
   const [currencyError, setCurrencyError] = useState<string>("")
+  const [loading, setLoading] = useState(true)
   const navigate = useNavigate()
 
   const expensesCollection = collection(db, "expenses2")
@@ -59,61 +63,69 @@ const QuickExpense: React.FC = () => {
     }
 
     if (!currency) {
-      // Check if currency is empty
       setCurrencyError("Please select a currency")
       return
     }
 
-    // Check if the currency matches for previous expenses between the same people
-    const matchingExpenses = expenses.filter(
-      (expense) =>
-        (expense.person1 === person1 && expense.person2 === person2) ||
-        (expense.person1 === person2 && expense.person2 === person1)
-    )
-
-    if (
-      matchingExpenses.length > 0 &&
-      matchingExpenses[0].currency !== currency
-    ) {
-      setErrorMessage(
-        "Currency not the same as the one used in the previous expense!"
+    const user = auth.currentUser
+    if (user) {
+      // Check if the currency matches for previous expenses between the same people
+      const matchingExpenses = expenses.filter(
+        (expense) =>
+          (expense.person1 === person1 && expense.person2 === person2) ||
+          (expense.person1 === person2 && expense.person2 === person1)
       )
-      return
-    }
 
-    const newExpense: Expense = {
-      person1,
-      person2,
-      description,
-      amount,
-      currency,
-    }
+      if (
+        matchingExpenses.length > 0 &&
+        matchingExpenses[0].currency !== currency
+      ) {
+        setErrorMessage(
+          "Currency not the same as the one used in the previous expense!"
+        )
+        return
+      }
 
-    try {
-      const docRef = await addDoc(expensesCollection, newExpense)
-      setExpenses([...expenses, { id: docRef.id, ...newExpense }])
-      setPerson1("")
-      setPerson2("")
-      setDescription("")
-      setAmount(0)
-      setErrorMessage("")
-      setCurrencyError("")
-      fetchExpensesAndCalculateDebts()
-    } catch (error) {
-      console.error("Error adding expense: ", error)
+      const newExpense: Expense = {
+        person1,
+        person2,
+        description,
+        amount,
+        currency,
+        userId: user.uid,
+      }
+
+      try {
+        const docRef = await addDoc(expensesCollection, newExpense)
+        setExpenses([...expenses, { id: docRef.id, ...newExpense }])
+        setPerson1("")
+        setPerson2("")
+        setDescription("")
+        setAmount(0)
+        setErrorMessage("")
+        setCurrencyError("")
+        fetchExpensesAndCalculateDebts(user.uid)
+      } catch (error) {
+        console.error("Error adding expense: ", error)
+      }
     }
   }
 
   const fetchExpensesAndCalculateDebts = async () => {
-    const querySnapshot = await getDocs(expensesCollection)
-    const expensesData: Expense[] = []
-    querySnapshot.forEach((doc) => {
-      expensesData.push({ id: doc.id, ...doc.data() })
-    })
+    const user = auth.currentUser
+    if (user) {
+      const userId = user.uid
+      const q = query(expensesCollection, where("userId", "==", userId))
+      const querySnapshot = await getDocs(q)
+      const expensesData: Expense[] = []
+      querySnapshot.forEach((doc) => {
+        expensesData.push({ id: doc.id, ...doc.data() })
+      })
 
-    setExpenses(expensesData)
-    const netDebts = calculateNetDebts(expensesData)
-    updateNetDebtsUI(netDebts)
+      setExpenses(expensesData)
+      const netDebts = calculateNetDebts(expensesData)
+      updateNetDebtsUI(netDebts)
+    }
   }
 
   function capitalizeName(name: string) {
@@ -178,69 +190,88 @@ const QuickExpense: React.FC = () => {
         : "No debts between people"
     }
   }
+  useEffect(() => {
+    const unsubscribe = auth.onAuthStateChanged((user) => {
+      if (user) {
+        fetchExpensesAndCalculateDebts().then(() => setLoading(false))
+      }
+    })
+
+    return () => unsubscribe()
+  }, [])
 
   useEffect(() => {
-    fetchExpensesAndCalculateDebts()
+    const user = auth.currentUser
+
+    if (user) {
+      fetchExpensesAndCalculateDebts()
+    }
   }, [])
 
   return (
     <div>
-      <div>
-        <br></br>
-        <label htmlFor="person1">Person 1:</label>
-        <input
-          type="text"
-          id="person1"
-          value={person1}
-          onChange={(e) => setPerson1(e.target.value)}
-          required
-        />
-        {person1Error && <p className="error-message">{person1Error}</p>}
-        <label htmlFor="person2">Person 2:</label>
-        <input
-          type="text"
-          id="person2"
-          value={person2}
-          onChange={(e) => setPerson2(e.target.value)}
-          required
-        />
-        {person2Error && <p className="error-message">{person2Error}</p>}
-        <label htmlFor="description">Description (optional):</label>
-        <input
-          type="text"
-          id="description"
-          value={description}
-          onChange={(e) => setDescription(e.target.value)}
-          required
-        />
-        <label htmlFor="amount">Amount:</label>
-        <input
-          type="number"
-          id="amount"
-          value={amount}
-          onChange={(e) => setAmount(parseFloat(e.target.value))}
-          required
-        />
-        {amountError && <p className="error-message">{amountError}</p>}
-        {errorMessage && <p className="error-message">{errorMessage}</p>}
-        {currencyError && <p className="error-message">{currencyError}</p>}{" "}
-        <label htmlFor="currency">Currency:</label>
-        <select
-          id="currency"
-          value={currency}
-          onChange={(e) => setCurrency(e.target.value)}
-        >
-          <option>Select a currency</option>
-          {allCurrencies.map((currencyOption, index) => (
-            <option key={index} value={currencyOption.code}>
-              {currencyOption.code} ({currencyOption.symbol})
-            </option>
-          ))}
-        </select>
-        <button type="button" onClick={handleAddExpense}>
-          Add Expense
-        </button>
-      </div>
+      {loading ? (
+        <LoadingSpinner />
+      ) : (
+        <div>
+          <br></br>
+          <label htmlFor="person1">Person 1:</label>
+          <input
+            type="text"
+            id="person1"
+            value={person1}
+            onChange={(e) => setPerson1(e.target.value)}
+            required
+          />
+          {person1Error && <p className="error-message">{person1Error}</p>}
+          <label htmlFor="person2">Person 2:</label>
+          <input
+            type="text"
+            id="person2"
+            value={person2}
+            onChange={(e) => setPerson2(e.target.value)}
+            required
+          />
+          {person2Error && <p className="error-message">{person2Error}</p>}
+          <label htmlFor="description">Description (optional):</label>
+          <input
+            type="text"
+            id="description"
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+            required
+          />
+          <label htmlFor="amount">Amount:</label>
+          <input
+            type="number"
+            id="amount"
+            value={amount}
+            onChange={(e) => setAmount(parseFloat(e.target.value))}
+            required
+          />
+          {amountError && <p className="error-message">{amountError}</p>}
+          {errorMessage && <p className="error-message">{errorMessage}</p>}
+          {currencyError && (
+            <p className="error-message">{currencyError}</p>
+          )}{" "}
+          <label htmlFor="currency">Currency:</label>
+          <select
+            id="currency"
+            value={currency}
+            onChange={(e) => setCurrency(e.target.value)}
+          >
+            <option>Select a currency</option>
+            {allCurrencies.map((currencyOption, index) => (
+              <option key={index} value={currencyOption.code}>
+                {currencyOption.code} ({currencyOption.symbol})
+              </option>
+            ))}
+          </select>
+          <button type="button" onClick={handleAddExpense}>
+            Add Expense
+          </button>
+        </div>
+      )}
       <div>
         <h2>Net Debts</h2>
         <div id="netDebts"></div>
