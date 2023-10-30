@@ -194,11 +194,14 @@ const QuickExpense: React.FC = () => {
     const unsubscribe = auth.onAuthStateChanged((user) => {
       if (user) {
         fetchExpensesAndCalculateDebts().then(() => setLoading(false))
+      } else {
+        console.error("User is not signed in.")
+        navigate("/")
       }
     })
 
     return () => unsubscribe()
-  }, [])
+  })
 
   useEffect(() => {
     const user = auth.currentUser
@@ -206,7 +209,7 @@ const QuickExpense: React.FC = () => {
     if (user) {
       fetchExpensesAndCalculateDebts()
     }
-  }, [])
+  })
 
   return (
     <div>

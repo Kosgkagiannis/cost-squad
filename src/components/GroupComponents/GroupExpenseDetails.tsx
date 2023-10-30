@@ -16,9 +16,10 @@ import {
   getDownloadURL,
   deleteObject,
 } from "firebase/storage"
-import { db } from "../../config/firebase"
+import { auth, db } from "../../config/firebase"
 import ImageModal from "../GlobalComponents/ImageModal"
 import { useNavigate } from "react-router-dom"
+import { onAuthStateChanged } from "firebase/auth"
 
 const GroupExpenseDetails = () => {
   const { groupId, expenseId } = useParams()
@@ -144,6 +145,20 @@ const GroupExpenseDetails = () => {
       console.error("Error deleting image:", error)
     }
   }
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (user) {
+      } else {
+        console.error("User is not signed in.")
+        navigate("/")
+      }
+    })
+
+    return () => {
+      unsubscribe()
+    }
+  }, [])
 
   const handleImageUpload = async (
     event: React.ChangeEvent<HTMLInputElement>

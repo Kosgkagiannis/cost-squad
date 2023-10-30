@@ -51,7 +51,7 @@ h1 {
 
 input[type="text"],
 input[type="number"] {
-  width: 100%;
+  width: 95%;
   padding: 10px;
   margin: 5px -5px;
   border: none;
@@ -690,4 +690,11 @@ svg[role="img"] {
   .expense-item {
     width: calc(33.33% - 10px);
   }
+}
+
+.logo{
+  display:flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
 }

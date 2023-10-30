@@ -9,10 +9,11 @@ import {
   deleteDoc,
   getDocs,
 } from "firebase/firestore"
-import { db } from "../../config/firebase"
+import { auth, db } from "../../config/firebase"
 import { useNavigate } from "react-router-dom"
 import { ref, uploadBytes, getDownloadURL, getStorage } from "firebase/storage"
 import LoadingSpinner from "../GlobalComponents/LoadingSpinner"
+import { onAuthStateChanged } from "firebase/auth"
 
 const EditMemberPage = () => {
   const navigate = useNavigate()
@@ -116,6 +117,19 @@ const EditMemberPage = () => {
   }
 
   useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (user) {
+      } else {
+        console.error("User is not signed in.")
+        navigate("/")
+      }
+    })
+
+    return () => {
+      unsubscribe()
+    }
+  })
+  useEffect(() => {
     const fetchMemberData = async () => {
       if (!groupId || !memberId) {
         console.error("groupId or memberId is undefined")
@@ -165,7 +179,6 @@ const EditMemberPage = () => {
         const querySnapshot = await getDocs(expensesQuery)
 
         querySnapshot.forEach(async (doc) => {
-          const expenseData = doc.data()
           const debtsCollectionRef = collection(doc.ref, "debts")
           const debtsQuery = query(debtsCollectionRef)
           const debtsQuerySnapshot = await getDocs(debtsQuery)

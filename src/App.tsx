@@ -20,10 +20,11 @@ import GroupExpenseDetails from "./components/GroupComponents/GroupExpenseDetail
 import Groups from "./images/groups.png"
 import QuickExpense from "./images/quick-expense.png"
 import QuickExpenseDetails from "./components/QuickExpenseComponents/QuickExpenseDetails"
+import LoadingSpinner from "./components/GlobalComponents/LoadingSpinner"
 
 function App() {
   const [user, setUser] = useState<User | null>(null)
-
+  const [loading, setLoading] = useState(true)
   const fetchUserGroups = async (userId: string): Promise<GroupProps[]> => {
     try {
       const groupsCollectionRef = collection(db, "groups")
@@ -49,6 +50,7 @@ function App() {
 
   const handleUserLogin = async () => {
     setUser(auth.currentUser)
+    setLoading(false) // Set loading to false after the user is logged in
   }
 
   const handleLogout = async () => {
@@ -64,14 +66,19 @@ function App() {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (user) {
         setUser(user)
-        fetchUserGroups(user.uid).then((userGroups) => {})
+        fetchUserGroups(user.uid).then((userGroups) => {
+          setLoading(false) // Set loading to false after data is loaded
+        })
       } else {
         setUser(null)
+        setLoading(false) // Set loading to false if no user is logged in
       }
     })
 
     if (auth.currentUser) {
-      fetchUserGroups(auth.currentUser.uid).then((userGroups) => {})
+      fetchUserGroups(auth.currentUser.uid).then((userGroups) => {
+        setLoading(false) // Set loading to false after data is loaded
+      })
     }
 
     return () => {
@@ -82,63 +89,83 @@ function App() {
   return (
     <Router basename="/">
       <div className="App">
-        {user && <Header user={user} handleLogout={handleLogout} />}
-        <Routes>
-          <Route
-            path="/"
-            element={
-              user ? (
-                <div className="questions-form">
-                  <h2 className="questions">
-                    Want to add an expense between multiple people?
-                  </h2>
-                  <h3 className="questions">
-                    You can do that by creating a group:
-                  </h3>
-                  <Link to="/create-group" style={{ textDecoration: "none" }}>
-                    <button className="button-content">
-                      Go to Groups
-                      <img src={Groups} height={30} width={30} alt="Groups" />
-                    </button>
-                  </Link>
+        {loading ? (
+          <LoadingSpinner />
+        ) : (
+          <>
+            {user && <Header user={user} handleLogout={handleLogout} />}
+            <Routes>
+              <Route
+                path="/"
+                element={
+                  user ? (
+                    <div className="questions-form">
+                      <h2 className="questions">
+                        Want to add an expense between multiple people?
+                      </h2>
+                      <h3 className="questions">
+                        You can do that by creating a group:
+                      </h3>
+                      <Link
+                        to="/create-group"
+                        style={{ textDecoration: "none" }}
+                      >
+                        <button className="button-content">
+                          Go to Groups
+                          <img
+                            src={Groups}
+                            height={30}
+                            width={30}
+                            alt="Groups"
+                          />
+                        </button>
+                      </Link>
 
-                  <div className="divider" />
-                  <h2 className="questions">
-                    Want to add a quick expense between 2 people?
-                  </h2>
-                  <Link to="/quick-expense" style={{ textDecoration: "none" }}>
-                    <button className="button-content">
-                      Go to QuickExpense
-                      <img
-                        src={QuickExpense}
-                        height={30}
-                        width={30}
-                        alt="Groups"
-                      />
-                    </button>
-                  </Link>
-                </div>
-              ) : (
-                <LoginRegister onUserLogin={handleUserLogin} />
-              )
-            }
-          />
-          <Route path="/quick-expense" element={<QuickExpenseComponent />} />
-          <Route
-            path="/quick-expense/:expenseId"
-            element={<QuickExpenseDetails />}
-          />
-          <Route path="/create-group" element={<CreateGroupPage />} />
-          <Route path="/edit-group/:groupId" element={<EditGroupPage />} />
-          <Route
-            path="/edit-member/:groupId/:memberId"
-            element={<EditMemberPage />}
-          />
-          <Route
-            path="/expense-details/:groupId/:expenseId"
-            element={<GroupExpenseDetails />}
-          />
-        </Routes>
+                      <div className="divider" />
+                      <h2 className="questions">
+                        Want to add a quick expense between 2 people?
+                      </h2>
+                      <Link
+                        to="/quick-expense"
+                        style={{ textDecoration: "none" }}
+                      >
+                        <button className="button-content">
+                          Go to QuickExpense
+                          <img
+                            src={QuickExpense}
+                            height={30}
+                            width={30}
+                            alt="Groups"
+                          />
+                        </button>
+                      </Link>
+                    </div>
+                  ) : (
+                    <LoginRegister onUserLogin={handleUserLogin} />
+                  )
+                }
+              />
+              <Route
+                path="/quick-expense"
+                element={<QuickExpenseComponent />}
+              />
+              <Route
+                path="/quick-expense/:expenseId"
+                element={<QuickExpenseDetails />}
+              />
+              <Route path="/create-group" element={<CreateGroupPage />} />
+              <Route path="/edit-group/:groupId" element={<EditGroupPage />} />
+              <Route
+                path="/edit-member/:groupId/:memberId"
+                element={<EditMemberPage />}
+              />
+              <Route
+                path="/expense-details/:groupId/:expenseId"
+                element={<GroupExpenseDetails />}
+              />
+            </Routes>
+          </>
+        )}
       </div>
     </Router>
   )

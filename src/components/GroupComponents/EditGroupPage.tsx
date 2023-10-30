@@ -276,13 +276,14 @@ const EditGroupPage = () => {
         setUserId(user.uid)
       } else {
         setUserId(null)
+        navigate("/")
       }
     })
 
     return () => {
       unsubscribe()
     }
-  }, [])
+  }, [navigate])
 
   useEffect(() => {
     if (!groupId) {
