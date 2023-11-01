@@ -1,18 +1,18 @@
 {
   "files": {
-    "main.css": "/cost-squad/static/css/main.d0478443.css",
-    "main.js": "/cost-squad/static/js/main.7388948f.js",
+    "main.css": "/cost-squad/static/css/main.4057d2d5.css",
+    "main.js": "/cost-squad/static/js/main.60d3fad3.js",
     "static/media/loading.gif": "/cost-squad/static/media/loading.c6c411782cdd3f298124.gif",
     "static/media/google.jpg": "/cost-squad/static/media/google.dcb6e6d31a47f8d19bdf.jpg",
     "static/media/logo-header.jpg": "/cost-squad/static/media/logo-header.b1f3ebd8c04a985094b4.jpg",
     "static/media/quick-expense.png": "/cost-squad/static/media/quick-expense.ba01882f443f1bf23f87.png",
     "static/media/groups.png": "/cost-squad/static/media/groups.d4f7c2ed6d3e875379d6.png",
     "index.html": "/cost-squad/index.html",
-    "main.d0478443.css.map": "/cost-squad/static/css/main.d0478443.css.map",
-    "main.7388948f.js.map": "/cost-squad/static/js/main.7388948f.js.map"
+    "main.4057d2d5.css.map": "/cost-squad/static/css/main.4057d2d5.css.map",
+    "main.60d3fad3.js.map": "/cost-squad/static/js/main.60d3fad3.js.map"
   },
   "entrypoints": [
-    "static/css/main.d0478443.css",
-    "static/js/main.7388948f.js"
+    "static/css/main.4057d2d5.css",
+    "static/js/main.60d3fad3.js"
   ]
 }
