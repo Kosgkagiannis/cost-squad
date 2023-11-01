@@ -12,11 +12,13 @@ import { User, onAuthStateChanged } from "firebase/auth"
 import GroupProps from "../../types/GroupTypes/GroupProps"
 import { Link } from "react-router-dom"
 import { useNavigate } from "react-router-dom"
+import LoadingSpinner from "../GlobalComponents/LoadingSpinner"
 
 const GroupCreationForm = () => {
   const [groupName, setGroupName] = useState("")
   const [createdGroupName, setCreatedGroupName] = useState<string | null>(null)
   const [userGroups, setUserGroups] = useState<GroupProps[]>([])
+  const [loading, setLoading] = useState(true)
   const navigate = useNavigate()
 
   const handleGroupNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -65,7 +67,7 @@ const GroupCreationForm = () => {
       })
 
       setUserGroups(userGroups)
-      setIsLoading(false)
+      setLoading(false)
     } catch (err) {
       console.error("Error fetching user groups:", err)
     }
@@ -77,7 +79,7 @@ const GroupCreationForm = () => {
         fetchUserGroups(user.uid)
       } else {
         setUserGroups([])
-        setIsLoading(false)
+        setLoading(false)
         console.error("User is not signed in.")
         navigate("/")
       }
@@ -103,17 +105,20 @@ const GroupCreationForm = () => {
       </button>
 
       <h3>Your Groups</h3>
-
-      <ul>
-        {userGroups.map((group) => (
-          <li key={group.id}>
-            {group.groupName}
-            <Link to={`/edit-group/${group.id}`} className="edit-button">
-              Edit
-            </Link>
-          </li>
-        ))}
-      </ul>
+      {loading ? (
+        <LoadingSpinner />
+      ) : (
+        <ul>
+          {userGroups.map((group) => (
+            <li key={group.id}>
+              {group.groupName}
+              <Link to={`/edit-group/${group.id}`} className="edit-button">
+                Edit
+              </Link>
+            </li>
+          ))}
+        </ul>
+      )}
     </div>
   )
 }

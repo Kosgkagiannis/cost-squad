@@ -1,13 +1,14 @@
 import React, { useState } from "react"
 import { auth, googleProvider } from "../../config/firebase"
 import {
-  createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
   signInWithPopup,
   onAuthStateChanged,
 } from "firebase/auth"
 import "./Login-Register.css"
 import SignupForm from "./SignUpForm"
+import LogoHeader from "../../images/logo-header.jpg"
+import googleIcon from "../../images/google.jpg"
 
 interface LoginRegisterProps {
   onUserLogin: () => void
@@ -44,10 +45,22 @@ const LoginRegister: React.FC<LoginRegisterProps> = ({ onUserLogin }) => {
     }
   })
 
+  const signInWithGoogle = async () => {
+    try {
+      clearError()
+      await signInWithPopup(auth, googleProvider)
+      onUserLogin()
+    } catch (err: any) {
+      setError(err.message)
+    }
+  }
   return (
     <div className="login-content">
       <div className="header">
-        <h1 className="header-title">CostSquad</h1>
+        <div className="logo">
+          <img src={LogoHeader} height={48} width={64} alt="Logo" />
+          <h1 className="header-title">CostSquad</h1>
+        </div>{" "}
       </div>
       <h2>Log In</h2>
       <input
@@ -63,8 +76,13 @@ const LoginRegister: React.FC<LoginRegisterProps> = ({ onUserLogin }) => {
       />
       <button onClick={signInWithEmail}>Log in</button>
       {error && <p className="error-message">{error}</p>}
-
-      <p style={{ marginBlockStart: "20px" }}>
+      <h2>Or Log In with Google</h2>
+      <div className="google-signup">
+        <button onClick={signInWithGoogle}>
+          <img src={googleIcon} alt="Google Icon" /> Log In With Google
+        </button>
+      </div>
+      <p style={{ marginBlockStart: "40px" }}>
         Don't have an account? Sign up{" "}
         <span
           className="signup-link"
@@ -78,6 +96,7 @@ const LoginRegister: React.FC<LoginRegisterProps> = ({ onUserLogin }) => {
           here
         </span>
       </p>
+
       {showModal && (
         <SignupForm
           onClose={toggleModal}

@@ -1,4 +1,4 @@
-import React from "react"
+import React, { useState } from "react"
 
 interface GroupHeaderProps {
   groupTitle: string | null
@@ -15,6 +15,12 @@ const GroupHeader: React.FC<GroupHeaderProps> = ({
   handleUpdateGroupName,
   onDeleteGroup,
 }) => {
+  const [isEditingGroupName, setIsEditingGroupName] = useState(false)
+
+  const cancelEdit = () => {
+    setIsEditingGroupName(false)
+  }
+
   return (
     <div>
       <h1>{groupTitle || "Group Name"}</h1>
@@ -24,20 +30,29 @@ const GroupHeader: React.FC<GroupHeaderProps> = ({
       >
         Delete Group
       </button>
-      <h2>Edit Group Name</h2>
-      <input
-        type="text"
-        placeholder="Enter New Group Name"
-        value={newGroupName}
-        onChange={onGroupNameChange}
-        maxLength={20}
-      />
-      <button
-        onClick={handleUpdateGroupName}
-        disabled={newGroupName.trim() === ""}
-      >
-        Update Group Name
-      </button>
+      {isEditingGroupName ? (
+        <>
+          <h2>Edit Group Name</h2>
+          <input
+            type="text"
+            placeholder="Enter New Group Name"
+            value={newGroupName}
+            onChange={onGroupNameChange}
+            maxLength={20}
+          />
+          <button
+            onClick={handleUpdateGroupName}
+            disabled={newGroupName.trim() === ""}
+          >
+            Update Group Name
+          </button>
+          <button onClick={cancelEdit}>Cancel</button>
+        </>
+      ) : (
+        <button onClick={() => setIsEditingGroupName(true)}>
+          Edit Group Name
+        </button>
+      )}
     </div>
   )
 }

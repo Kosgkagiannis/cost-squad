@@ -183,8 +183,10 @@ h1, h2 {
   }
 
   h2 {
-    font-size: 28px;
+    font-size: 24px;
   }
+
+
 }
 
 .header a {
@@ -683,6 +685,19 @@ svg[role="img"] {
   border: 1px solid #ccc;
 }
 
+.expense-item-groups {
+  width: calc(34% - 10px);
+  margin-right: 10px;
+  margin-bottom: 10px;
+  display:flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 20px;
+  border: 1px solid #ccc;
+  height: auto;
+}
+
+
 .expense-item  p {
   word-wrap: break-word;
 }
@@ -695,6 +710,42 @@ svg[role="img"] {
 .logo{
   display:flex;
   flex-direction: row;
-  justify-content: space-between;
+  justify-content: center;
   align-items: center;
+}
+
+.welcome-carousel-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 100;
+}
+
+.welcome-carousel {
+  background-color: #fff;
+  border-radius: 8px;
+  padding: 20px;
+  width: 80%;
+  max-width: 600px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  z-index: 101;
+}
+
+.carousel-nav{
+  display:flex;
+  flex-direction: row;
+  justify-content: space-between;
 }

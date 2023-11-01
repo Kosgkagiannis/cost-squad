@@ -6,6 +6,9 @@ import { auth, db } from "./config/firebase"
 import {
   getDocs,
   collection,
+  doc,
+  getDoc,
+  setDoc,
   query as firestoreQuery,
   where,
 } from "firebase/firestore"
@@ -21,10 +24,16 @@ import Groups from "./images/groups.png"
 import QuickExpense from "./images/quick-expense.png"
 import QuickExpenseDetails from "./components/QuickExpenseComponents/QuickExpenseDetails"
 import LoadingSpinner from "./components/GlobalComponents/LoadingSpinner"
+import WelcomeCarousel from "./components/GlobalComponents/WelcomeCarousel"
 
 function App() {
   const [user, setUser] = useState<User | null>(null)
   const [loading, setLoading] = useState(true)
+  const [showCarousel, setShowCarousel] = useState(true)
+  const [showModal, setShowModal] = useState(true)
+
+  const userPreferencesCollection = collection(db, "user_preferences")
+
   const fetchUserGroups = async (userId: string): Promise<GroupProps[]> => {
     try {
       const groupsCollectionRef = collection(db, "groups")
@@ -48,38 +57,55 @@ function App() {
     }
   }
 
+  const handleCarouselComplete = async () => {
+    setShowModal(false)
+
+    const userDocRef = doc(userPreferencesCollection, user.uid)
+    const userDocSnapshot = await getDoc(userDocRef)
+
+    if (!userDocSnapshot.exists()) {
+      await setDoc(userDocRef, { hasSeenModal: true })
+    }
+  }
   const handleUserLogin = async () => {
     setUser(auth.currentUser)
-    setLoading(false) // Set loading to false after the user is logged in
+    setLoading(false)
+    setShowCarousel(true)
   }
 
   const handleLogout = async () => {
     try {
       await auth.signOut()
       setUser(null)
+      setShowCarousel(false)
+      setShowModal(false)
     } catch (err) {
       console.error(err)
     }
   }
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
+    const unsubscribe = onAuthStateChanged(auth, async (user) => {
       if (user) {
         setUser(user)
-        fetchUserGroups(user.uid).then((userGroups) => {
-          setLoading(false) // Set loading to false after data is loaded
+        fetchUserGroups(user.uid).then(() => {
+          setLoading(false)
         })
+
+        const userDocRef = doc(userPreferencesCollection, user.uid)
+        const userDocSnapshot = await getDoc(userDocRef)
+
+        if (!userDocSnapshot.exists()) {
+          setShowModal(true)
+        } else {
+          setShowModal(false)
+        }
       } else {
         setUser(null)
-        setLoading(false) // Set loading to false if no user is logged in
+        setLoading(false)
+        setShowModal(false)
       }
     })
-
-    if (auth.currentUser) {
-      fetchUserGroups(auth.currentUser.uid).then((userGroups) => {
-        setLoading(false) // Set loading to false after data is loaded
-      })
-    }
 
     return () => {
       unsubscribe()
@@ -99,47 +125,55 @@ function App() {
                 path="/"
                 element={
                   user ? (
-                    <div className="questions-form">
-                      <h2 className="questions">
-                        Want to add an expense between multiple people?
-                      </h2>
-                      <h3 className="questions">
-                        You can do that by creating a group:
-                      </h3>
-                      <Link
-                        to="/create-group"
-                        style={{ textDecoration: "none" }}
-                      >
-                        <button className="button-content">
-                          Go to Groups
-                          <img
-                            src={Groups}
-                            height={30}
-                            width={30}
-                            alt="Groups"
-                          />
-                        </button>
-                      </Link>
+                    <>
+                      {showModal && (
+                        <WelcomeCarousel
+                          onComplete={handleCarouselComplete}
+                          visible={showCarousel}
+                        />
+                      )}
+                      <div className="questions-form">
+                        <h2 className="questions">
+                          Want to add an expense between multiple people?
+                        </h2>
+                        <h3 className="questions">
+                          You can do that by creating a group:
+                        </h3>
+                        <Link
+                          to="/create-group"
+                          style={{ textDecoration: "none" }}
+                        >
+                          <button className="button-content">
+                            Go to Groups
+                            <img
+                              src={Groups}
+                              height={30}
+                              width={30}
+                              alt="Groups"
+                            />
+                          </button>
+                        </Link>
 
-                      <div className="divider" />
-                      <h2 className="questions">
-                        Want to add a quick expense between 2 people?
-                      </h2>
-                      <Link
-                        to="/quick-expense"
-                        style={{ textDecoration: "none" }}
-                      >
-                        <button className="button-content">
-                          Go to QuickExpense
-                          <img
-                            src={QuickExpense}
-                            height={30}
-                            width={30}
-                            alt="Groups"
-                          />
-                        </button>
-                      </Link>
-                    </div>
+                        <div className="divider" />
+                        <h2 className="questions">
+                          Want to add a quick expense between 2 people?
+                        </h2>
+                        <Link
+                          to="/quick-expense"
+                          style={{ textDecoration: "none" }}
+                        >
+                          <button className="button-content">
+                            Go to QuickExpense
+                            <img
+                              src={QuickExpense}
+                              height={30}
+                              width={30}
+                              alt="Groups"
+                            />
+                          </button>
+                        </Link>
+                      </div>
+                    </>
                   ) : (
                     <LoginRegister onUserLogin={handleUserLogin} />
                   )

@@ -1,4 +1,4 @@
-import React from "react"
+import React, { useState } from "react"
 import { Link } from "react-router-dom"
 import GroupMemberListProps from "../../types/GroupTypes/GroupMemberListProps"
 
@@ -9,19 +9,32 @@ const GroupMemberList: React.FC<GroupMemberListProps> = ({
   handleAddMember,
   groupId,
 }) => {
+  const [isAddingMembers, setIsAddingMembers] = useState(false)
+
+  const cancelAddMembers = () => {
+    setIsAddingMembers(false)
+  }
+
   return (
     <div>
       <h2>Add Members</h2>
-      <input
-        type="text"
-        placeholder="Enter Member's Name"
-        value={newMember}
-        onChange={onMemberInputChange}
-        maxLength={15}
-      />
-      <button onClick={handleAddMember} disabled={newMember.trim() === ""}>
-        Add Member
-      </button>
+      {isAddingMembers ? (
+        <>
+          <input
+            type="text"
+            placeholder="Enter Member's Name"
+            value={newMember}
+            onChange={onMemberInputChange}
+            maxLength={15}
+          />
+          <button onClick={handleAddMember} disabled={newMember.trim() === ""}>
+            Add Member
+          </button>
+          <button onClick={cancelAddMembers}>Cancel</button>
+        </>
+      ) : (
+        <button onClick={() => setIsAddingMembers(true)}>Add Members</button>
+      )}
       <h2>Members</h2>
       <div className="grid-container">
         {groupMembers
