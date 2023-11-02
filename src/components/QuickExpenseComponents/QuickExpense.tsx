@@ -193,7 +193,11 @@ const QuickExpense: React.FC = () => {
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged((user) => {
       if (user) {
-        fetchExpensesAndCalculateDebts().then(() => setLoading(false))
+        fetchExpensesAndCalculateDebts().then(() =>
+          setTimeout(() => {
+            setLoading(false)
+          }, 500)
+        )
       } else {
         console.error("User is not signed in.")
         navigate("/")
@@ -216,88 +220,93 @@ const QuickExpense: React.FC = () => {
       {loading ? (
         <LoadingSpinner />
       ) : (
-        <div>
-          <br></br>
-          <label htmlFor="person1">Person 1:</label>
-          <input
-            type="text"
-            id="person1"
-            value={person1}
-            onChange={(e) => setPerson1(e.target.value)}
-            required
-          />
-          {person1Error && <p className="error-message">{person1Error}</p>}
-          <label htmlFor="person2">Person 2:</label>
-          <input
-            type="text"
-            id="person2"
-            value={person2}
-            onChange={(e) => setPerson2(e.target.value)}
-            required
-          />
-          {person2Error && <p className="error-message">{person2Error}</p>}
-          <label htmlFor="description">Description (optional):</label>
-          <input
-            type="text"
-            id="description"
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-            required
-          />
-          <label htmlFor="amount">Amount:</label>
-          <input
-            type="number"
-            id="amount"
-            value={amount}
-            onChange={(e) => setAmount(parseFloat(e.target.value))}
-            required
-          />
-          {amountError && <p className="error-message">{amountError}</p>}
-          {errorMessage && <p className="error-message">{errorMessage}</p>}
-          {currencyError && (
-            <p className="error-message">{currencyError}</p>
-          )}{" "}
-          <label htmlFor="currency">Currency:</label>
-          <select
-            id="currency"
-            value={currency}
-            onChange={(e) => setCurrency(e.target.value)}
-          >
-            <option>Select a currency</option>
-            {allCurrencies.map((currencyOption, index) => (
-              <option key={index} value={currencyOption.code}>
-                {currencyOption.code} ({currencyOption.symbol})
-              </option>
-            ))}
-          </select>
-          <button type="button" onClick={handleAddExpense}>
-            Add Expense
-          </button>
-        </div>
-      )}
-      <div>
-        <h2>Net Debts</h2>
-        <div id="netDebts"></div>
-      </div>
+        <>
+          <div>
+            <br></br>
+            <label htmlFor="person1">Person 1:</label>
+            <input
+              type="text"
+              id="person1"
+              value={person1}
+              onChange={(e) => setPerson1(e.target.value)}
+              required
+            />
+            {person1Error && <p className="error-message">{person1Error}</p>}
+            <label htmlFor="person2">Person 2:</label>
+            <input
+              type="text"
+              id="person2"
+              value={person2}
+              onChange={(e) => setPerson2(e.target.value)}
+              required
+            />
+            {person2Error && <p className="error-message">{person2Error}</p>}
+            <label htmlFor="description">Description (optional):</label>
+            <input
+              type="text"
+              id="description"
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              required
+            />
+            <label htmlFor="amount">Amount:</label>
+            <input
+              type="number"
+              id="amount"
+              value={amount}
+              onChange={(e) => setAmount(parseFloat(e.target.value))}
+              required
+            />
+            {amountError && <p className="error-message">{amountError}</p>}
+            {errorMessage && <p className="error-message">{errorMessage}</p>}
+            {currencyError && (
+              <p className="error-message">{currencyError}</p>
+            )}{" "}
+            <label htmlFor="currency">Currency:</label>
+            <select
+              id="currency"
+              value={currency}
+              onChange={(e) => setCurrency(e.target.value)}
+            >
+              <option>Select a currency</option>
+              {allCurrencies.map((currencyOption, index) => (
+                <option key={index} value={currencyOption.code}>
+                  {currencyOption.code} ({currencyOption.symbol})
+                </option>
+              ))}
+            </select>
+            <button type="button" onClick={handleAddExpense}>
+              Add Expense
+            </button>
+          </div>
 
-      <div>
-        <h2>Expenses History</h2>
-        <ul>
-          {expenses.map((expense, index) => (
-            <li key={index}>
-              {expense.person1} owes {expense.amount}
-              {expense.currency} to {expense.person2}{" "}
-              {expense.description ? "for" + expense.description : ""}
-              <button onClick={() => navigate(`/quick-expense/${expense.id}`)}>
-                Details
-              </button>
-              <button onClick={() => handleDeleteExpense(expense.id)}>
-                Delete
-              </button>
-            </li>
-          ))}
-        </ul>
-      </div>
+          <div>
+            <h2>Net Debts</h2>
+            <div id="netDebts"></div>
+          </div>
+
+          <div>
+            <h2>Expenses History</h2>
+            <ul>
+              {expenses.map((expense, index) => (
+                <li key={index}>
+                  {expense.person1} owes {expense.amount}
+                  {expense.currency} to {expense.person2}{" "}
+                  {expense.description ? "for" + expense.description : ""}
+                  <button
+                    onClick={() => navigate(`/quick-expense/${expense.id}`)}
+                  >
+                    Details
+                  </button>
+                  <button onClick={() => handleDeleteExpense(expense.id)}>
+                    Delete
+                  </button>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </>
+      )}
     </div>
   )
 }

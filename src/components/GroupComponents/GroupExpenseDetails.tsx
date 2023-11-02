@@ -237,7 +237,7 @@ const GroupExpenseDetails = () => {
 
   return (
     <div>
-      <button style={{ background: "red" }} onClick={deleteExpense}>
+      <button style={{ background: "#ff0000bd" }} onClick={deleteExpense}>
         Delete Expense
       </button>
       <h2>Expense Details</h2>

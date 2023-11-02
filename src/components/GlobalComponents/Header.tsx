@@ -48,7 +48,7 @@ function Header({ handleLogout }: HeaderProps) {
         <div className={`header-items ${menuOpen ? "open" : ""}`}>
           {!isHomePage && (
             <Link to="/create-group" onClick={closeMenu} className="menu-item">
-              Groups
+              Squads
               <img src={Groups} height={30} width={30} alt="Groups" />
             </Link>
           )}

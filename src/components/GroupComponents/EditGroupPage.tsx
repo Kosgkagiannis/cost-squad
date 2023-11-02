@@ -203,7 +203,9 @@ const EditGroupPage = () => {
         }
 
         setDebts(allDebtsData)
-        setLoading(false)
+        setTimeout(() => {
+          setLoading(false)
+        }, 1200)
       } catch (error) {
         console.error("Error fetching expenses and debts:", error)
       }
@@ -261,7 +263,9 @@ const EditGroupPage = () => {
           ...doc.data(),
         }))
         setGroupMembers(membersData)
-        setLoading(false)
+        setTimeout(() => {
+          setLoading(false)
+        }, 1200)
       } catch (error) {
         console.error("Error fetching group members:", error)
       }
@@ -572,7 +576,7 @@ const EditGroupPage = () => {
               debts={debts}
             />
           )}
-          <GroupDebtList groupId={groupId} debts={debts} />
+          {groupId && <GroupDebtList groupId={groupId} debts={debts} />}
         </>
       )}
     </div>

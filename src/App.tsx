@@ -79,6 +79,10 @@ function App() {
       setUser(null)
       setShowCarousel(false)
       setShowModal(false)
+      setLoading(true)
+      setTimeout(() => {
+        setLoading(false)
+      }, 5000)
     } catch (err) {
       console.error(err)
     }
@@ -102,7 +106,9 @@ function App() {
         }
       } else {
         setUser(null)
-        setLoading(false)
+        setTimeout(() => {
+          setLoading(false)
+        }, 500)
         setShowModal(false)
       }
     })
@@ -136,15 +142,12 @@ function App() {
                         <h2 className="questions">
                           Want to add an expense between multiple people?
                         </h2>
-                        <h3 className="questions">
-                          You can do that by creating a group:
-                        </h3>
                         <Link
                           to="/create-group"
                           style={{ textDecoration: "none" }}
                         >
                           <button className="button-content">
-                            Go to Groups
+                            Go to Squads
                             <img
                               src={Groups}
                               height={30}
@@ -156,14 +159,14 @@ function App() {
 
                         <div className="divider" />
                         <h2 className="questions">
-                          Want to add a quick expense between 2 people?
+                          Want to add an expense between 2 people?
                         </h2>
                         <Link
                           to="/quick-expense"
                           style={{ textDecoration: "none" }}
                         >
                           <button className="button-content">
-                            Go to QuickExpense
+                            Go to Quick Expense
                             <img
                               src={QuickExpense}
                               height={30}

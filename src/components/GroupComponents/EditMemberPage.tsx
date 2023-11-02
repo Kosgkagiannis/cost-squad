@@ -147,7 +147,9 @@ const EditMemberPage = () => {
         setProfilePicture(memberData.profilePicture || "")
       }
 
-      setLoading(false)
+      setTimeout(() => {
+        setLoading(false)
+      }, 500)
     }
 
     fetchMemberData()
@@ -205,9 +207,12 @@ const EditMemberPage = () => {
 
   return (
     <div>
-      <button onClick={() => memberId && handleDeleteMember(memberId)}>
+      <button
+        style={{ backgroundColor: "#ff0000bd" }}
+        onClick={() => memberId && handleDeleteMember(memberId)}
+      >
         Delete
-      </button>{" "}
+      </button>
       <h2>Edit Member Info</h2>
       {loading ? (
         <LoadingSpinner />

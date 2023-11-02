@@ -15,9 +15,13 @@ const GroupMemberList: React.FC<GroupMemberListProps> = ({
     setIsAddingMembers(false)
   }
 
+  const handleAddMemberAndCloseMenu = () => {
+    setIsAddingMembers(false)
+    handleAddMember()
+  }
+
   return (
     <div>
-      <h2>Add Members</h2>
       {isAddingMembers ? (
         <>
           <input
@@ -27,15 +31,18 @@ const GroupMemberList: React.FC<GroupMemberListProps> = ({
             onChange={onMemberInputChange}
             maxLength={15}
           />
-          <button onClick={handleAddMember} disabled={newMember.trim() === ""}>
+          <button
+            onClick={handleAddMemberAndCloseMenu}
+            disabled={newMember.trim() === ""}
+          >
             Add Member
           </button>
           <button onClick={cancelAddMembers}>Cancel</button>
         </>
       ) : (
-        <button onClick={() => setIsAddingMembers(true)}>Add Members</button>
+        <button onClick={() => setIsAddingMembers(true)}>Add Member</button>
       )}
-      <h2>Members</h2>
+      <h2>{groupMembers.length > 0 ? "Members" : ""}</h2>
       <div className="grid-container">
         {groupMembers
           .filter((member) => member.name && member.name.trim() !== "")

@@ -67,7 +67,9 @@ const GroupCreationForm = () => {
       })
 
       setUserGroups(userGroups)
-      setLoading(false)
+      setTimeout(() => {
+        setLoading(false)
+      }, 500)
     } catch (err) {
       console.error("Error fetching user groups:", err)
     }
@@ -79,7 +81,9 @@ const GroupCreationForm = () => {
         fetchUserGroups(user.uid)
       } else {
         setUserGroups([])
-        setLoading(false)
+        setTimeout(() => {
+          setLoading(false)
+        }, 500)
         console.error("User is not signed in.")
         navigate("/")
       }
@@ -92,26 +96,27 @@ const GroupCreationForm = () => {
 
   return (
     <div>
-      <h2>Create a New Group</h2>
-      {createdGroupName && <p>Group Created: {createdGroupName}</p>}
+      <h2>Create a New Squad</h2>
+      {createdGroupName && <p>Squad Created: {createdGroupName}</p>}
       <input
         type="text"
         placeholder="Enter Group Name"
         value={groupName}
         onChange={handleGroupNameChange}
+        maxLength={15}
       />
       <button onClick={handleCreateGroup} disabled={groupName.trim() === ""}>
-        Create Group
+        Create Squad
       </button>
 
-      <h3>Your Groups</h3>
+      <h3>Your Squads</h3>
       {loading ? (
         <LoadingSpinner />
       ) : (
-        <ul>
+        <ul className="expense-list">
           {userGroups.map((group) => (
-            <li key={group.id}>
-              {group.groupName}
+            <li key={group.id} className="expense-item-squads">
+              <p>{group.groupName}</p>
               <Link to={`/edit-group/${group.id}`} className="edit-button">
                 Edit
               </Link>
