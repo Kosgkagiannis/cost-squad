@@ -36,7 +36,7 @@ const GroupHeader: React.FC<GroupHeaderProps> = ({
   return (
     <div>
       <div className="top-delete-button">
-        <h1>{groupTitle || "Group Name"}</h1>
+        <h1 className="group-title">{groupTitle || "Group Name"}</h1>
         <div className="menu-icon" onClick={toggleMenu}>
           <img
             width={30}
@@ -53,7 +53,7 @@ const GroupHeader: React.FC<GroupHeaderProps> = ({
             <div className="menu-dropdown" onClick={stopPropagation}>
               <button
                 onClick={onDeleteGroup}
-                style={{ backgroundColor: "#ff0000bd", color: "white" }}
+                style={{ backgroundColor: "#ff0000bd", color: "#ffffffed" }}
               >
                 Delete Squad
               </button>

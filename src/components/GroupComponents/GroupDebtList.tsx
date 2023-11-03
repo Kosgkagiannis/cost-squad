@@ -87,7 +87,8 @@ const GroupDebtList: React.FC<DebtListProps> = ({ debts, groupId }) => {
     <>
       {memberDebtsArray.length > 0 ? (
         <div>
-          <h2>Debts</h2>
+          <div className="divider" />
+          <h2>Total Debts Graph</h2>
           <VictoryChart
             domainPadding={20}
             width={600}
@@ -119,7 +120,7 @@ const GroupDebtList: React.FC<DebtListProps> = ({ debts, groupId }) => {
                 },
                 labels: {
                   fontSize: "12px",
-                  fill: "black",
+                  fill: "white",
                   angle: -45,
                   textAnchor: "start",
                   padding: 8,
@@ -137,6 +138,7 @@ const GroupDebtList: React.FC<DebtListProps> = ({ debts, groupId }) => {
                   fontSize: 12,
                   angle: -45,
                   textAnchor: "end",
+                  fill: "white",
                 },
               }}
             />
@@ -145,15 +147,18 @@ const GroupDebtList: React.FC<DebtListProps> = ({ debts, groupId }) => {
               label="Total Debt"
               style={{
                 axis: { stroke: "#ccc", strokeWidth: 2 },
-                axisLabel: { padding: 5, fontWeight: "bold" },
+                axisLabel: { padding: 5, fontWeight: "bold", fill: "white" },
                 tickLabels: {
                   fontWeight: "",
                   padding: 30,
                   fontSize: 11,
+                  fill: "white",
                 },
               }}
             />
           </VictoryChart>
+          <div className="divider" />
+          <h2>Net Debts</h2>
           <ul className="styled-list">
             {filteredNetDebts.map(([debtKey, amount], index) => {
               const [debtor, creditor] = debtKey.split("-")
@@ -174,20 +179,24 @@ const GroupDebtList: React.FC<DebtListProps> = ({ debts, groupId }) => {
                           alt={`${creditor}'s Profile`}
                           className="member-profile-image"
                         />
-                        {creditor}
+                        <span>{creditor}</span>
                       </div>
-                      <div className="text-debt-container">owes</div>
+                      <div className="text-debt-container">
+                        <span>owes</span>
+                      </div>
                       <div className="image-container">
                         <img
                           src={debtorProfileImage}
                           alt={`${debtor}'s Profile`}
                           className="member-profile-image"
                         />
-                        {debtor}
+                        <span>{debtor}</span>
                       </div>
                       <div className="text-debt-container">
-                        <div className="custom-arrow"></div> $
-                        {Math.abs(formattedAmountNumber)}
+                        <div className="custom-arrow"></div>{" "}
+                        <div className="debts">
+                          ${Math.abs(formattedAmountNumber)}
+                        </div>
                       </div>
                     </>
                   ) : (
@@ -198,20 +207,24 @@ const GroupDebtList: React.FC<DebtListProps> = ({ debts, groupId }) => {
                           alt={`${debtor}'s Profile`}
                           className="member-profile-image"
                         />
-                        {debtor}
+                        <div className="debts">{debtor}</div>
                       </div>
-                      <div className="text-debt-container">owes</div>
+                      <div className="text-debt-container">
+                        <div className="debts">owes</div>
+                      </div>
                       <div className="image-container">
                         <img
                           src={creditorProfileImage}
                           alt={`${creditor}'s Profile`}
                           className="member-profile-image"
                         />
-                        {creditor}
+                        <div className="debts">{creditor}</div>
                       </div>
                       <div className="text-debt-container">
-                        <div className="custom-arrow"></div>$
-                        {Math.abs(formattedAmountNumber)}
+                        <div className="custom-arrow"></div>
+                        <div className="debts">
+                          ${Math.abs(formattedAmountNumber)}
+                        </div>
                       </div>
                     </>
                   )}

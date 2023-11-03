@@ -1,23 +1,15 @@
 import React, { useEffect, useState } from "react"
 import { useParams } from "react-router-dom"
-import { doc, getDoc } from "firebase/firestore"
+import { doc, getDoc, deleteDoc, Timestamp } from "firebase/firestore"
 import { auth, db } from "../../config/firebase"
 import LoadingSpinner from "../GlobalComponents/LoadingSpinner"
 import { useNavigate } from "react-router-dom"
-
-interface Expense {
-  id: string
-  person1: string
-  person2: string
-  description: string
-  amount: number
-  currency: string
-  userId: string
-}
+import QuickExpenseProps from "../../types/QuickExpenseTypes/PublicExpenseProps"
+import { format } from "date-fns"
 
 const QuickExpenseDetails: React.FC = () => {
   const { expenseId } = useParams<{ expenseId: string }>()
-  const [expense, setExpense] = useState<Expense | null>(null)
+  const [expense, setExpense] = useState<QuickExpenseProps | null>(null)
   const [loading, setLoading] = useState(true)
   const navigate = useNavigate()
 
@@ -31,12 +23,12 @@ const QuickExpenseDetails: React.FC = () => {
           const expenseSnapshot = await getDoc(expenseRef)
 
           if (expenseSnapshot.exists()) {
-            const expenseData = expenseSnapshot.data() as Expense
+            const expenseData = expenseSnapshot.data() as QuickExpenseProps
 
             if (expenseData.userId === userId) {
               setExpense({ id: expenseId, ...expenseData })
             } else {
-              setExpense(null) // Expense doesn't belong to the user
+              setExpense(null)
             }
           } else {
             setExpense(null)
@@ -54,7 +46,24 @@ const QuickExpenseDetails: React.FC = () => {
     })
 
     return () => unsubscribe()
-  }, [expenseId])
+  }, [expenseId, navigate])
+
+  const handleDeleteExpense = async () => {
+    if (expense) {
+      const confirmDelete = window.confirm(
+        "Are you sure you want to delete this expense?"
+      )
+
+      if (confirmDelete) {
+        try {
+          await deleteDoc(doc(db, "expenses2", expense.id))
+          navigate("/quick-expense")
+        } catch (error) {
+          console.error("Error deleting expense: ", error)
+        }
+      }
+    }
+  }
 
   if (loading) {
     return <LoadingSpinner />
@@ -73,6 +82,11 @@ const QuickExpenseDetails: React.FC = () => {
       <p>
         Amount: {expense.amount} {expense.currency}
       </p>
+      <p>
+        Date and Time:{" "}
+        {format(expense.timestamp.toDate(), "do MMMM yyyy - HH:mm:ss")}
+      </p>
+      <button onClick={handleDeleteExpense}>Delete</button>
     </div>
   )
 }

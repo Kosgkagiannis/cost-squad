@@ -156,7 +156,7 @@ button:disabled {
 }
 
 .header-title {
-  color: white;
+  color: #ffffffed;
   border-radius: 0 0 20px 20px;
   font-weight: bold;
   letter-spacing: 3px;
@@ -165,10 +165,21 @@ button:disabled {
 
 h1, h2 {
   font-size: 24px;
+  color: #ffffffed;
+}
+h3, span, label{
+  color: #ffffffed;
+
 }
 
 p{
   font-size: 16px;
+  color: #ffffffed;
+}
+
+.debts{
+  color: #ffffffed;
+  font-size: 14px;
 }
 
 @media (max-width: 768px) {
@@ -182,6 +193,9 @@ p{
 
   p{
     font-size: 14px;
+  }
+  .debts{
+    font-size: 12px;
   }
 }
 
@@ -222,13 +236,13 @@ p{
 .divider {
   border: none;
   height: 4px;
-  background-color: white;
-  margin: 20px 0;
+  background-color: #ffffffed;
+  margin: 40px 0;
   opacity: 0.7;
 }
 
 .questions-form {
-  margin-block: 5rem;
+  margin-block: 9rem;
   display:flex;
   flex-direction: column;
   justify-content: center;
@@ -277,6 +291,7 @@ p{
   cursor: pointer;
   margin: 1rem;
   border-radius: 5px;
+  font-size: 13px;
 }
 
 .custom-upload-button:hover {
@@ -284,20 +299,21 @@ p{
 }
 
 .image-gallery {
-  display: flex;
-  flex-wrap: wrap;
+  display: grid;
+  margin-top:1rem;
+  grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
   gap: 10px;
-  justify-content: center;
+  justify-items: center;
 }
 
 .image-item {
   flex: 1;
   max-width: 200px;
-  height: fit-content;
-  max-height: 100px;
   border: 1px solid #ccc;
   border-radius: 5px;
   overflow: hidden;
+  display: flex;
+  align-items: stretch;
 }
 
 .image-item img {
@@ -346,6 +362,7 @@ p{
 .delete-button {
   display: flex;
   justify-content: center;
+  align-items: center;
 }
 
 @media (min-width: 768px) {
@@ -365,7 +382,7 @@ p{
   cursor: pointer;
   background-color: #007bff;
   color: #fff;
-  padding: 10px 20px;
+  padding: 5px 10px;
   border: none;
   border-radius: 50%;
 }
@@ -519,7 +536,7 @@ p{
   justify-content: space-evenly;
   width: 5rem;
   text-decoration: none;
-  color: white;
+  color: #ffffffed;
   background-color: #007bff;
   padding: 10px;
   border-radius: 5px;
@@ -603,7 +620,7 @@ svg[role="img"] {
 .styled-list {
   list-style: none;
   padding: 0;
-  margin-top: 5rem;
+  margin-top: 2rem;
 }
 
 .styled-list-item {
@@ -613,6 +630,7 @@ svg[role="img"] {
   display: flex;
   align-items: center;
   justify-content: space-around;
+  background: radial-gradient(circle, #00a3ff, #006eff94);
   height: 100px;
 }
 
@@ -676,7 +694,7 @@ svg[role="img"] {
   height: 0;
   border-style: solid;
   border-width: 5px 0 5px 10px;
-  border-color: transparent transparent transparent #007bff;
+  border-color: transparent transparent transparent #ffffffed;
   left: 0;
   top: 0;
 }
@@ -691,14 +709,16 @@ svg[role="img"] {
 }
 
 .expense-item {
-  width: calc(34% - 10px);
+  width: calc(40% - 10px);
   margin-right: 10px;
   margin-bottom: 10px;
+  line-height: 1.5rem;
   display:flex;
   flex-direction: column;
   justify-content: center;
-  height: 17rem;
+  height: auto;
   padding: 10px;
+  color: white;
   border: 1px solid #ccc;
   background: radial-gradient(circle, #00a3ff, #006eff94);
 
@@ -761,7 +781,7 @@ svg[role="img"] {
   background: white;
   border-radius: 8px;
   padding: 20px;
-  height: 80%;
+  height: 90%;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -807,7 +827,7 @@ svg[role="img"] {
   align-items: center;
   margin-bottom: 2rem;
   gap: 0.5rem;
-  margin-left: 1rem;
+  margin-left: 2rem;
 }
 
 .menu-icon {
@@ -838,4 +858,14 @@ svg[role="img"] {
 
 .menu-icon .menu-dropdown button:hover {
   background-color: #f0f0f0;
+}
+
+.group-title {
+  background-color: #007bff;
+  color: #ffffffed;
+  padding: 10px 20px;
+  border-radius: 8px;
+  text-align: center;
+  font-size: 24px;
+  word-break: break-word;
 }

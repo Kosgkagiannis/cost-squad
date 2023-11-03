@@ -1,6 +1,7 @@
 import React, { useState } from "react"
 import { Link } from "react-router-dom"
 import GroupMemberListProps from "../../types/GroupTypes/GroupMemberListProps"
+import LoadingAnimation from "../../images/loading2.gif"
 
 const GroupMemberList: React.FC<GroupMemberListProps> = ({
   groupMembers,
@@ -10,15 +11,34 @@ const GroupMemberList: React.FC<GroupMemberListProps> = ({
   groupId,
 }) => {
   const [isAddingMembers, setIsAddingMembers] = useState(false)
+  const [isLoading, setIsLoading] = useState(false)
+  const itemsPerPage = 6
+  const [currentPage, setCurrentPage] = useState(1)
 
   const cancelAddMembers = () => {
     setIsAddingMembers(false)
   }
 
   const handleAddMemberAndCloseMenu = () => {
+    setIsLoading(true)
     setIsAddingMembers(false)
-    handleAddMember()
+
+    setTimeout(() => {
+      handleAddMember()
+      setIsLoading(false)
+    }, 1500)
   }
+
+  const handleNextPage = () => {
+    setCurrentPage((prevPage) => prevPage + 1)
+  }
+
+  const handlePreviousPage = () => {
+    setCurrentPage((prevPage) => prevPage - 1)
+  }
+
+  const startIndex = (currentPage - 1) * itemsPerPage
+  const endIndex = currentPage * itemsPerPage
 
   return (
     <div>
@@ -31,21 +51,33 @@ const GroupMemberList: React.FC<GroupMemberListProps> = ({
             onChange={onMemberInputChange}
             maxLength={15}
           />
-          <button
-            onClick={handleAddMemberAndCloseMenu}
-            disabled={newMember.trim() === ""}
-          >
-            Add Member
-          </button>
+          {isLoading ? (
+            <img src={LoadingAnimation} width={48} height={48} alt="Loading" />
+          ) : (
+            <button
+              onClick={handleAddMemberAndCloseMenu}
+              disabled={newMember.trim() === ""}
+            >
+              Add Member
+            </button>
+          )}
           <button onClick={cancelAddMembers}>Cancel</button>
         </>
       ) : (
-        <button onClick={() => setIsAddingMembers(true)}>Add Member</button>
+        <div className="delete-button">
+          <button onClick={() => setIsAddingMembers(true)}>Add Member</button>
+          {isLoading && (
+            <img width={48} height={48} alt="Loading" src={LoadingAnimation} />
+          )}
+        </div>
       )}
+      <div className="divider" />
+
       <h2>{groupMembers.length > 0 ? "Members" : ""}</h2>
       <div className="grid-container">
         {groupMembers
           .filter((member) => member.name && member.name.trim() !== "")
+          .slice(startIndex, endIndex)
           .map((member) => (
             <Link
               key={member.id}
@@ -59,12 +91,26 @@ const GroupMemberList: React.FC<GroupMemberListProps> = ({
                     alt={member.name}
                     className="member-profile-image"
                   />
-                  <span className="member-name">{member.name}</span>
+                  <p className="member-name">{member.name}</p>
                 </div>
               </div>
             </Link>
           ))}
       </div>
+      {groupMembers.length > itemsPerPage && (
+        <div className="pagination">
+          <button onClick={handlePreviousPage} disabled={currentPage === 1}>
+            {"<"}
+          </button>
+          <span>Page {currentPage}</span>
+          <button
+            onClick={handleNextPage}
+            disabled={endIndex >= groupMembers.length}
+          >
+            {">"}
+          </button>
+        </div>
+      )}
     </div>
   )
 }

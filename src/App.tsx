@@ -156,8 +156,8 @@ function App() {
                             />
                           </button>
                         </Link>
-
                         <div className="divider" />
+
                         <h2 className="questions">
                           Want to add an expense between 2 people?
                         </h2>

@@ -7,24 +7,18 @@ import {
   doc,
   query,
   where,
+  Timestamp,
 } from "firebase/firestore"
 import { auth, db } from "../../config/firebase"
 import { allCurrencies } from "../GlobalComponents/currencies"
 import { useNavigate } from "react-router-dom"
 import LoadingSpinner from "../GlobalComponents/LoadingSpinner"
-
-interface Expense {
-  id?: string
-  person1: string
-  person2: string
-  description: string
-  amount: number
-  currency: string
-  userId: string
-}
+import LoadingAnimation from "../../images/loading2.gif"
+import QuickExpenseProps from "../../types/QuickExpenseTypes/PublicExpenseProps"
 
 const QuickExpense: React.FC = () => {
-  const [expenses, setExpenses] = useState<Expense[]>([])
+  const [expenses, setExpenses] = useState<QuickExpenseProps[]>([])
+  const [isLoading, setIsLoading] = useState(false)
   const [person1, setPerson1] = useState<string>("")
   const [person2, setPerson2] = useState<string>("")
   const [description, setDescription] = useState<string>("")
@@ -45,6 +39,7 @@ const QuickExpense: React.FC = () => {
     setPerson2Error("")
     setAmountError("")
     setErrorMessage("")
+    setCurrencyError("")
 
     if (!person1) {
       setPerson1Error("Please enter a name for person 1")
@@ -69,30 +64,43 @@ const QuickExpense: React.FC = () => {
 
     const user = auth.currentUser
     if (user) {
-      // Check if the currency matches for previous expenses between the same people
-      const matchingExpenses = expenses.filter(
-        (expense) =>
-          (expense.person1 === person1 && expense.person2 === person2) ||
-          (expense.person1 === person2 && expense.person2 === person1)
-      )
+      const formattedPerson1 = capitalizeName(person1)
+      const formattedPerson2 = capitalizeName(person2)
 
-      if (
-        matchingExpenses.length > 0 &&
-        matchingExpenses[0].currency !== currency
-      ) {
-        setErrorMessage(
-          "Currency not the same as the one used in the previous expense!"
-        )
-        return
+      const matchingExpenses = expenses.filter((expense) => {
+        const storedPerson1 = capitalizeName(expense.person1)
+        const storedPerson2 = capitalizeName(expense.person2)
+
+        const match1 =
+          formattedPerson1 === storedPerson1 &&
+          formattedPerson2 === storedPerson2
+        const match2 =
+          formattedPerson1 === storedPerson2 &&
+          formattedPerson2 === storedPerson1
+
+        return match1 || match2
+      })
+
+      if (matchingExpenses.length > 0) {
+        const previousCurrency = matchingExpenses[0].currency
+
+        if (previousCurrency !== currency) {
+          setErrorMessage(
+            "Currency not the same as the one used in the previous expense!"
+          )
+          return
+        }
       }
+      setIsLoading(true)
 
-      const newExpense: Expense = {
-        person1,
-        person2,
+      const newExpense: QuickExpenseProps = {
+        person1: formattedPerson1,
+        person2: formattedPerson2,
         description,
         amount,
         currency,
         userId: user.uid,
+        timestamp: Timestamp.now(),
       }
 
       try {
@@ -109,6 +117,9 @@ const QuickExpense: React.FC = () => {
         console.error("Error adding expense: ", error)
       }
     }
+    setTimeout(() => {
+      setIsLoading(false)
+    }, 500)
   }
 
   const fetchExpensesAndCalculateDebts = async () => {
@@ -117,7 +128,7 @@ const QuickExpense: React.FC = () => {
       const userId = user.uid
       const q = query(expensesCollection, where("userId", "==", userId))
       const querySnapshot = await getDocs(q)
-      const expensesData: Expense[] = []
+      const expensesData: QuickExpenseProps[] = []
       querySnapshot.forEach((doc) => {
         expensesData.push({ id: doc.id, ...doc.data() })
       })
@@ -131,7 +142,7 @@ const QuickExpense: React.FC = () => {
   function capitalizeName(name: string) {
     return name.charAt(0).toUpperCase() + name.slice(1).toLowerCase()
   }
-  const calculateNetDebts = (expensesData: Expense[]) => {
+  const calculateNetDebts = (expensesData: QuickExpenseProps[]) => {
     const netDebts: Record<string, { amount: number; currency: string }> = {}
 
     expensesData.forEach((expense) => {
@@ -153,16 +164,6 @@ const QuickExpense: React.FC = () => {
     return netDebts
   }
 
-  const handleDeleteExpense = async (expenseId: string) => {
-    try {
-      await deleteDoc(doc(expensesCollection, expenseId))
-      setExpenses(expenses.filter((expense) => expense.id !== expenseId))
-      fetchExpensesAndCalculateDebts()
-    } catch (error) {
-      console.error("Error deleting expense: ", error)
-    }
-  }
-
   const updateNetDebtsUI = (
     netDebts: Record<string, { amount: number; currency: string }>
   ) => {
@@ -175,21 +176,27 @@ const QuickExpense: React.FC = () => {
         const currency = netDebts[key].currency
         const debtDescription =
           amount > 0
-            ? `${person1} owes ${amount} ${currency} to ${person2}`
-            : `${person2} owes ${-amount} ${currency} to ${person1}`
+            ? `${person1} owes ${person2} → ${amount} ${currency}`
+            : `${person2} owes ${person1} → ${-amount} ${currency}`
         debtList.push(debtDescription)
       }
     }
 
     const netDebtsElement = document.getElementById("netDebts")
     if (netDebtsElement) {
+      const ulClass = "styled-list"
+      const liClass = "styled-list-item"
       netDebtsElement.innerHTML = debtList.length
-        ? `<ul>${debtList
-            .map((debt, index) => `<li key=${index}>${debt}</li>`)
+        ? `<ul class="${ulClass}">${debtList
+            .map(
+              (debt, index) =>
+                `<li class="${liClass}" key=${index}>${debt}</li>`
+            )
             .join("")}</ul>`
         : "No debts between people"
     }
   }
+
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged((user) => {
       if (user) {
@@ -211,9 +218,9 @@ const QuickExpense: React.FC = () => {
     const user = auth.currentUser
 
     if (user) {
-      fetchExpensesAndCalculateDebts()
+      fetchExpensesAndCalculateDebts(user.uid)
     }
-  })
+  }, [])
 
   return (
     <div>
@@ -222,25 +229,56 @@ const QuickExpense: React.FC = () => {
       ) : (
         <>
           <div>
-            <br></br>
-            <label htmlFor="person1">Person 1:</label>
-            <input
-              type="text"
-              id="person1"
-              value={person1}
-              onChange={(e) => setPerson1(e.target.value)}
-              required
-            />
-            {person1Error && <p className="error-message">{person1Error}</p>}
-            <label htmlFor="person2">Person 2:</label>
-            <input
-              type="text"
-              id="person2"
-              value={person2}
-              onChange={(e) => setPerson2(e.target.value)}
-              required
-            />
-            {person2Error && <p className="error-message">{person2Error}</p>}
+            <br />
+            <div
+              style={{
+                display: "flex",
+                gap: "1rem",
+                alignItems: "center",
+                justifyContent: "center",
+                marginBlock: "2rem",
+              }}
+            >
+              <div style={{ display: "flex", flexDirection: "column" }}>
+                <label htmlFor="person1">Person 1:</label>
+                <input
+                  type="text"
+                  id="person1"
+                  value={person1}
+                  onChange={(e) => setPerson1(e.target.value)}
+                  required
+                  maxLength={20}
+                />
+                {person1Error && (
+                  <p className="error-message">{person1Error}</p>
+                )}
+              </div>
+              <span
+                style={{
+                  display: "flex",
+                  marginBlockStart: "1rem",
+                  gap: "1rem",
+                  alignItems: "center",
+                }}
+              >
+                owes
+                <div className="custom-arrow"></div>{" "}
+              </span>
+              <div style={{ display: "flex", flexDirection: "column" }}>
+                <label htmlFor="person2">Person 2:</label>
+                <input
+                  type="text"
+                  id="person2"
+                  value={person2}
+                  onChange={(e) => setPerson2(e.target.value)}
+                  required
+                  maxLength={20}
+                />
+                {person2Error && (
+                  <p className="error-message">{person2Error}</p>
+                )}
+              </div>
+            </div>
             <label htmlFor="description">Description (optional):</label>
             <input
               type="text"
@@ -248,12 +286,13 @@ const QuickExpense: React.FC = () => {
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               required
+              maxLength={40}
             />
             <label htmlFor="amount">Amount:</label>
             <input
               type="number"
               id="amount"
-              value={amount}
+              value={amount.toString()}
               onChange={(e) => setAmount(parseFloat(e.target.value))}
               required
             />
@@ -262,49 +301,76 @@ const QuickExpense: React.FC = () => {
             {currencyError && (
               <p className="error-message">{currencyError}</p>
             )}{" "}
-            <label htmlFor="currency">Currency:</label>
-            <select
-              id="currency"
-              value={currency}
-              onChange={(e) => setCurrency(e.target.value)}
-            >
-              <option>Select a currency</option>
-              {allCurrencies.map((currencyOption, index) => (
-                <option key={index} value={currencyOption.code}>
-                  {currencyOption.code} ({currencyOption.symbol})
-                </option>
-              ))}
-            </select>
+            <div style={{ marginBlock: "1rem" }}>
+              <label htmlFor="currency">Currency:</label>
+              <select
+                id="currency"
+                value={currency}
+                onChange={(e) => setCurrency(e.target.value)}
+              >
+                <option>Select a currency</option>
+                {allCurrencies.map((currencyOption, index) => (
+                  <option key={index} value={currencyOption.code}>
+                    {currencyOption.code} ({currencyOption.symbol})
+                  </option>
+                ))}
+              </select>
+            </div>
             <button type="button" onClick={handleAddExpense}>
               Add Expense
             </button>
           </div>
+          {expenses.length > 0 && (
+            <>
+              {isLoading ? (
+                <img
+                  src={LoadingAnimation}
+                  width={48}
+                  height={48}
+                  alt="Loading"
+                />
+              ) : (
+                <>
+                  <div className="divider" />
 
-          <div>
-            <h2>Net Debts</h2>
-            <div id="netDebts"></div>
-          </div>
+                  <div>
+                    <h2>Net Debts</h2>
+                    <div style={{ color: "#ffffffed" }} id="netDebts"></div>
+                  </div>
 
-          <div>
-            <h2>Expenses History</h2>
-            <ul>
-              {expenses.map((expense, index) => (
-                <li key={index}>
-                  {expense.person1} owes {expense.amount}
-                  {expense.currency} to {expense.person2}{" "}
-                  {expense.description ? "for" + expense.description : ""}
-                  <button
-                    onClick={() => navigate(`/quick-expense/${expense.id}`)}
-                  >
-                    Details
-                  </button>
-                  <button onClick={() => handleDeleteExpense(expense.id)}>
-                    Delete
-                  </button>
-                </li>
-              ))}
-            </ul>
-          </div>
+                  <div>
+                    <div className="divider" />
+
+                    <h2>Expenses History</h2>
+                    <ul className="expense-list">
+                      {expenses.map((expense, index) => (
+                        <li key={index} className="expense-item">
+                          <span>
+                            {expense.person1} owes {expense.person2}
+                            <br /> → {expense.amount}
+                            {expense.currency}
+                          </span>
+                          <br /> <br />
+                          {expense.description ? (
+                            "for" + " " + expense.description
+                          ) : (
+                            <br />
+                          )}
+                          <button
+                            onClick={() =>
+                              navigate(`/quick-expense/${expense.id}`)
+                            }
+                          >
+                            Details
+                          </button>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                </>
+              )}
+            </>
+          )}
         </>
       )}
     </div>

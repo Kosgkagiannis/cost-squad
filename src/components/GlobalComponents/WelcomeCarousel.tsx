@@ -79,6 +79,7 @@ const WelcomeCarousel: React.FC<WelcomeCarouselProps> = ({
               height={180}
               autoPlay
               muted
+              preload="auto"
               loop
               className="background-video"
             >
@@ -91,9 +92,7 @@ const WelcomeCarousel: React.FC<WelcomeCarouselProps> = ({
         )}
         <div className="carousel-nav">
           <div>
-            <button onClick={onComplete} className="skip-button">
-              Skip
-            </button>
+            <button onClick={onComplete}>Skip</button>
           </div>
           <div>
             <button

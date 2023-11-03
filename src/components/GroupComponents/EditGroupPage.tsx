@@ -326,8 +326,6 @@ const EditGroupPage = () => {
 
         const imageSnapshot = await uploadBytes(storageRef, imageFile)
         imageUrls = [await getDownloadURL(imageSnapshot.ref)]
-      } else {
-        console.error("Image file doesn't exist")
       }
 
       const newExpenseData = {

@@ -20,10 +20,14 @@ import { auth, db } from "../../config/firebase"
 import ImageModal from "../GlobalComponents/ImageModal"
 import { useNavigate } from "react-router-dom"
 import { onAuthStateChanged } from "firebase/auth"
+import LoadingAnimation from "../../images/loading2.gif"
+import LoadingSpinner from "../GlobalComponents/LoadingSpinner"
 
 const GroupExpenseDetails = () => {
   const { groupId, expenseId } = useParams()
   const [imageFileName, setImageFileName] = useState<string | null>(null)
+  const [isLoading, setIsLoading] = useState(false)
+  const [isLoadingImage, setIsLoadingImage] = useState(false)
   const [showImageMessage, setShowImageMessage] = useState(false)
   const [modalImageUrl, setModalImageUrl] = useState("")
   const [isModalOpen, setIsModalOpen] = useState(false)
@@ -163,6 +167,7 @@ const GroupExpenseDetails = () => {
   const handleImageUpload = async (
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
+    setIsLoadingImage(true)
     const file = event.target.files && event.target.files[0]
     if (file) {
       try {
@@ -185,7 +190,10 @@ const GroupExpenseDetails = () => {
         await updateDoc(expenseDocRef, { imageUrls: updatedImageUrls })
 
         setExpenseData({ ...expenseData, imageUrls: updatedImageUrls })
-        displayImageMessage(`Selected Image: ${file.name}`)
+        setTimeout(() => {
+          displayImageMessage(`Selected Image: ${file.name}`)
+          setIsLoadingImage(false)
+        }, 1500)
       } catch (error) {
         console.error("Error uploading image:", error)
       }
@@ -194,6 +202,7 @@ const GroupExpenseDetails = () => {
 
   useEffect(() => {
     const fetchExpenseData = async () => {
+      setIsLoading(true)
       try {
         if (!groupId || !expenseId) {
           console.error("Group ID or Expense ID is undefined")
@@ -219,6 +228,9 @@ const GroupExpenseDetails = () => {
       } catch (error) {
         console.error("Error fetching expense data:", error)
       }
+      setTimeout(() => {
+        setIsLoading(false)
+      }, 500)
     }
 
     fetchExpenseData()
@@ -235,79 +247,104 @@ const GroupExpenseDetails = () => {
     setExpenseData({ ...expenseData, comments: updatedComments })
   }
 
+  const formatImageFileName = (fileName: string | null) => {
+    if (fileName && fileName.length > 14) {
+      const firstPart = fileName.slice(0, 10)
+      const lastPart = fileName.slice(-4)
+      return `${firstPart}...${lastPart}`
+    }
+    return fileName
+  }
+
   return (
     <div>
-      <button style={{ background: "#ff0000bd" }} onClick={deleteExpense}>
-        Delete Expense
-      </button>
-      <h2>Expense Details</h2>
-      <p>Description: {expenseData.description}</p>
-      <p>Amount: {expenseData.amount}</p>
-      <p>
-        Date and Time:
-        {expenseData.timestamp
-          ? (expenseData.timestamp as Date).toLocaleString()
-          : "N/A"}
-      </p>
-      <p>Shared: {expenseData.shared ? "Yes" : "No"}</p>
+      {isLoading ? (
+        <LoadingSpinner />
+      ) : (
+        <>
+          <button style={{ background: "#ff0000bd" }} onClick={deleteExpense}>
+            Delete Expense
+          </button>
+          <h2>Expense Details</h2>
+          <p style={{ wordBreak: "break-word" }}>
+            Description: {expenseData.description}
+          </p>
+          <p>Amount: {expenseData.amount}</p>
+          <p>
+            Date and Time:
+            {expenseData.timestamp
+              ? (expenseData.timestamp as Date).toLocaleString()
+              : "N/A"}
+          </p>
+          <p>Shared: {expenseData.shared ? "Yes" : "No"}</p>
 
-      {/* <br />
+          {/* <br />
       <input type="file" accept="image/*" onChange={handleImageUpload} />
       <br /> */}
 
-      <div>
-        <h3>Comments</h3>
-        <ul>
-          {expenseData.comments.map((comment, index) => (
-            <li key={index}>
-              {comment}
-              <button onClick={() => deleteComment(index)}>Delete</button>
-            </li>
-          ))}
-        </ul>
-      </div>
+          <div>
+            <h3>Comments</h3>
+            <ul>
+              {expenseData.comments.map((comment, index) => (
+                <li key={index}>
+                  {comment}
+                  <button onClick={() => deleteComment(index)}>Delete</button>
+                </li>
+              ))}
+            </ul>
+          </div>
 
-      {/* Input field for adding comments */}
-      <input
-        type="text"
-        placeholder="Add a comment"
-        value={commentInput}
-        onChange={(e) => setCommentInput(e.target.value)}
-      />
-      <button onClick={() => addComment(commentInput)}>Add Comment</button>
-      <br></br>
-      <div className="custom-upload-button" onClick={handleCustomUploadClick}>
-        <span>Upload Receipt</span>
-        <input
-          type="file"
-          accept="image/*"
-          id="fileInput"
-          style={{ display: "none" }}
-          onChange={handleImageUpload}
-        />
-      </div>
-      {showImageMessage && (
-        <p>Selected Image: {imageFileName || "No image selected"}</p>
-      )}
-      {isModalOpen && (
-        <ImageModal
-          imageUrl={modalImageUrl}
-          closeModal={closeModal}
-          deleteImage={() => deleteImage(modalImageUrl)}
-        />
-      )}
-      {expenseData.imageUrls.length > 0 && (
-        <div className="image-gallery">
-          {expenseData.imageUrls.map((imageUrl, index) => (
-            <div key={index} className="image-item">
-              <img
-                src={imageUrl}
-                alt={``}
-                onClick={() => handleImageClick(imageUrl)}
-              />
+          <input
+            type="text"
+            placeholder="Add a comment"
+            value={commentInput}
+            onChange={(e) => setCommentInput(e.target.value)}
+          />
+          <button onClick={() => addComment(commentInput)}>Add Comment</button>
+          <br></br>
+          <div
+            className="custom-upload-button"
+            onClick={handleCustomUploadClick}
+          >
+            <span>Upload Receipt</span>
+            <input
+              type="file"
+              accept="image/*"
+              id="fileInput"
+              style={{ display: "none" }}
+              onChange={handleImageUpload}
+            />
+          </div>
+          {isLoadingImage && (
+            <img src={LoadingAnimation} width={48} height={48} alt="Loading" />
+          )}
+          {showImageMessage && (
+            <p>
+              Selected Image:
+              {formatImageFileName(imageFileName) || "No image selected"}
+            </p>
+          )}
+          {isModalOpen && (
+            <ImageModal
+              imageUrl={modalImageUrl}
+              closeModal={closeModal}
+              deleteImage={() => deleteImage(modalImageUrl)}
+            />
+          )}
+          {expenseData.imageUrls.length > 0 && (
+            <div className="image-gallery">
+              {expenseData.imageUrls.map((imageUrl, index) => (
+                <div key={index} className="image-item">
+                  <img
+                    src={imageUrl}
+                    alt={`Gallery`}
+                    onClick={() => handleImageClick(imageUrl)}
+                  />
+                </div>
+              ))}
             </div>
-          ))}
-        </div>
+          )}
+        </>
       )}
     </div>
   )
