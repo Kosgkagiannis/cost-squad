@@ -335,34 +335,40 @@ const QuickExpense: React.FC = () => {
 
                   <div>
                     <h2>Net Debts</h2>
-                    <div style={{ color: "#ffffffed" }} id="netDebts"></div>
+                    <div
+                      style={{ color: "#ffffffed", fontSize: "14px" }}
+                      id="netDebts"
+                    ></div>
                   </div>
 
                   <div>
                     <div className="divider" />
 
                     <h2>Expenses History</h2>
-                    <ul className="expense-list">
+                    <ul className="styled-list">
                       {expenses.map((expense, index) => (
-                        <li key={index} className="expense-item">
+                        <li
+                          key={index}
+                          style={{ height: "auto" }}
+                          className="styled-list-item"
+                        >
                           <span>
-                            {expense.person1} owes {expense.person2}
-                            <br /> → {expense.amount}
-                            {expense.currency}
+                            <p style={{ wordBreak: "break-word" }}>
+                              {expense.person1} owes {expense.person2} →{" "}
+                              {expense.amount}
+                              {expense.currency}
+                              {expense.description
+                                ? " for " + expense.description
+                                : " "}
+                            </p>
+                            <button
+                              onClick={() =>
+                                navigate(`/quick-expense/${expense.id}`)
+                              }
+                            >
+                              Details
+                            </button>
                           </span>
-                          <br /> <br />
-                          {expense.description ? (
-                            "for" + " " + expense.description
-                          ) : (
-                            <br />
-                          )}
-                          <button
-                            onClick={() =>
-                              navigate(`/quick-expense/${expense.id}`)
-                            }
-                          >
-                            Details
-                          </button>
                         </li>
                       ))}
                     </ul>

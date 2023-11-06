@@ -49,6 +49,11 @@ h1 {
   word-wrap: break-word;
 }
 
+ul {
+  list-style-type: disc;
+  color: white;
+}
+
 input[type="text"],
 input[type="number"] {
   width: 95%;

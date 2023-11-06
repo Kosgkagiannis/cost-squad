@@ -29,6 +29,7 @@ const GroupExpenseDetails = () => {
   const [isLoading, setIsLoading] = useState(false)
   const [isLoadingImage, setIsLoadingImage] = useState(false)
   const [showImageMessage, setShowImageMessage] = useState(false)
+  const [isCommentInputVisible, setCommentInputVisible] = useState(false)
   const [modalImageUrl, setModalImageUrl] = useState("")
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [commentInput, setCommentInput] = useState("")
@@ -49,6 +50,9 @@ const GroupExpenseDetails = () => {
     comments: [],
   })
 
+  const toggleCommentInput = () => {
+    setCommentInputVisible(!isCommentInputVisible)
+  }
   const deleteExpense = async () => {
     const confirmDelete = window.confirm(
       "Are you sure you want to delete this expense?"
@@ -281,27 +285,42 @@ const GroupExpenseDetails = () => {
           {/* <br />
       <input type="file" accept="image/*" onChange={handleImageUpload} />
       <br /> */}
-
+          <div className="divider" />
           <div>
             <h3>Comments</h3>
             <ul>
               {expenseData.comments.map((comment, index) => (
-                <li key={index}>
+                <li
+                  style={{ wordBreak: "break-word", marginBlockStart: "1rem" }}
+                  key={index}
+                >
                   {comment}
                   <button onClick={() => deleteComment(index)}>Delete</button>
                 </li>
               ))}
             </ul>
           </div>
-
-          <input
-            type="text"
-            placeholder="Add a comment"
-            value={commentInput}
-            onChange={(e) => setCommentInput(e.target.value)}
-          />
-          <button onClick={() => addComment(commentInput)}>Add Comment</button>
+          {isCommentInputVisible ? (
+            <>
+              <input
+                type="text"
+                placeholder="Add a comment"
+                value={commentInput}
+                onChange={(e) => setCommentInput(e.target.value)}
+                maxLength={50}
+              />
+              <button onClick={() => addComment(commentInput)}>
+                Add Comment
+              </button>
+              <button onClick={toggleCommentInput}>Cancel</button>
+            </>
+          ) : (
+            <button onClick={toggleCommentInput}>Add Comment</button>
+          )}
           <br></br>
+          <div className="divider" />
+          <h3>Receipts</h3>
+
           <div
             className="custom-upload-button"
             onClick={handleCustomUploadClick}
