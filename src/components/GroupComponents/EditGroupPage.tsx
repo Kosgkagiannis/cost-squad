@@ -112,7 +112,7 @@ const EditGroupPage = () => {
 
   const handleAmountChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const inputValue = event.target.value
-    const maxAmountLength = 11
+    const maxAmountLength = 6
 
     if (inputValue.length <= maxAmountLength) {
       setAmount(inputValue)

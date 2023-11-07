@@ -33,6 +33,7 @@ const GroupExpenseDetails = () => {
   const [modalImageUrl, setModalImageUrl] = useState("")
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [commentInput, setCommentInput] = useState("")
+  const [currency, setCurrency] = useState<string>("")
   const navigate = useNavigate()
   const [expenseData, setExpenseData] = useState<{
     description: string
@@ -49,6 +50,16 @@ const GroupExpenseDetails = () => {
     imageUrls: [],
     comments: [],
   })
+
+  useEffect(() => {
+    const hash = window.location.hash
+    const currencyParamIndex = hash.indexOf("currency=")
+
+    if (currencyParamIndex !== -1) {
+      const currencyParam = hash.slice(currencyParamIndex + "currency=".length)
+      setCurrency(decodeURIComponent(currencyParam))
+    }
+  }, [])
 
   const toggleCommentInput = () => {
     setCommentInputVisible(!isCommentInputVisible)
@@ -87,7 +98,7 @@ const GroupExpenseDetails = () => {
         await deleteDoc(expenseRef)
         // need to delete firestore document too with this
         await deleteDoc(expenseRef)
-        navigate(`/edit-group/${groupId}`)
+        navigate(`/edit-group/${groupId}?currency=${currency}`)
       } catch (error) {
         console.error("Error deleting expense:", error)
       }
@@ -273,14 +284,20 @@ const GroupExpenseDetails = () => {
           <p style={{ wordBreak: "break-word" }}>
             Description: {expenseData.description}
           </p>
-          <p>Amount: {expenseData.amount}</p>
           <p>
-            Date and Time:
+            Amount:{" "}
+            {new Intl.NumberFormat(undefined, {
+              minimumFractionDigits: 0,
+              maximumFractionDigits: 3,
+            }).format(expenseData.amount)}{" "}
+            {currency}
+          </p>
+          <p>
+            Date and Time:{" "}
             {expenseData.timestamp
               ? (expenseData.timestamp as Date).toLocaleString()
               : "N/A"}
           </p>
-          <p>Shared: {expenseData.shared ? "Yes" : "No"}</p>
 
           {/* <br />
       <input type="file" accept="image/*" onChange={handleImageUpload} />

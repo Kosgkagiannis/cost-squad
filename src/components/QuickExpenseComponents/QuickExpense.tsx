@@ -1,10 +1,8 @@
-import React, { useState, useEffect } from "react"
+import React, { useState, useEffect, useCallback } from "react"
 import {
   collection,
   addDoc,
-  deleteDoc,
   getDocs,
-  doc,
   query,
   where,
   Timestamp,
@@ -20,6 +18,7 @@ const QuickExpense: React.FC = () => {
   const [expenses, setExpenses] = useState<QuickExpenseProps[]>([])
   const [isLoading, setIsLoading] = useState(false)
   const [person1, setPerson1] = useState<string>("")
+  const [debtList, setDebtList] = useState<string[]>([])
   const [person2, setPerson2] = useState<string>("")
   const [description, setDescription] = useState<string>("")
   const [amount, setAmount] = useState<number>(0)
@@ -34,7 +33,7 @@ const QuickExpense: React.FC = () => {
 
   const expensesCollection = collection(db, "expenses2")
 
-  const handleAddExpense = async () => {
+  const handleAddExpense = useCallback(async () => {
     setPerson1Error("")
     setPerson2Error("")
     setAmountError("")
@@ -120,9 +119,9 @@ const QuickExpense: React.FC = () => {
     setTimeout(() => {
       setIsLoading(false)
     }, 500)
-  }
+  }, [person1, person2, description, amount, currency, expenses])
 
-  const fetchExpensesAndCalculateDebts = async () => {
+  const fetchExpensesAndCalculateDebts = async (userId: string) => {
     const user = auth.currentUser
     if (user) {
       const userId = user.uid
@@ -167,7 +166,7 @@ const QuickExpense: React.FC = () => {
   const updateNetDebtsUI = (
     netDebts: Record<string, { amount: number; currency: string }>
   ) => {
-    const debtList = []
+    const newDebtList = []
 
     for (const key in netDebts) {
       if (netDebts[key].amount !== 0) {
@@ -178,16 +177,18 @@ const QuickExpense: React.FC = () => {
           amount > 0
             ? `${person1} owes ${person2} → ${amount} ${currency}`
             : `${person2} owes ${person1} → ${-amount} ${currency}`
-        debtList.push(debtDescription)
+        newDebtList.push(debtDescription)
       }
     }
+
+    setDebtList(newDebtList)
 
     const netDebtsElement = document.getElementById("netDebts")
     if (netDebtsElement) {
       const ulClass = "styled-list"
       const liClass = "styled-list-item"
-      netDebtsElement.innerHTML = debtList.length
-        ? `<ul class="${ulClass}">${debtList
+      netDebtsElement.innerHTML = newDebtList.length
+        ? `<ul class="${ulClass}">${newDebtList
             .map(
               (debt, index) =>
                 `<li class="${liClass}" key=${index}>${debt}</li>`
@@ -200,7 +201,7 @@ const QuickExpense: React.FC = () => {
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged((user) => {
       if (user) {
-        fetchExpensesAndCalculateDebts().then(() =>
+        fetchExpensesAndCalculateDebts(user.uid).then(() =>
           setTimeout(() => {
             setLoading(false)
           }, 500)
@@ -212,7 +213,7 @@ const QuickExpense: React.FC = () => {
     })
 
     return () => unsubscribe()
-  })
+  }, [auth.currentUser])
 
   useEffect(() => {
     const user = auth.currentUser
@@ -302,7 +303,9 @@ const QuickExpense: React.FC = () => {
               <p className="error-message">{currencyError}</p>
             )}{" "}
             <div style={{ marginBlock: "1rem" }}>
-              <label htmlFor="currency">Currency:</label>
+              <label style={{ marginRight: "10px" }} htmlFor="currency">
+                Currency:
+              </label>
               <select
                 id="currency"
                 value={currency}
@@ -316,7 +319,11 @@ const QuickExpense: React.FC = () => {
                 ))}
               </select>
             </div>
-            <button type="button" onClick={handleAddExpense}>
+            <button
+              type="button"
+              onClick={handleAddExpense}
+              disabled={isLoading}
+            >
               Add Expense
             </button>
           </div>
@@ -335,10 +342,19 @@ const QuickExpense: React.FC = () => {
 
                   <div>
                     <h2>Net Debts</h2>
-                    <div
-                      style={{ color: "#ffffffed", fontSize: "14px" }}
-                      id="netDebts"
-                    ></div>
+                    <div style={{ color: "#ffffffed", fontSize: "14px" }}>
+                      {debtList.length ? (
+                        <ul className="styled-list">
+                          {debtList.map((debt, index) => (
+                            <li key={index} className="styled-list-item">
+                              {debt}
+                            </li>
+                          ))}
+                        </ul>
+                      ) : (
+                        "No debts between people"
+                      )}
+                    </div>
                   </div>
 
                   <div>

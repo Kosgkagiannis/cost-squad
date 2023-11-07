@@ -1,5 +1,5 @@
 import React, { useState } from "react"
-import { Link } from "react-router-dom"
+import { useNavigate } from "react-router-dom"
 import GroupMemberListProps from "../../types/GroupTypes/GroupMemberListProps"
 import LoadingAnimation from "../../images/loading2.gif"
 
@@ -12,6 +12,7 @@ const GroupMemberList: React.FC<GroupMemberListProps> = ({
 }) => {
   const [isAddingMembers, setIsAddingMembers] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
+  const navigate = useNavigate()
   const itemsPerPage = 6
   const [currentPage, setCurrentPage] = useState(1)
 
@@ -79,22 +80,23 @@ const GroupMemberList: React.FC<GroupMemberListProps> = ({
           .filter((member) => member.name && member.name.trim() !== "")
           .slice(startIndex, endIndex)
           .map((member) => (
-            <Link
-              key={member.id}
-              style={{ textDecoration: "none", color: "black" }}
-              to={`/edit-member/${groupId}/${member.id}`}
-            >
-              <div className="mobile-profile member-list-item">
-                <div className="member-box">
-                  <img
-                    src={member.profilePicture}
-                    alt={member.name}
-                    className="member-profile-image"
-                  />
-                  <p className="member-name">{member.name}</p>
-                </div>
+            <div className="mobile-profile member-list-item">
+              <div className="member-box">
+                <img
+                  src={member.profilePicture}
+                  alt={member.name}
+                  className="member-profile-image"
+                />
+                <p className="member-name">{member.name}</p>
+                <button
+                  onClick={() =>
+                    navigate(`/edit-member/${groupId}/${member.id}`)
+                  }
+                >
+                  Edit
+                </button>
               </div>
-            </Link>
+            </div>
           ))}
       </div>
       {groupMembers.length > itemsPerPage && (

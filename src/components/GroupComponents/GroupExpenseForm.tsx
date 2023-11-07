@@ -1,12 +1,11 @@
-import React, { useState } from "react"
-import { Link } from "react-router-dom"
+import React, { useState, useEffect } from "react"
+import { useNavigate } from "react-router-dom"
 import GroupExpenseFormProps from "../../types/GroupTypes/GroupExpenseFormProps"
 import WarningIcon from "../../images/warning.png"
 
 const GroupExpenseForm: React.FC<GroupExpenseFormProps> = ({
   description,
   amount,
-  shared,
   selectedMember,
   selectedMemberId,
   groupId,
@@ -15,13 +14,24 @@ const GroupExpenseForm: React.FC<GroupExpenseFormProps> = ({
   imageFileName,
   handleDescriptionChange,
   handleAmountChange,
-  handleSharedChange,
   handleSelectedMemberChange,
   handleAddExpense,
   handleImageChange,
 }) => {
   const itemsPerPage = 4
   const [currentPage, setCurrentPage] = useState(1)
+  const [currency, setCurrency] = useState<string>("")
+  const navigate = useNavigate()
+
+  useEffect(() => {
+    const hash = window.location.hash
+    const currencyParamIndex = hash.indexOf("currency=")
+
+    if (currencyParamIndex !== -1) {
+      const currencyParam = hash.slice(currencyParamIndex + "currency=".length)
+      setCurrency(decodeURIComponent(currencyParam))
+    }
+  }, [])
 
   const handleNextPage = () => {
     setCurrentPage(currentPage + 1)
@@ -60,6 +70,7 @@ const GroupExpenseForm: React.FC<GroupExpenseFormProps> = ({
           <h2>Add Expense</h2>
           <input
             type="text"
+            id="description-group"
             placeholder="Description"
             value={description}
             onChange={handleDescriptionChange}
@@ -71,14 +82,22 @@ const GroupExpenseForm: React.FC<GroupExpenseFormProps> = ({
             value={amount}
             onChange={handleAmountChange}
           />
-          <label>
-            Shared equally:
-            <input
-              type="checkbox"
-              checked={shared}
-              onChange={handleSharedChange}
-            />
-          </label>
+          <div style={{ margin: "1rem" }}>
+            <label style={{ margin: "10px" }}>Paid By: {selectedMember}</label>
+            <select
+              value={selectedMemberId}
+              onChange={handleSelectedMemberChange}
+            >
+              <option value=""></option>
+              {groupMembers
+                .filter((member) => member.name && member.name.trim() !== "")
+                .map((member) => (
+                  <option key={member.id} value={member.id}>
+                    {member.name}
+                  </option>
+                ))}
+            </select>
+          </div>
           <div
             className="custom-upload-button"
             onClick={handleCustomUploadClick}
@@ -98,24 +117,6 @@ const GroupExpenseForm: React.FC<GroupExpenseFormProps> = ({
               {formatImageFileName(imageFileName) || "No image selected"}
             </p>
           )}
-          <div>
-            <label style={{ marginRight: "10px" }}>
-              Paid By: {selectedMember}
-            </label>
-            <select
-              value={selectedMemberId}
-              onChange={handleSelectedMemberChange}
-            >
-              <option value=""></option>
-              {groupMembers
-                .filter((member) => member.name && member.name.trim() !== "")
-                .map((member) => (
-                  <option key={member.id} value={member.id}>
-                    {member.name}
-                  </option>
-                ))}
-            </select>
-          </div>
           <button
             disabled={
               description.trim() === "" ||
@@ -133,11 +134,24 @@ const GroupExpenseForm: React.FC<GroupExpenseFormProps> = ({
               {expensesToDisplay.map((expense) => (
                 <li key={expense.id} className="expense-item">
                   <p>Description: {expense.description}</p>
-                  <p>Amount: {expense.amount}</p>
+                  <p>
+                    Amount:{" "}
+                    {new Intl.NumberFormat(undefined, {
+                      minimumFractionDigits: 0,
+                      maximumFractionDigits: 3,
+                    }).format(expense.amount)}{" "}
+                    {currency}
+                  </p>
                   <p>Paid By: {expense.payerName}</p>
-                  <Link to={`/expense-details/${groupId}/${expense.id}`}>
+                  <button
+                    onClick={() =>
+                      navigate(
+                        `/expense-details/${groupId}/${expense.id}?currency=${currency}`
+                      )
+                    }
+                  >
                     Details
-                  </Link>
+                  </button>
                 </li>
               ))}
             </ul>

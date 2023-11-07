@@ -1,14 +1,6 @@
 import React, { useState, useEffect } from "react"
 import { useParams } from "react-router-dom"
-import {
-  doc,
-  getDoc,
-  updateDoc,
-  deleteDoc,
-  collection,
-  getDocs,
-  writeBatch,
-} from "firebase/firestore"
+import { doc, getDoc, updateDoc, deleteDoc } from "firebase/firestore"
 import {
   getStorage,
   ref,
@@ -259,7 +251,7 @@ const QuickExpenseDetails = () => {
             Amount: {expenseData.amount} {expenseData.currency}
           </p>
           <p>
-            Date and Time:
+            Date and Time:{" "}
             {expenseData.timestamp
               ? (expenseData.timestamp as Date).toLocaleString()
               : "N/A"}

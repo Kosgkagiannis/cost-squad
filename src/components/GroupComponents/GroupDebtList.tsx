@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react"
-import { VictoryChart, VictoryBar, VictoryAxis, VictoryTheme } from "victory"
+import { VictoryChart, VictoryBar, VictoryAxis } from "victory"
 import GroupDebtProps from "../../types/GroupTypes/GroupDebtProps"
 import { db } from "../../config/firebase"
 import { collection, getDocs } from "firebase/firestore"
@@ -11,6 +11,17 @@ interface DebtListProps {
 
 const GroupDebtList: React.FC<DebtListProps> = ({ debts, groupId }) => {
   const [members, setMembers] = useState<{ [key: string]: string }>({})
+  const [currency, setCurrency] = useState<string>("")
+
+  useEffect(() => {
+    const hash = window.location.hash
+    const currencyParamIndex = hash.indexOf("currency=")
+
+    if (currencyParamIndex !== -1) {
+      const currencyParam = hash.slice(currencyParamIndex + "currency=".length)
+      setCurrency(decodeURIComponent(currencyParam))
+    }
+  }, [])
 
   // Fetch and store member profile pictures
   useEffect(() => {
@@ -92,19 +103,21 @@ const GroupDebtList: React.FC<DebtListProps> = ({ debts, groupId }) => {
           <VictoryChart
             domainPadding={20}
             width={600}
-            height={400}
-            padding={{ left: 100, top: 55, right: 45, bottom: 105 }}
+            height={450}
+            padding={{ left: 80, top: 55, right: 35, bottom: 105 }}
           >
             <VictoryBar
               data={memberDebtsArray}
               x="member"
               y="totalDebt"
               labels={({ datum }) => {
-                const label = `$${
+                const formattedAmount =
                   datum.totalDebt % 1 === 0
                     ? datum.totalDebt.toFixed(0)
                     : datum.totalDebt.toFixed(2)
-                }`
+
+                const label = `${formattedAmount}${currency}`
+
                 const maxLabelLength = 8
                 return label.length > maxLabelLength
                   ? label.substring(0, maxLabelLength) +
@@ -119,7 +132,7 @@ const GroupDebtList: React.FC<DebtListProps> = ({ debts, groupId }) => {
                   strokeWidth: 2,
                 },
                 labels: {
-                  fontSize: "12px",
+                  fontSize: "14px",
                   fill: "white",
                   angle: -45,
                   textAnchor: "start",
@@ -135,7 +148,7 @@ const GroupDebtList: React.FC<DebtListProps> = ({ debts, groupId }) => {
                 axis: { stroke: "#ccc", strokeWidth: 2 },
                 axisLabel: { padding: 35, fontWeight: "bold" },
                 tickLabels: {
-                  fontSize: 12,
+                  fontSize: 14,
                   angle: -45,
                   textAnchor: "end",
                   fill: "white",
@@ -151,7 +164,7 @@ const GroupDebtList: React.FC<DebtListProps> = ({ debts, groupId }) => {
                 tickLabels: {
                   fontWeight: "",
                   padding: 30,
-                  fontSize: 11,
+                  fontSize: 14,
                   fill: "white",
                 },
               }}
@@ -195,7 +208,7 @@ const GroupDebtList: React.FC<DebtListProps> = ({ debts, groupId }) => {
                       <div className="text-debt-container">
                         <div className="custom-arrow"></div>{" "}
                         <div className="debts">
-                          ${Math.abs(formattedAmountNumber)}
+                          {Math.abs(formattedAmountNumber)} {currency}
                         </div>
                       </div>
                     </>
@@ -223,7 +236,7 @@ const GroupDebtList: React.FC<DebtListProps> = ({ debts, groupId }) => {
                       <div className="text-debt-container">
                         <div className="custom-arrow"></div>
                         <div className="debts">
-                          ${Math.abs(formattedAmountNumber)}
+                          {Math.abs(formattedAmountNumber)} {currency}
                         </div>
                       </div>
                     </>

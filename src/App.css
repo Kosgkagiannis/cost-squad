@@ -102,7 +102,7 @@ button:hover {
 }
 
 .error-message {
-  color: #ff0000;
+  color: #ff0000bd;
   margin-top: 10px;
 }
 
@@ -552,12 +552,11 @@ p{
 .member-box {
   border: 1px solid #ccc;
   padding: 10px;
-  border-radius: 5px;
+  border-radius: 10px;
   background-color: #ffffff00;
   box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
   display: flex;
   width: 9.5rem;
-  height: 6.5rem;
   background: radial-gradient(circle, #00a3ff, #006eff94);
   flex-direction: column;
   align-items: center;
@@ -634,6 +633,7 @@ svg[role="img"] {
   margin: 20px 0;
   display: flex;
   align-items: center;
+  border-radius: 10px;
   justify-content: space-around;
   background: radial-gradient(circle, #00a3ff, #006eff94);
   height: 100px;
@@ -723,6 +723,7 @@ svg[role="img"] {
   justify-content: center;
   height: auto;
   padding: 10px;
+  border-radius: 10px;
   color: white;
   border: 1px solid #ccc;
   background: radial-gradient(circle, #00a3ff, #006eff94);
@@ -739,6 +740,7 @@ svg[role="img"] {
   justify-content: center;
   align-items: center;
   padding: 20px;
+  border-radius: 10px;
   border: 1px solid #ccc;
   height: auto;
   background: radial-gradient(circle, #00a3ff, #006eff94);

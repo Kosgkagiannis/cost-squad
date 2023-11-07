@@ -3,7 +3,7 @@ import SettingsIcon from "../../images/settings.png"
 
 interface GroupHeaderProps {
   groupTitle: string | null
-  originalGroupName: string
+  originalGroupName?: string
   newGroupName: string
   onGroupNameChange: (e: React.ChangeEvent<HTMLInputElement>) => void
   handleUpdateGroupName: () => void
