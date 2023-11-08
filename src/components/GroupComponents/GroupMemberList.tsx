@@ -51,6 +51,7 @@ const GroupMemberList: React.FC<GroupMemberListProps> = ({
             value={newMember}
             onChange={onMemberInputChange}
             maxLength={15}
+            data-testid="new-member-input"
           />
           {isLoading ? (
             <img src={LoadingAnimation} width={48} height={48} alt="Loading" />
@@ -58,6 +59,7 @@ const GroupMemberList: React.FC<GroupMemberListProps> = ({
             <button
               onClick={handleAddMemberAndCloseMenu}
               disabled={newMember.trim() === ""}
+              data-testid="add-member-button2"
             >
               Add Member
             </button>
@@ -66,7 +68,12 @@ const GroupMemberList: React.FC<GroupMemberListProps> = ({
         </>
       ) : (
         <div className="delete-button">
-          <button onClick={() => setIsAddingMembers(true)}>Add Member</button>
+          <button
+            data-testid="add-member-button"
+            onClick={() => setIsAddingMembers(true)}
+          >
+            Add Member
+          </button>
           {isLoading && (
             <img width={48} height={48} alt="Loading" src={LoadingAnimation} />
           )}

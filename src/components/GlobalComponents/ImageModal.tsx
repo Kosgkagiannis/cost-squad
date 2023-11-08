@@ -8,7 +8,7 @@ interface ImageModalProps {
 
 const ImageModal = ({ imageUrl, closeModal, deleteImage }: ImageModalProps) => {
   return (
-    <div className="image-modal" onClick={closeModal}>
+    <div className="image-modal" onClick={closeModal} data-testid="image-modal">
       <div className="image-modal-content" onClick={(e) => e.stopPropagation()}>
         <span className="close" onClick={closeModal}>
           &times;

@@ -5,7 +5,7 @@ import {
   signInWithPopup,
   onAuthStateChanged,
 } from "firebase/auth"
-import "./Login-Register.css"
+import "./css/Login-Register.css"
 import SignupForm from "./SignUpForm"
 import LogoHeader from "../../images/logo-header.jpg"
 import googleIcon from "../../images/google.jpg"
@@ -76,7 +76,7 @@ const LoginRegister: React.FC<LoginRegisterProps> = ({ onUserLogin }) => {
       />
       <button onClick={signInWithEmail}>Log in</button>
       {error && <p className="error-message">{error}</p>}
-      <h2>Or Log In with Google</h2>
+      <h2>Or Log in with Google</h2>
       <div className="google-signup">
         <button onClick={signInWithGoogle}>
           <img src={googleIcon} alt="Google Icon" /> Log In With Google

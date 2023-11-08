@@ -39,13 +39,17 @@ function Header({ handleLogout }: HeaderProps) {
           <div
             className={`hamburger-menu ${menuOpen ? "open" : ""}`}
             onClick={toggleMenu}
+            data-testid="hamburger-menu"
           >
             <div className="bar"></div>
             <div className="bar"></div>
             <div className="bar"></div>
           </div>
         </div>
-        <div className={`header-items ${menuOpen ? "open" : ""}`}>
+        <div
+          className={`header-items ${menuOpen ? "open" : ""}`}
+          data-testid="header-items"
+        >
           {!isHomePage && (
             <Link to="/create-group" onClick={closeMenu} className="menu-item">
               Squads

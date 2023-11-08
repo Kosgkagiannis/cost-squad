@@ -4,7 +4,7 @@ import { db } from "../../config/firebase"
 import { createUserWithEmailAndPassword, signInWithPopup } from "firebase/auth"
 import { collection, getDocs, where, query } from "firebase/firestore"
 import googleIcon from "../../images/google.jpg"
-import "./Modal.css"
+import "../GlobalComponents/css/Modal.css"
 
 interface SignupFormProps {
   onClose: () => void
@@ -76,12 +76,12 @@ const SignupForm: React.FC<SignupFormProps> = ({
           type="password"
           onChange={(e) => setPassword(e.target.value)}
         />
-        <button onClick={signUpWithEmail}>Sign Up</button>
+        <button onClick={signUpWithEmail}>Sign up</button>
         {error && <p className="error-message">{error}</p>}
         <h2>Or sign up with Google</h2>
         <div className="google-signup">
           <button onClick={signInWithGoogle}>
-            <img src={googleIcon} alt="Google Icon" /> Sign Up With Google
+            <img src={googleIcon} alt="Google Icon" /> Sign up with Google
           </button>
         </div>
       </div>

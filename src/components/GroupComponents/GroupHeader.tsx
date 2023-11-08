@@ -36,7 +36,9 @@ const GroupHeader: React.FC<GroupHeaderProps> = ({
   return (
     <div>
       <div className="top-delete-button">
-        <h1 className="group-title">{groupTitle || "Group Name"}</h1>
+        <h1 data-testid="group-name-title" className="group-title">
+          {groupTitle || "Group Name"}
+        </h1>
         <div className="menu-icon" onClick={toggleMenu}>
           <img
             width={30}
@@ -63,6 +65,7 @@ const GroupHeader: React.FC<GroupHeaderProps> = ({
                   <input
                     type="text"
                     placeholder="Enter New Group Name"
+                    data-testid="group-name-input"
                     value={
                       isEditingGroupName ? newGroupName : originalGroupName
                     }

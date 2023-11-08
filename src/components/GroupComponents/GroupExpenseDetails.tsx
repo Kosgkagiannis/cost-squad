@@ -39,6 +39,7 @@ const GroupExpenseDetails = () => {
     description: string
     amount: number
     timestamp: Date | null
+    payerName: string
     shared: boolean
     imageUrls: string[]
     comments: string[]
@@ -46,6 +47,7 @@ const GroupExpenseDetails = () => {
     description: "",
     amount: 0,
     timestamp: null,
+    payerName: "",
     shared: false,
     imageUrls: [],
     comments: [],
@@ -233,6 +235,7 @@ const GroupExpenseDetails = () => {
             description: expenseData.description,
             amount: expenseData.amount,
             timestamp: expenseData.timestamp.toDate(),
+            payerName: expenseData.payerName,
             shared: expenseData.shared,
             imageUrls: expenseData.imageUrls || [],
             comments: expenseData.comments || [],
@@ -292,6 +295,7 @@ const GroupExpenseDetails = () => {
             }).format(expenseData.amount)}{" "}
             {currency}
           </p>
+          <p>Paid by: {expenseData.payerName}</p>
           <p>
             Date and Time:{" "}
             {expenseData.timestamp
