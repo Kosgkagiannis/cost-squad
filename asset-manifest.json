@@ -1,24 +1,24 @@
 {
   "files": {
-    "main.css": "/static/css/main.9b840fa4.css",
-    "main.js": "/static/js/main.7cec0912.js",
-    "static/media/groups.mp4": "/static/media/groups.ccc32cf7532452edc445.mp4",
-    "static/media/loading.gif": "/static/media/loading.c6c411782cdd3f298124.gif",
-    "static/media/costsquad.mp4": "/static/media/costsquad.3ef98a74807d55041991.mp4",
-    "static/media/loading2.gif": "/static/media/loading2.315d2c936933d671353b.gif",
-    "static/media/google.jpg": "/static/media/google.dcb6e6d31a47f8d19bdf.jpg",
-    "static/media/quick-expense-video.mp4": "/static/media/quick-expense-video.a51218d28b3108322e6f.mp4",
-    "static/media/logo-header.jpg": "/static/media/logo-header.b1f3ebd8c04a985094b4.jpg",
-    "static/media/quick-expense.png": "/static/media/quick-expense.ba01882f443f1bf23f87.png",
-    "static/media/groups.png": "/static/media/groups.d4f7c2ed6d3e875379d6.png",
-    "static/media/warning.png": "/static/media/warning.13437a81188877164712.png",
-    "static/media/settings.png": "/static/media/settings.6dce827fd94a5890c5f7.png",
-    "index.html": "/index.html",
-    "main.9b840fa4.css.map": "/static/css/main.9b840fa4.css.map",
-    "main.7cec0912.js.map": "/static/js/main.7cec0912.js.map"
+    "main.css": "/cost-squad/static/css/main.9b840fa4.css",
+    "main.js": "/cost-squad/static/js/main.a9628e0b.js",
+    "static/media/groups.mp4": "/cost-squad/static/media/groups.ccc32cf7532452edc445.mp4",
+    "static/media/loading.gif": "/cost-squad/static/media/loading.c6c411782cdd3f298124.gif",
+    "static/media/costsquad.mp4": "/cost-squad/static/media/costsquad.3ef98a74807d55041991.mp4",
+    "static/media/loading2.gif": "/cost-squad/static/media/loading2.315d2c936933d671353b.gif",
+    "static/media/google.jpg": "/cost-squad/static/media/google.dcb6e6d31a47f8d19bdf.jpg",
+    "static/media/quick-expense-video.mp4": "/cost-squad/static/media/quick-expense-video.a51218d28b3108322e6f.mp4",
+    "static/media/logo-header.jpg": "/cost-squad/static/media/logo-header.b1f3ebd8c04a985094b4.jpg",
+    "static/media/quick-expense.png": "/cost-squad/static/media/quick-expense.ba01882f443f1bf23f87.png",
+    "static/media/groups.png": "/cost-squad/static/media/groups.d4f7c2ed6d3e875379d6.png",
+    "static/media/warning.png": "/cost-squad/static/media/warning.13437a81188877164712.png",
+    "static/media/settings.png": "/cost-squad/static/media/settings.6dce827fd94a5890c5f7.png",
+    "index.html": "/cost-squad/index.html",
+    "main.9b840fa4.css.map": "/cost-squad/static/css/main.9b840fa4.css.map",
+    "main.a9628e0b.js.map": "/cost-squad/static/js/main.a9628e0b.js.map"
   },
   "entrypoints": [
     "static/css/main.9b840fa4.css",
-    "static/js/main.7cec0912.js"
+    "static/js/main.a9628e0b.js"
   ]
 }
