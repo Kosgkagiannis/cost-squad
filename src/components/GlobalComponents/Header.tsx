@@ -56,7 +56,7 @@ function Header({ handleLogout }: HeaderProps) {
               <img src={QuickExpense} height={30} width={30} alt="Groups" />
             </Link>
           )}
-          <a href="/" onClick={handleLogout} className="menu-item">
+          <a href="/cost-squad" onClick={handleLogout} className="menu-item">
             Logout
             <img src={Logout} height={30} width={30} alt="Groups" />
           </a>

@@ -4,6 +4,8 @@ import GroupDebtProps from "../../types/GroupTypes/GroupDebtProps"
 import { db } from "../../config/firebase"
 import { collection, getDocs } from "firebase/firestore"
 import DefaultAvatar from "../../images/default-avatar.png"
+import GraphAnimation from "../../images/graph-animation.gif"
+import NetDebtsAnimation from "../../images/net-debts-animation.gif"
 
 interface DebtListProps {
   debts: GroupDebtProps[]
@@ -100,7 +102,15 @@ const GroupDebtList: React.FC<DebtListProps> = ({ debts, groupId }) => {
       {memberDebtsArray.length > 0 ? (
         <div>
           <div className="divider" />
-          <h2>Total Debts Graph</h2>
+          <div className="title-and-animation">
+            <h2>Total Debts Graph</h2>
+            <img
+              src={GraphAnimation}
+              alt="Total Debts Graph"
+              width={50}
+              height={50}
+            />
+          </div>
           <VictoryChart
             domainPadding={20}
             width={600}
@@ -172,7 +182,15 @@ const GroupDebtList: React.FC<DebtListProps> = ({ debts, groupId }) => {
             />
           </VictoryChart>
           <div className="divider" />
-          <h2>Net Debts</h2>
+          <div className="title-and-animation">
+            <h2>Net Debts</h2>
+            <img
+              src={NetDebtsAnimation}
+              alt="Net Debts animation"
+              width={50}
+              height={50}
+            />
+          </div>
           <ul className="styled-list">
             {filteredNetDebts.map(([debtKey, amount], index) => {
               const [debtor, creditor] = debtKey.split("-")

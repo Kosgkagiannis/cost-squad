@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from "react"
 import { useNavigate } from "react-router-dom"
 import GroupExpenseFormProps from "../../types/GroupTypes/GroupExpenseFormProps"
-import WarningIcon from "../../images/warning.png"
+import WarningIcon from "../../images/error-animation.gif"
+import ExpensesHistory from "../../images/expenses-history.gif"
+import AddExpenseAnimation from "../../images/add-expense-animation.gif"
 
 const GroupExpenseForm: React.FC<GroupExpenseFormProps> = ({
   description,
   amount,
-  selectedMember,
   selectedMemberId,
   groupId,
   groupMembers,
@@ -67,7 +68,15 @@ const GroupExpenseForm: React.FC<GroupExpenseFormProps> = ({
       {groupMembers.length > 1 ? (
         <div>
           <div className="divider" />
-          <h2>Add Expense</h2>
+          <div className="title-and-animation">
+            <h2>Add expense</h2>
+            <img
+              src={AddExpenseAnimation}
+              alt="Add expense animation"
+              width={50}
+              height={50}
+            />
+          </div>
           <input
             type="text"
             id="description-group"
@@ -130,7 +139,15 @@ const GroupExpenseForm: React.FC<GroupExpenseFormProps> = ({
           </button>
           <div>
             <div className="divider" />
-            <h2>Expenses History</h2>
+            <div className="title-and-animation">
+              <h2>Expenses History</h2>
+              <img
+                src={ExpensesHistory}
+                alt="Expenses History"
+                width={50}
+                height={50}
+              />
+            </div>
             <ul className="expense-list">
               {expensesToDisplay.map((expense) => (
                 <li key={expense.id} className="expense-item">

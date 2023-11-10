@@ -1,9 +1,9 @@
 import React from "react"
-import loadingGif from "../../images/loading.gif"
+import loadingGif from "../../images/loading3.gif"
 
 const LoadingSpinner = () => (
   <div>
-    <img src={loadingGif} width={320} height={250} alt="Loading" />
+    <img src={loadingGif} width={120} height={120} alt="Loading" />
   </div>
 )
 

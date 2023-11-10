@@ -218,24 +218,25 @@ const EditMemberPage = () => {
 
   return (
     <div>
-      <button
-        style={{ backgroundColor: "#ff0000bd" }}
-        onClick={() => memberId && handleDeleteMember(memberId)}
-      >
-        Delete
-      </button>
-      <h2>Edit Member Info</h2>
       {loading ? (
         <LoadingSpinner />
       ) : (
         <>
+          <h2 className="group-title">{memberName}</h2>
+
+          <button
+            style={{ backgroundColor: "#ff0000bd" }}
+            onClick={() => memberId && handleDeleteMember(memberId)}
+          >
+            Delete member
+          </button>
+          <h3>Edit member info</h3>
           <div>
-            <h3>{memberName}</h3>
             <img src={profilePicture} alt="Profile" className="rounded-image" />
           </div>
 
           <label className="custom-upload-button">
-            <span>Upload Image</span>
+            <span>Upload profile picture</span>
             <input
               type="file"
               accept="image/*"

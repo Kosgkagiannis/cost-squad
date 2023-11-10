@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react"
 import { useNavigate } from "react-router-dom"
 import GroupMemberListProps from "../../types/GroupTypes/GroupMemberListProps"
 import LoadingAnimation from "../../images/loading2.gif"
+import MembersAnimation from "../../images/members-animation.gif"
 
 const GroupMemberList: React.FC<GroupMemberListProps> = ({
   groupMembers,
@@ -91,8 +92,17 @@ const GroupMemberList: React.FC<GroupMemberListProps> = ({
         </div>
       )}
       <div className="divider" />
-
-      <h2>{groupMembers.length > 0 ? "Members" : ""}</h2>
+      <div className="title-and-animation">
+        <h2>{groupMembers.length > 0 ? "Members" : ""}</h2>
+        {groupMembers.length > 0 && (
+          <img
+            src={MembersAnimation}
+            alt="Members animation"
+            width={50}
+            height={50}
+          />
+        )}
+      </div>
       <div className="grid-container">
         {groupMembers
           .filter((member) => member.name && member.name.trim() !== "")

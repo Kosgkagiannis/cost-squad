@@ -13,6 +13,8 @@ import { useNavigate } from "react-router-dom"
 import LoadingSpinner from "../GlobalComponents/LoadingSpinner"
 import LoadingAnimation from "../../images/loading2.gif"
 import QuickExpenseProps from "../../types/QuickExpenseTypes/PublicExpenseProps"
+import NetDebtsAnimation from "../../images/net-debts-animation.gif"
+import ExpensesHistory from "../../images/expenses-history.gif"
 
 const QuickExpense: React.FC = () => {
   const [expenses, setExpenses] = useState<QuickExpenseProps[]>([])
@@ -231,6 +233,7 @@ const QuickExpense: React.FC = () => {
         <LoadingSpinner />
       ) : (
         <>
+          <h1 className="group-title">Quick Expense</h1>
           <div>
             <br />
             <div
@@ -347,7 +350,15 @@ const QuickExpense: React.FC = () => {
                   <div className="divider" />
 
                   <div>
-                    <h2>Net Debts</h2>
+                    <div className="title-and-animation">
+                      <h2>Net Debts</h2>
+                      <img
+                        src={NetDebtsAnimation}
+                        alt="Net Debts animation"
+                        width={50}
+                        height={50}
+                      />
+                    </div>
                     <div style={{ color: "#ffffffed", fontSize: "14px" }}>
                       {debtList.length ? (
                         <ul className="styled-list">
@@ -365,8 +376,15 @@ const QuickExpense: React.FC = () => {
 
                   <div>
                     <div className="divider" />
-
-                    <h2>Expenses History</h2>
+                    <div className="title-and-animation">
+                      <h2>Expenses History</h2>
+                      <img
+                        src={ExpensesHistory}
+                        alt="Expenses History"
+                        width={50}
+                        height={50}
+                      />
+                    </div>
                     <ul className="styled-list">
                       {expenses.map((expense, index) => (
                         <li
