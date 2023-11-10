@@ -116,7 +116,7 @@ function App() {
     return () => {
       unsubscribe()
     }
-  }, [])
+  }, [userPreferencesCollection])
 
   return (
     <Router basename="/">

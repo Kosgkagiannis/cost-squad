@@ -179,7 +179,7 @@ const GroupExpenseDetails = () => {
     return () => {
       unsubscribe()
     }
-  }, [])
+  }, [navigate])
 
   const handleImageUpload = async (
     event: React.ChangeEvent<HTMLInputElement>

@@ -3,7 +3,7 @@ import GroupCreationForm from "./GroupCreationForm"
 
 function CreateGroupPage() {
   return (
-    <div>
+    <div data-testid="group-creation-form">
       <GroupCreationForm />
     </div>
   )

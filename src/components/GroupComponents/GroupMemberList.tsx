@@ -1,4 +1,4 @@
-import React, { useState } from "react"
+import React, { useState, useEffect } from "react"
 import { useNavigate } from "react-router-dom"
 import GroupMemberListProps from "../../types/GroupTypes/GroupMemberListProps"
 import LoadingAnimation from "../../images/loading2.gif"
@@ -12,9 +12,20 @@ const GroupMemberList: React.FC<GroupMemberListProps> = ({
 }) => {
   const [isAddingMembers, setIsAddingMembers] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
+  const [currency, setCurrency] = useState<string>("")
   const navigate = useNavigate()
   const itemsPerPage = 6
   const [currentPage, setCurrentPage] = useState(1)
+
+  useEffect(() => {
+    const hash = window.location.hash
+    const currencyParamIndex = hash.indexOf("currency=")
+
+    if (currencyParamIndex !== -1) {
+      const currencyParam = hash.slice(currencyParamIndex + "currency=".length)
+      setCurrency(decodeURIComponent(currencyParam))
+    }
+  }, [])
 
   const cancelAddMembers = () => {
     setIsAddingMembers(false)
@@ -87,7 +98,7 @@ const GroupMemberList: React.FC<GroupMemberListProps> = ({
           .filter((member) => member.name && member.name.trim() !== "")
           .slice(startIndex, endIndex)
           .map((member) => (
-            <div className="mobile-profile member-list-item">
+            <div key={member.id} className="mobile-profile member-list-item">
               <div className="member-box">
                 <img
                   src={member.profilePicture}
@@ -97,7 +108,9 @@ const GroupMemberList: React.FC<GroupMemberListProps> = ({
                 <p className="member-name">{member.name}</p>
                 <button
                   onClick={() =>
-                    navigate(`/edit-member/${groupId}/${member.id}`)
+                    navigate(
+                      `/edit-member/${groupId}/${member.id}?currency=${currency}`
+                    )
                   }
                 >
                   Edit

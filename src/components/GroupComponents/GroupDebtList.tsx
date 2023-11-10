@@ -3,6 +3,7 @@ import { VictoryChart, VictoryBar, VictoryAxis } from "victory"
 import GroupDebtProps from "../../types/GroupTypes/GroupDebtProps"
 import { db } from "../../config/firebase"
 import { collection, getDocs } from "firebase/firestore"
+import DefaultAvatar from "../../images/default-avatar.png"
 
 interface DebtListProps {
   debts: GroupDebtProps[]
@@ -188,7 +189,7 @@ const GroupDebtList: React.FC<DebtListProps> = ({ debts, groupId }) => {
                     <>
                       <div className="image-container">
                         <img
-                          src={creditorProfileImage}
+                          src={creditorProfileImage || DefaultAvatar}
                           alt={`${creditor}'s Profile`}
                           className="member-profile-image"
                         />
@@ -199,7 +200,7 @@ const GroupDebtList: React.FC<DebtListProps> = ({ debts, groupId }) => {
                       </div>
                       <div className="image-container">
                         <img
-                          src={debtorProfileImage}
+                          src={debtorProfileImage || DefaultAvatar}
                           alt={`${debtor}'s Profile`}
                           className="member-profile-image"
                         />
@@ -216,7 +217,7 @@ const GroupDebtList: React.FC<DebtListProps> = ({ debts, groupId }) => {
                     <>
                       <div className="image-container">
                         <img
-                          src={debtorProfileImage}
+                          src={debtorProfileImage || DefaultAvatar}
                           alt={`${debtor}'s Profile`}
                           className="member-profile-image"
                         />
@@ -227,7 +228,7 @@ const GroupDebtList: React.FC<DebtListProps> = ({ debts, groupId }) => {
                       </div>
                       <div className="image-container">
                         <img
-                          src={creditorProfileImage}
+                          src={creditorProfileImage || DefaultAvatar}
                           alt={`${creditor}'s Profile`}
                           className="member-profile-image"
                         />

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from "react"
+import React, { useState, useEffect } from "react"
 import {
   collection,
   addDoc,
@@ -33,7 +33,7 @@ const QuickExpense: React.FC = () => {
 
   const expensesCollection = collection(db, "expenses2")
 
-  const handleAddExpense = useCallback(async () => {
+  const handleAddExpense = async () => {
     setPerson1Error("")
     setPerson2Error("")
     setAmountError("")
@@ -119,7 +119,8 @@ const QuickExpense: React.FC = () => {
     setTimeout(() => {
       setIsLoading(false)
     }, 500)
-  }, [person1, person2, description, amount, currency, expenses])
+    // eslint-disable-next-line
+  }
 
   const fetchExpensesAndCalculateDebts = async (userId: string) => {
     const user = auth.currentUser
@@ -213,6 +214,7 @@ const QuickExpense: React.FC = () => {
     })
 
     return () => unsubscribe()
+    // eslint-disable-next-line
   }, [auth.currentUser])
 
   useEffect(() => {
@@ -220,7 +222,7 @@ const QuickExpense: React.FC = () => {
 
     if (user) {
       fetchExpensesAndCalculateDebts(user.uid)
-    }
+    } // eslint-disable-next-line
   }, [])
 
   return (
@@ -245,6 +247,7 @@ const QuickExpense: React.FC = () => {
                 <input
                   type="text"
                   id="person1"
+                  data-testid="person1-input"
                   value={person1}
                   onChange={(e) => setPerson1(e.target.value)}
                   required
@@ -270,6 +273,7 @@ const QuickExpense: React.FC = () => {
                 <input
                   type="text"
                   id="person2"
+                  data-testid="person2-input"
                   value={person2}
                   onChange={(e) => setPerson2(e.target.value)}
                   required
@@ -293,6 +297,7 @@ const QuickExpense: React.FC = () => {
             <input
               type="number"
               id="amount"
+              data-testid="amount-input"
               value={amount.toString()}
               onChange={(e) => setAmount(parseFloat(e.target.value))}
               required
@@ -309,6 +314,7 @@ const QuickExpense: React.FC = () => {
               <select
                 id="currency"
                 value={currency}
+                data-testid="currency-select"
                 onChange={(e) => setCurrency(e.target.value)}
               >
                 <option>Select a currency</option>
@@ -371,8 +377,7 @@ const QuickExpense: React.FC = () => {
                           <span>
                             <p style={{ wordBreak: "break-word" }}>
                               {expense.person1} owes {expense.person2} →{" "}
-                              {expense.amount}
-                              {expense.currency}
+                              {expense.amount} {expense.currency}
                               {expense.description
                                 ? " for " + expense.description
                                 : " "}

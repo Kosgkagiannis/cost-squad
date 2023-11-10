@@ -139,6 +139,7 @@ const QuickExpenseDetails = () => {
     return () => {
       unsubscribe()
     }
+    // eslint-disable-next-line
   }, [])
 
   const handleImageUpload = async (

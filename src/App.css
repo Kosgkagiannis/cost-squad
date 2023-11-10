@@ -845,7 +845,7 @@ svg[role="img"] {
 
 .menu-icon .menu-dropdown {
   position: absolute;
-  top: 50px;
+  top: 40px;
   right: 0;
   background-color: white;
   border: 1px solid #ccc;
@@ -854,6 +854,7 @@ svg[role="img"] {
   display: flex;
   flex-direction: column;
   width: max-content;
+  z-index: 100;
   padding: 10px;
   background:  #00a3ff
 

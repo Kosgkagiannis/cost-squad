@@ -20,8 +20,19 @@ const EditMemberPage = () => {
   const { groupId, memberId }: { groupId?: string; memberId?: string } =
     useParams()
   const [memberName, setMemberName] = useState("")
+  const [currency, setCurrency] = useState<string>("")
   const [profilePicture, setProfilePicture] = useState("")
   const [loading, setLoading] = useState(false)
+
+  useEffect(() => {
+    const hash = window.location.hash
+    const currencyParamIndex = hash.indexOf("currency=")
+
+    if (currencyParamIndex !== -1) {
+      const currencyParam = hash.slice(currencyParamIndex + "currency=".length)
+      setCurrency(decodeURIComponent(currencyParam))
+    }
+  }, [])
 
   const handleUpdateMemberName = async () => {
     try {
@@ -198,7 +209,7 @@ const EditMemberPage = () => {
           })
         })
 
-        navigate(`/edit-group/${groupId}`)
+        navigate(`/edit-group/${groupId}?currency=${currency}`)
       } catch (error) {
         console.error("Error deleting group member:", error)
       }

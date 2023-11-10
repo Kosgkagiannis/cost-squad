@@ -83,10 +83,11 @@ const GroupExpenseForm: React.FC<GroupExpenseFormProps> = ({
             onChange={handleAmountChange}
           />
           <div style={{ margin: "1rem" }}>
-            <label style={{ margin: "10px" }}>Paid By: {selectedMember}</label>
+            <label style={{ margin: "10px" }}>Paid By: </label>
             <select
               value={selectedMemberId}
               onChange={handleSelectedMemberChange}
+              data-testid="selected-member"
             >
               <option value=""></option>
               {groupMembers

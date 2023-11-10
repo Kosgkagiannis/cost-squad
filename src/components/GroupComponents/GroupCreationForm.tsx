@@ -17,7 +17,6 @@ import { allCurrencies } from "../GlobalComponents/currencies"
 
 const GroupCreationForm = () => {
   const [groupName, setGroupName] = useState("")
-  const [createdGroupName, setCreatedGroupName] = useState<string | null>(null)
   const [userGroups, setUserGroups] = useState<GroupProps[]>([])
   const [currency, setCurrency] = useState<string>("")
   const [loading, setLoading] = useState(true)
@@ -52,7 +51,6 @@ const GroupCreationForm = () => {
         currency,
       })
 
-      setCreatedGroupName(groupName)
       setGroupName("")
 
       await fetchUserGroups(user.uid)
@@ -99,7 +97,7 @@ const GroupCreationForm = () => {
     return () => {
       unsubscribe()
     }
-  }, [])
+  }, [navigate])
 
   return (
     <div>
