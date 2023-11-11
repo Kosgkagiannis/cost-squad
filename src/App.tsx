@@ -20,8 +20,8 @@ import CreateGroupPage from "./components/GroupComponents/CreateGroupPage"
 import EditGroupPage from "./components/GroupComponents/EditGroupPage"
 import EditMemberPage from "./components/GroupComponents/EditMemberPage"
 import GroupExpenseDetails from "./components/GroupComponents/GroupExpenseDetails"
-import Groups from "./images/groups.png"
-import QuickExpense from "./images/quick-expense.png"
+import QuickExpenseAnimation from "./images/quick-expense-animation.gif"
+import SquadAnimated from "./images/squad-animated.gif"
 import QuickExpenseDetails from "./components/QuickExpenseComponents/QuickExpenseDetails"
 import LoadingSpinner from "./components/GlobalComponents/LoadingSpinner"
 import WelcomeCarousel from "./components/GlobalComponents/WelcomeCarousel"
@@ -116,7 +116,7 @@ function App() {
     return () => {
       unsubscribe()
     }
-  }, [])
+  }, [userPreferencesCollection])
 
   return (
     <Router basename="/">
@@ -139,42 +139,45 @@ function App() {
                         />
                       )}
                       <div className="questions-form">
-                        <h2 className="questions">
-                          Want to add an expense between multiple people?
-                        </h2>
-                        <Link
-                          to="/create-group"
-                          style={{ textDecoration: "none" }}
-                        >
-                          <button className="button-content">
-                            Go to Squads
-                            <img
-                              src={Groups}
-                              height={30}
-                              width={30}
-                              alt="Groups"
-                            />
-                          </button>
-                        </Link>
-                        <div className="divider" />
+                        <div className="home-items">
+                          <h2 className="questions">
+                            Want to add an expense between multiple people?
+                          </h2>
 
-                        <h2 className="questions">
-                          Want to add an expense between 2 people?
-                        </h2>
-                        <Link
-                          to="/quick-expense"
-                          style={{ textDecoration: "none" }}
-                        >
-                          <button className="button-content">
-                            Go to Quick Expense
-                            <img
-                              src={QuickExpense}
-                              height={30}
-                              width={30}
-                              alt="Groups"
-                            />
-                          </button>
-                        </Link>
+                          <img
+                            src={SquadAnimated}
+                            height={100}
+                            width={100}
+                            alt="Squads"
+                          />
+                          <Link
+                            to="/create-group"
+                            style={{ textDecoration: "none" }}
+                          >
+                            <button className="button-content">
+                              Go to Squads
+                            </button>
+                          </Link>
+                        </div>
+                        <div className="home-items">
+                          <h2 className="questions">
+                            Want to add an expense between 2 people?
+                          </h2>
+                          <img
+                            src={QuickExpenseAnimation}
+                            height={100}
+                            width={100}
+                            alt="Quick Expense"
+                          />
+                          <Link
+                            to="/quick-expense"
+                            style={{ textDecoration: "none" }}
+                          >
+                            <button className="button-content">
+                              Go to Quick Expense
+                            </button>
+                          </Link>
+                        </div>
                       </div>
                     </>
                   ) : (

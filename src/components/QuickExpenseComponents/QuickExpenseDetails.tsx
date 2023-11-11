@@ -139,6 +139,7 @@ const QuickExpenseDetails = () => {
     return () => {
       unsubscribe()
     }
+    // eslint-disable-next-line
   }, [])
 
   const handleImageUpload = async (
@@ -238,13 +239,13 @@ const QuickExpenseDetails = () => {
         <LoadingSpinner />
       ) : (
         <>
+          <h2 className="group-title">Expense Details</h2>
           <button
             style={{ background: "#ff0000bd" }}
             onClick={handleDeleteExpense}
           >
             Delete Expense
           </button>
-          <h2>Expense Details</h2>
           <p>Person 1: {expenseData.person1}</p>
           <p>Person 2: {expenseData.person2}</p>
           <p>
@@ -263,7 +264,7 @@ const QuickExpenseDetails = () => {
           <div className="divider" />
 
           <div>
-            <h3>Comments</h3>
+            <h2>Comments</h2>
             <ul>
               {expenseData.comments.map((comment, index) => (
                 <li
@@ -298,7 +299,7 @@ const QuickExpenseDetails = () => {
           )}
           <br></br>
           <div className="divider" />
-          <h3>Receipts</h3>
+          <h2>Receipts</h2>
           <div
             className="custom-upload-button"
             onClick={handleCustomUploadClick}

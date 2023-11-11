@@ -20,8 +20,19 @@ const EditMemberPage = () => {
   const { groupId, memberId }: { groupId?: string; memberId?: string } =
     useParams()
   const [memberName, setMemberName] = useState("")
+  const [currency, setCurrency] = useState<string>("")
   const [profilePicture, setProfilePicture] = useState("")
   const [loading, setLoading] = useState(false)
+
+  useEffect(() => {
+    const hash = window.location.hash
+    const currencyParamIndex = hash.indexOf("currency=")
+
+    if (currencyParamIndex !== -1) {
+      const currencyParam = hash.slice(currencyParamIndex + "currency=".length)
+      setCurrency(decodeURIComponent(currencyParam))
+    }
+  }, [])
 
   const handleUpdateMemberName = async () => {
     try {
@@ -198,7 +209,7 @@ const EditMemberPage = () => {
           })
         })
 
-        navigate(`/edit-group/${groupId}`)
+        navigate(`/edit-group/${groupId}?currency=${currency}`)
       } catch (error) {
         console.error("Error deleting group member:", error)
       }
@@ -207,24 +218,25 @@ const EditMemberPage = () => {
 
   return (
     <div>
-      <button
-        style={{ backgroundColor: "#ff0000bd" }}
-        onClick={() => memberId && handleDeleteMember(memberId)}
-      >
-        Delete
-      </button>
-      <h2>Edit Member Info</h2>
       {loading ? (
         <LoadingSpinner />
       ) : (
         <>
+          <h2 className="group-title">{memberName}</h2>
+
+          <button
+            style={{ backgroundColor: "#ff0000bd" }}
+            onClick={() => memberId && handleDeleteMember(memberId)}
+          >
+            Delete member
+          </button>
+          <h3>Edit member info</h3>
           <div>
-            <h3>{memberName}</h3>
             <img src={profilePicture} alt="Profile" className="rounded-image" />
           </div>
 
           <label className="custom-upload-button">
-            <span>Upload Image</span>
+            <span>Upload profile picture</span>
             <input
               type="file"
               accept="image/*"

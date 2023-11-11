@@ -14,10 +14,10 @@ import { Link } from "react-router-dom"
 import { useNavigate } from "react-router-dom"
 import LoadingSpinner from "../GlobalComponents/LoadingSpinner"
 import { allCurrencies } from "../GlobalComponents/currencies"
+import MembersAnimation from "../../images/members-animation.gif"
 
 const GroupCreationForm = () => {
   const [groupName, setGroupName] = useState("")
-  const [createdGroupName, setCreatedGroupName] = useState<string | null>(null)
   const [userGroups, setUserGroups] = useState<GroupProps[]>([])
   const [currency, setCurrency] = useState<string>("")
   const [loading, setLoading] = useState(true)
@@ -52,7 +52,6 @@ const GroupCreationForm = () => {
         currency,
       })
 
-      setCreatedGroupName(groupName)
       setGroupName("")
 
       await fetchUserGroups(user.uid)
@@ -99,11 +98,11 @@ const GroupCreationForm = () => {
     return () => {
       unsubscribe()
     }
-  }, [])
+  }, [navigate])
 
   return (
     <div>
-      <h2>Create a New Squad</h2>
+      <h2 className="group-title">Create a New Squad</h2>
       <input
         type="text"
         placeholder="Enter Group Name"
@@ -132,24 +131,35 @@ const GroupCreationForm = () => {
       {error && <p style={{ color: "#ff0000bd" }}>{error}</p>}
 
       <button onClick={handleCreateGroup}>Create Squad</button>
+      <div className="divider" />
 
-      <h3>Your Squads</h3>
       {loading ? (
         <LoadingSpinner />
       ) : (
-        <ul className="expense-list">
-          {userGroups.map((group) => (
-            <li key={group.id} className="expense-item-squads">
-              <p style={{ wordBreak: "break-word" }}>{group.groupName}</p>
-              <Link
-                to={`/edit-group/${group.id}?currency=${group.currency}`}
-                className="edit-button"
-              >
-                Edit
-              </Link>
-            </li>
-          ))}
-        </ul>
+        <>
+          <div className="title-and-animation">
+            <h2>Your Squads</h2>
+            <img
+              src={MembersAnimation}
+              alt="Members animation"
+              width={50}
+              height={50}
+            />
+          </div>
+          <ul className="expense-list">
+            {userGroups.map((group) => (
+              <li key={group.id} className="expense-item-squads">
+                <p style={{ wordBreak: "break-word" }}>{group.groupName}</p>
+                <Link
+                  to={`/edit-group/${group.id}?currency=${group.currency}`}
+                  className="edit-button"
+                >
+                  Edit
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </>
       )}
     </div>
   )

@@ -179,7 +179,7 @@ const GroupExpenseDetails = () => {
     return () => {
       unsubscribe()
     }
-  }, [])
+  }, [navigate])
 
   const handleImageUpload = async (
     event: React.ChangeEvent<HTMLInputElement>
@@ -280,10 +280,10 @@ const GroupExpenseDetails = () => {
         <LoadingSpinner />
       ) : (
         <>
+          <h2 className="group-title">Expense Details</h2>
           <button style={{ background: "#ff0000bd" }} onClick={deleteExpense}>
             Delete Expense
           </button>
-          <h2>Expense Details</h2>
           <p style={{ wordBreak: "break-word" }}>
             Description: {expenseData.description}
           </p>
@@ -308,7 +308,7 @@ const GroupExpenseDetails = () => {
       <br /> */}
           <div className="divider" />
           <div>
-            <h3>Comments</h3>
+            <h2>Comments</h2>
             <ul>
               {expenseData.comments.map((comment, index) => (
                 <li
@@ -340,7 +340,7 @@ const GroupExpenseDetails = () => {
           )}
           <br></br>
           <div className="divider" />
-          <h3>Receipts</h3>
+          <h2>Receipts</h2>
 
           <div
             className="custom-upload-button"

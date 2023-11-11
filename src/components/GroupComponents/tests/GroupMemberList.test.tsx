@@ -1,7 +1,7 @@
 import React from "react"
 import { render, screen, fireEvent } from "@testing-library/react"
-import { MemoryRouter } from "react-router-dom" // Import MemoryRouter
-import GroupMemberList from "../GroupMemberList" // Import your component
+import { MemoryRouter } from "react-router-dom"
+import GroupMemberList from "../GroupMemberList"
 
 const mockProps = {
   groupMembers: [
