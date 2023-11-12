@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url>
+    <loc>https://www.costsquad.pro/</loc>
+  </url>
+  <url>
+    <loc>https://www.costsquad.pro/quick-expense</loc>
+  </url>
+  <url>
+    <loc>https://www.costsquad.pro/create-group</loc>
+  </url>
+  <url>
+    <loc>https://www.costsquad.pro/edit-group/:groupId</loc>
+  </url>
+  <url>
+    <loc>https://www.costsquad.pro/edit-member/:groupId/:memberId</loc>
+  </url>
+  <url>
+    <loc>https://www.costsquad.pro/expense-details/:groupId/:expenseId</loc>
+  </url>
+</urlset>

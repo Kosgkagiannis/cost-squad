@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react"
+import React, { useState, useEffect, lazy, Suspense } from "react"
 import { useParams, useNavigate } from "react-router-dom"
 import {
   doc,
@@ -23,12 +23,13 @@ import {
 } from "firebase/storage"
 import { v4 as uuidv4 } from "uuid"
 import { User, onAuthStateChanged } from "firebase/auth"
-import GroupHeader from "./GroupHeader"
-import GroupMemberList from "./GroupMemberList"
-import GroupExpenseForm from "./GroupExpenseForm"
 import GroupDebtList from "./GroupDebtList"
 import GroupDebtProps from "../../types/GroupTypes/GroupDebtProps"
 import LoadingSpinner from "../GlobalComponents/LoadingSpinner"
+
+const GroupHeader = lazy(() => import("./GroupHeader"))
+const GroupMemberList = lazy(() => import("./GroupMemberList"))
+const GroupExpenseForm = lazy(() => import("./GroupExpenseForm"))
 
 const EditGroupPage = () => {
   const { groupId }: { groupId?: string } = useParams()
@@ -536,45 +537,57 @@ const EditGroupPage = () => {
         <LoadingSpinner />
       ) : (
         <>
-          <GroupHeader
-            groupTitle={groupTitle}
-            newGroupName={newGroupName}
-            onGroupNameChange={handleGroupNameChange}
-            handleUpdateGroupName={handleUpdateGroupName}
-            onDeleteGroup={onDeleteGroup}
-          />
-          {groupId && (
-            <GroupMemberList
-              groupMembers={groupMembers}
-              newMember={newMember}
-              onMemberInputChange={handleMemberInputChange}
-              handleAddMember={handleAddMember}
-              groupId={groupId}
+          <Suspense fallback={<LoadingSpinner />}>
+            <GroupHeader
+              groupTitle={groupTitle}
+              newGroupName={newGroupName}
+              onGroupNameChange={handleGroupNameChange}
+              handleUpdateGroupName={handleUpdateGroupName}
+              onDeleteGroup={onDeleteGroup}
             />
+          </Suspense>
+          {groupId && (
+            <Suspense fallback={<LoadingSpinner />}>
+              <GroupMemberList
+                groupMembers={groupMembers}
+                newMember={newMember}
+                onMemberInputChange={handleMemberInputChange}
+                handleAddMember={handleAddMember}
+                groupId={groupId}
+              />
+            </Suspense>
           )}
           {groupId && (
-            <GroupExpenseForm
-              description={description}
-              amount={amount}
-              shared={shared}
-              selectedMember={selectedMember}
-              selectedMemberId={selectedMemberId}
-              groupMembers={groupMembers}
+            <Suspense fallback={<LoadingSpinner />}>
+              <GroupExpenseForm
+                description={description}
+                amount={amount}
+                shared={shared}
+                selectedMember={selectedMember}
+                selectedMemberId={selectedMemberId}
+                groupMembers={groupMembers}
+                groupId={groupId}
+                groupExpenses={groupExpenses}
+                handleDescriptionChange={handleDescriptionChange}
+                handleAmountChange={handleAmountChange}
+                handleSharedChange={handleSharedChange}
+                handleSelectedMemberChange={handleSelectedMemberChange}
+                handleAddExpense={handleAddExpense}
+                handleDeleteExpense={handleDeleteExpense}
+                imageFile={imageFile}
+                imageFileName={imageFileName}
+                handleImageChange={handleImageChange}
+                debts={debts}
+              />
+            </Suspense>
+          )}
+          {groupId && (
+            <GroupDebtList
               groupId={groupId}
-              groupExpenses={groupExpenses}
-              handleDescriptionChange={handleDescriptionChange}
-              handleAmountChange={handleAmountChange}
-              handleSharedChange={handleSharedChange}
-              handleSelectedMemberChange={handleSelectedMemberChange}
-              handleAddExpense={handleAddExpense}
-              handleDeleteExpense={handleDeleteExpense}
-              imageFile={imageFile}
-              imageFileName={imageFileName}
-              handleImageChange={handleImageChange}
               debts={debts}
+              groupMembers={groupMembers}
             />
           )}
-          {groupId && <GroupDebtList groupId={groupId} debts={debts} />}
         </>
       )}
     </div>

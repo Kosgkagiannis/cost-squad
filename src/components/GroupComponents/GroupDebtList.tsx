@@ -6,15 +6,24 @@ import { collection, getDocs } from "firebase/firestore"
 import DefaultAvatar from "../../images/default-avatar.png"
 import GraphAnimation from "../../images/graph-animation.gif"
 import NetDebtsAnimation from "../../images/net-debts-animation.gif"
+import Filter from "../../images/filter.png"
 
 interface DebtListProps {
   debts: GroupDebtProps[]
   groupId: string
+  groupMembers: any[]
 }
 
-const GroupDebtList: React.FC<DebtListProps> = ({ debts, groupId }) => {
+const GroupDebtList: React.FC<DebtListProps> = ({
+  debts,
+  groupId,
+  groupMembers,
+}) => {
   const [members, setMembers] = useState<{ [key: string]: string }>({})
   const [currency, setCurrency] = useState<string>("")
+  const [searchTerm, setSearchTerm] = useState("")
+  const [selectedMember, setSelectedMember] = useState<string | null>(null)
+  const [showSelectButton, setShowSelectButton] = useState(false)
 
   useEffect(() => {
     const hash = window.location.hash
@@ -43,7 +52,7 @@ const GroupDebtList: React.FC<DebtListProps> = ({ debts, groupId }) => {
     }
 
     fetchMembers()
-  }, [groupId])
+  }, [groupId, groupMembers])
 
   const netDebtsMap = new Map<string, number>()
 
@@ -71,10 +80,18 @@ const GroupDebtList: React.FC<DebtListProps> = ({ debts, groupId }) => {
     ([, amount]) => amount !== 0
   )
 
+  const filteredDebts = filteredNetDebts.filter(([debtKey]) => {
+    const [debtor, creditor] = debtKey.split("-")
+    return (
+      debtor.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      creditor.toLowerCase().includes(searchTerm.toLowerCase())
+    )
+  })
+
   // calculate total debt for each member after filtering
   const memberDebts = new Map<string, number>()
 
-  filteredNetDebts.forEach(([debtKey, amount]) => {
+  filteredDebts.forEach(([debtKey, amount]) => {
     const [debtor, creditor] = debtKey.split("-")
     const isCreditor = amount > 0
     const member = isCreditor ? creditor : debtor
@@ -85,7 +102,23 @@ const GroupDebtList: React.FC<DebtListProps> = ({ debts, groupId }) => {
       memberDebts.set(member, Math.abs(amount))
     }
   })
+  let displayDebts = selectedMember
+    ? filteredDebts.filter(([debtKey]) => {
+        const [debtor, creditor] = debtKey.split("-")
+        return (
+          (selectedMember && selectedMember === debtor) ||
+          (selectedMember && selectedMember === creditor)
+        )
+      })
+    : filteredDebts
 
+  if (!selectedMember) {
+    const uniqueNetDebts = filteredNetDebts.filter(
+      ([netDebtKey]) =>
+        !filteredDebts.some(([debtKey]) => debtKey === netDebtKey)
+    )
+    displayDebts = filteredDebts.concat(uniqueNetDebts)
+  }
   const memberDebtsArray = Array.from(memberDebts).map(
     ([member, totalDebt]) => ({
       member,
@@ -182,8 +215,10 @@ const GroupDebtList: React.FC<DebtListProps> = ({ debts, groupId }) => {
             />
           </VictoryChart>
           <div className="divider" />
+
           <div className="title-and-animation">
             <h2>Net Debts</h2>
+
             <img
               src={NetDebtsAnimation}
               alt="Net Debts animation"
@@ -191,8 +226,40 @@ const GroupDebtList: React.FC<DebtListProps> = ({ debts, groupId }) => {
               height={50}
             />
           </div>
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "end",
+              flexDirection: "column",
+              gap: "0.5rem",
+              alignItems: "end",
+              marginBlockStart: "1rem",
+            }}
+          >
+            <img
+              src={Filter}
+              alt="Filter Icon"
+              width={30}
+              height={30}
+              onClick={() => setShowSelectButton(!showSelectButton)}
+            />
+            {showSelectButton && (
+              <select
+                value={selectedMember || ""}
+                onChange={(e) => setSelectedMember(e.target.value)}
+                className="currency"
+              >
+                <option value="">Select member</option>
+                {Object.keys(members).map((memberName, index) => (
+                  <option key={index} value={memberName}>
+                    {memberName}
+                  </option>
+                ))}
+              </select>
+            )}
+          </div>
           <ul className="styled-list">
-            {filteredNetDebts.map(([debtKey, amount], index) => {
+            {displayDebts.map(([debtKey, amount], index) => {
               const [debtor, creditor] = debtKey.split("-")
               const formattedAmount = amount.toFixed(2)
 

@@ -115,6 +115,7 @@ const GroupCreationForm = () => {
           Currency:
         </label>
         <select
+          className="currency"
           id="currency"
           value={currency}
           onChange={(e) => setCurrency(e.target.value)}
@@ -131,21 +132,24 @@ const GroupCreationForm = () => {
       {error && <p style={{ color: "#ff0000bd" }}>{error}</p>}
 
       <button onClick={handleCreateGroup}>Create Squad</button>
-      <div className="divider" />
 
       {loading ? (
         <LoadingSpinner />
       ) : (
         <>
-          <div className="title-and-animation">
-            <h2>Your Squads</h2>
-            <img
-              src={MembersAnimation}
-              alt="Members animation"
-              width={50}
-              height={50}
-            />
-          </div>
+          <div className="divider" />
+
+          {userGroups.length > 0 && (
+            <div className="title-and-animation">
+              <h2>Your Squads</h2>
+              <img
+                src={MembersAnimation}
+                alt="Members animation"
+                width={50}
+                height={50}
+              />
+            </div>
+          )}
           <ul className="expense-list">
             {userGroups.map((group) => (
               <li key={group.id} className="expense-item-squads">

@@ -48,9 +48,9 @@ const GroupExpenseForm: React.FC<GroupExpenseFormProps> = ({
 
   const expensesToDisplay = groupExpenses
     .slice()
-    .sort((a, b) => a.id.localeCompare(b.id))
-    .reverse()
+    .sort((a, b) => b.timestamp - a.timestamp)
     .slice(startIndex, endIndex)
+
   const handleCustomUploadClick = () => {
     document.getElementById("fileInput")?.click()
   }
@@ -94,11 +94,12 @@ const GroupExpenseForm: React.FC<GroupExpenseFormProps> = ({
           <div style={{ margin: "1rem" }}>
             <label style={{ margin: "10px" }}>Paid By: </label>
             <select
+              className="currency"
               value={selectedMemberId}
               onChange={handleSelectedMemberChange}
               data-testid="selected-member"
             >
-              <option value=""></option>
+              <option value="">Select member</option>
               {groupMembers
                 .filter((member) => member.name && member.name.trim() !== "")
                 .map((member) => (
@@ -138,16 +139,20 @@ const GroupExpenseForm: React.FC<GroupExpenseFormProps> = ({
             Add Expense
           </button>
           <div>
-            <div className="divider" />
-            <div className="title-and-animation">
-              <h2>Expenses History</h2>
-              <img
-                src={ExpensesHistory}
-                alt="Expenses History"
-                width={50}
-                height={50}
-              />
-            </div>
+            {expensesToDisplay.length > 0 && (
+              <>
+                <div className="divider" />
+                <div className="title-and-animation">
+                  <h2>Expenses History</h2>
+                  <img
+                    src={ExpensesHistory}
+                    alt="Expenses History"
+                    width={50}
+                    height={50}
+                  />
+                </div>
+              </>
+            )}
             <ul className="expense-list">
               {expensesToDisplay.map((expense) => (
                 <li key={expense.id} className="expense-item">

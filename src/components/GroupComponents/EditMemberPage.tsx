@@ -84,7 +84,7 @@ const EditMemberPage = () => {
           })
         })
 
-        navigate(`/edit-group/${groupId}`)
+        navigate(`/edit-group/${groupId}?currency=${currency}`)
       } else {
         console.error("Member document does not exist.")
       }

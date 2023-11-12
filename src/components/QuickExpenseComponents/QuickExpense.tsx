@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react"
+import React, { useState, useEffect, useRef } from "react"
 import {
   collection,
   addDoc,
@@ -31,7 +31,17 @@ const QuickExpense: React.FC = () => {
   const [errorMessage, setErrorMessage] = useState<string>("")
   const [currencyError, setCurrencyError] = useState<string>("")
   const [loading, setLoading] = useState(true)
+  const [currentPage, setCurrentPage] = useState(1)
+  const [currentDebtPage, setCurrentDebtPage] = useState(1)
+  const debtRef = useRef<HTMLUListElement>(null)
+  const [expensesPerPage] = useState(5)
   const navigate = useNavigate()
+
+  useEffect(() => {
+    if (debtRef && debtRef.current) {
+      debtRef.current.scrollIntoView({ behavior: "smooth" })
+    }
+  }, [currentDebtPage])
 
   const expensesCollection = collection(db, "expenses2")
 
@@ -60,6 +70,12 @@ const QuickExpense: React.FC = () => {
 
     if (!currency) {
       setCurrencyError("Please select a currency")
+      return
+    }
+
+    if (person1.toLowerCase() === person2.toLowerCase()) {
+      setPerson1Error("Person 1 and Person 2 names cannot be the same")
+      setPerson2Error("Person 1 and Person 2 names cannot be the same")
       return
     }
 
@@ -134,6 +150,7 @@ const QuickExpense: React.FC = () => {
       querySnapshot.forEach((doc) => {
         expensesData.push({ id: doc.id, ...doc.data() })
       })
+      expensesData.sort((a, b) => b.timestamp - a.timestamp)
 
       setExpenses(expensesData)
       const netDebts = calculateNetDebts(expensesData)
@@ -227,6 +244,26 @@ const QuickExpense: React.FC = () => {
     } // eslint-disable-next-line
   }, [])
 
+  const indexOfLastExpense = currentPage * expensesPerPage
+  const indexOfLastDebt = currentDebtPage * expensesPerPage
+  const indexOfFirstExpense = indexOfLastExpense - expensesPerPage
+  const indexOfFirstDebt = indexOfLastDebt - expensesPerPage
+  const currentExpenses = expenses.slice(
+    indexOfFirstExpense,
+    indexOfLastExpense
+  )
+  const currentDebts = debtList.slice(indexOfFirstDebt, indexOfLastDebt)
+
+  const pageNumbersExpenses = []
+  for (let i = 1; i <= Math.ceil(expenses.length / expensesPerPage); i++) {
+    pageNumbersExpenses.push(i)
+  }
+
+  const pageNumbersDebts = []
+  for (let i = 1; i <= Math.ceil(debtList.length / expensesPerPage); i++) {
+    pageNumbersDebts.push(i)
+  }
+
   return (
     <div>
       {loading ? (
@@ -315,6 +352,7 @@ const QuickExpense: React.FC = () => {
                 Currency:
               </label>
               <select
+                className="currency"
                 id="currency"
                 value={currency}
                 data-testid="currency-select"
@@ -359,10 +397,11 @@ const QuickExpense: React.FC = () => {
                         height={50}
                       />
                     </div>
+
                     <div style={{ color: "#ffffffed", fontSize: "14px" }}>
                       {debtList.length ? (
-                        <ul className="styled-list">
-                          {debtList.map((debt, index) => (
+                        <ul className="styled-list" ref={debtRef}>
+                          {currentDebts.map((debt, index) => (
                             <li key={index} className="styled-list-item">
                               {debt}
                             </li>
@@ -370,6 +409,30 @@ const QuickExpense: React.FC = () => {
                         </ul>
                       ) : (
                         "No debts between people"
+                      )}
+                      {debtList.length > 5 && (
+                        <div
+                          style={{
+                            display: "flex",
+                            justifyContent: "center",
+                            alignItems: "center",
+                            flexWrap: "wrap",
+                          }}
+                        >
+                          {pageNumbersDebts.map((number) => (
+                            <button
+                              key={number}
+                              onClick={() => setCurrentDebtPage(number)}
+                              style={{
+                                margin: "0.5rem",
+                                padding: "1rem",
+                                cursor: "pointer",
+                              }}
+                            >
+                              {number}
+                            </button>
+                          ))}
+                        </div>
                       )}
                     </div>
                   </div>
@@ -386,12 +449,8 @@ const QuickExpense: React.FC = () => {
                       />
                     </div>
                     <ul className="styled-list">
-                      {expenses.map((expense, index) => (
-                        <li
-                          key={index}
-                          style={{ height: "auto" }}
-                          className="styled-list-item"
-                        >
+                      {currentExpenses.map((expense, index) => (
+                        <li key={index} className="styled-list-item">
                           <span>
                             <p style={{ wordBreak: "break-word" }}>
                               {expense.person1} owes {expense.person2} →{" "}
@@ -411,6 +470,30 @@ const QuickExpense: React.FC = () => {
                         </li>
                       ))}
                     </ul>
+                    {expenses.length > 5 && (
+                      <div
+                        style={{
+                          display: "flex",
+                          justifyContent: "center",
+                          alignItems: "center",
+                          flexWrap: "wrap",
+                        }}
+                      >
+                        {pageNumbersExpenses.map((number) => (
+                          <button
+                            key={number}
+                            onClick={() => setCurrentPage(number)}
+                            style={{
+                              margin: "0.5rem",
+                              padding: "1rem",
+                              cursor: "pointer",
+                            }}
+                          >
+                            {number}
+                          </button>
+                        ))}
+                      </div>
+                    )}
                   </div>
                 </>
               )}
