@@ -1,7 +1,10 @@
 {
   "files": {
-    "main.css": "/static/css/main.c7e08c10.css",
-    "main.js": "/static/js/main.68e19880.js",
+    "main.css": "/static/css/main.a0d3fde8.css",
+    "main.js": "/static/js/main.7493e48c.js",
+    "static/js/488.5eb7281d.chunk.js": "/static/js/488.5eb7281d.chunk.js",
+    "static/js/460.28f9999e.chunk.js": "/static/js/460.28f9999e.chunk.js",
+    "static/js/278.552db828.chunk.js": "/static/js/278.552db828.chunk.js",
     "static/media/groups.mp4": "/static/media/groups.ccc32cf7532452edc445.mp4",
     "static/media/squad-animated.gif": "/static/media/squad-animated.7d3c779df78541e23601.gif",
     "static/media/net-debts-animation.gif": "/static/media/net-debts-animation.b89fe03b914d20e0d116.gif",
@@ -22,11 +25,14 @@
     "static/media/settings.png": "/static/media/settings.25c5651086411fa5d61b.png",
     "static/media/default-avatar.png": "/static/media/default-avatar.867978d9a80136f33711.png",
     "index.html": "/index.html",
-    "main.c7e08c10.css.map": "/static/css/main.c7e08c10.css.map",
-    "main.68e19880.js.map": "/static/js/main.68e19880.js.map"
+    "main.a0d3fde8.css.map": "/static/css/main.a0d3fde8.css.map",
+    "main.7493e48c.js.map": "/static/js/main.7493e48c.js.map",
+    "488.5eb7281d.chunk.js.map": "/static/js/488.5eb7281d.chunk.js.map",
+    "460.28f9999e.chunk.js.map": "/static/js/460.28f9999e.chunk.js.map",
+    "278.552db828.chunk.js.map": "/static/js/278.552db828.chunk.js.map"
   },
   "entrypoints": [
-    "static/css/main.c7e08c10.css",
-    "static/js/main.68e19880.js"
+    "static/css/main.a0d3fde8.css",
+    "static/js/main.7493e48c.js"
   ]
 }
