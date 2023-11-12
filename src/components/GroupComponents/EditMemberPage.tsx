@@ -14,6 +14,7 @@ import { useNavigate } from "react-router-dom"
 import { ref, uploadBytes, getDownloadURL, getStorage } from "firebase/storage"
 import LoadingSpinner from "../GlobalComponents/LoadingSpinner"
 import { onAuthStateChanged } from "firebase/auth"
+import SendMail from "./SendMail"
 
 const EditMemberPage = () => {
   const navigate = useNavigate()
@@ -222,6 +223,7 @@ const EditMemberPage = () => {
         <LoadingSpinner />
       ) : (
         <>
+          <SendMail />
           <h2 className="group-title">{memberName}</h2>
 
           <button
