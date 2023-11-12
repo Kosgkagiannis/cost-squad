@@ -73,6 +73,7 @@ const QuickExpenseDetails = () => {
       setExpenseData({ ...expenseData, comments: updatedComments })
       setCommentInput("")
       addCommentToFirestore(comment)
+      setCommentInputVisible(!isCommentInputVisible)
     }
   }
 

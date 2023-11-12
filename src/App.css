@@ -54,8 +54,10 @@ ul {
 }
 
 input[type="text"],
-input[type="number"] {
-  width: 95%;
+input[type="number"],
+input[type="email"],
+input[type="password"] {
+  width: 90%;
   padding: 10px;
   margin: 5px -5px;
   border: none;
@@ -893,6 +895,23 @@ expense-item-squads p {
   padding: 0.5rem;
   border-radius: 5px;
   border: 1px solid #ccc;
-  background-color: #007bff;
-  color: white;
+  background-color: white;
+}
+
+.password-input {
+  position: relative;
+  width: 100%;
+  margin-bottom: 15px;
+}
+
+.password-input .login-input {
+  padding-right: 30px;
+}
+
+.eye-icon {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  right: 20px;
+  cursor: pointer;
 }

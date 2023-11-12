@@ -19,7 +19,9 @@ const SignupForm: React.FC<SignupFormProps> = ({
 }) => {
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
+  const [confirmPassword, setConfirmPassword] = useState("")
   const [error, setError] = useState<string | null>(null)
+  const [showPassword, setShowPassword] = useState(false)
 
   const clearError = () => {
     setError(null)
@@ -49,13 +51,21 @@ const SignupForm: React.FC<SignupFormProps> = ({
       if (await checkEmailExists(email)) {
         setError("Email already exists. Please use a different email.")
       } else {
-        await createUserWithEmailAndPassword(auth, email, password)
-        onSignup()
-        onClose()
+        if (password !== confirmPassword) {
+          setError("Passwords do not match.")
+        } else {
+          await createUserWithEmailAndPassword(auth, email, password)
+          onSignup()
+          onClose()
+        }
       }
     } catch (err: any) {
       setError(err.message)
     }
+  }
+
+  const togglePasswordVisibility = () => {
+    setShowPassword(!showPassword)
   }
 
   return (
@@ -65,17 +75,33 @@ const SignupForm: React.FC<SignupFormProps> = ({
           &times;
         </span>
         <h2>Sign Up</h2>
-        <input
-          className="login-input"
-          placeholder="Email..."
-          onChange={(e) => setEmail(e.target.value)}
-        />
-        <input
-          className="login-input"
-          placeholder="Password..."
-          type="password"
-          onChange={(e) => setPassword(e.target.value)}
-        />
+        <div className="password-input">
+          <input
+            className="login-input"
+            placeholder="Email..."
+            type="email"
+            onChange={(e) => setEmail(e.target.value)}
+          />
+        </div>
+        <div className="password-input">
+          <input
+            className="login-input"
+            placeholder="Password..."
+            type={showPassword ? "text" : "password"}
+            onChange={(e) => setPassword(e.target.value)}
+          />
+          <span className="eye-icon" onClick={togglePasswordVisibility}>
+            {showPassword ? "👁️" : "💬"}
+          </span>
+        </div>
+        <div className="password-input">
+          <input
+            className="login-input"
+            placeholder="Confirm Password..."
+            type={showPassword ? "text" : "password"}
+            onChange={(e) => setConfirmPassword(e.target.value)}
+          />
+        </div>
         <button onClick={signUpWithEmail}>Sign up</button>
         {error && <p className="error-message">{error}</p>}
         <h2>Or sign up with Google</h2>
