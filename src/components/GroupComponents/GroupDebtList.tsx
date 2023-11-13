@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react"
 import { VictoryChart, VictoryBar, VictoryAxis } from "victory"
 import GroupDebtProps from "../../types/GroupTypes/GroupDebtProps"
 import { db } from "../../config/firebase"
-import { collection, getDocs } from "firebase/firestore"
+import { collection, getDocs, doc, updateDoc, getDoc } from "firebase/firestore"
 import DefaultAvatar from "../../images/default-avatar.png"
 import GraphAnimation from "../../images/graph-animation.gif"
 import NetDebtsAnimation from "../../images/net-debts-animation.gif"
@@ -21,7 +21,6 @@ const GroupDebtList: React.FC<DebtListProps> = ({
 }) => {
   const [members, setMembers] = useState<{ [key: string]: string }>({})
   const [currency, setCurrency] = useState<string>("")
-  const [searchTerm, setSearchTerm] = useState("")
   const [selectedMember, setSelectedMember] = useState<string | null>(null)
   const [showSelectButton, setShowSelectButton] = useState(false)
 
@@ -33,6 +32,7 @@ const GroupDebtList: React.FC<DebtListProps> = ({
       const currencyParam = hash.slice(currencyParamIndex + "currency=".length)
       setCurrency(decodeURIComponent(currencyParam))
     }
+    saveMemberDebtsToFirestore()
   }, [])
 
   // Fetch and store member profile pictures
@@ -82,10 +82,7 @@ const GroupDebtList: React.FC<DebtListProps> = ({
 
   const filteredDebts = filteredNetDebts.filter(([debtKey]) => {
     const [debtor, creditor] = debtKey.split("-")
-    return (
-      debtor.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      creditor.toLowerCase().includes(searchTerm.toLowerCase())
-    )
+    return debtor.toLowerCase() || creditor.toLowerCase()
   })
 
   // calculate total debt for each member after filtering
@@ -129,6 +126,28 @@ const GroupDebtList: React.FC<DebtListProps> = ({
   // need the member names for the X axis
   const memberNames = Object.keys(members)
   memberNames.unshift("")
+
+  const saveMemberDebtsToFirestore = async () => {
+    memberDebtsArray.forEach(async (memberDebt) => {
+      const member = memberDebt
+
+      const memberDocRef = doc(db, "groups", groupId)
+
+      const memberDocSnapshot = await getDoc(memberDocRef)
+
+      if (memberDocSnapshot.exists()) {
+        const memberData = memberDocSnapshot.data()
+
+        memberData.debtsArray = memberDebtsArray
+        await updateDoc(memberDocRef, memberData)
+      } else {
+        console.error("Member document does not exist for:", member)
+      }
+    })
+  }
+  useEffect(() => {
+    saveMemberDebtsToFirestore()
+  }, [memberDebtsArray])
 
   return (
     <>

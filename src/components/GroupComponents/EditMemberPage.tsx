@@ -21,9 +21,15 @@ const EditMemberPage = () => {
   const { groupId, memberId }: { groupId?: string; memberId?: string } =
     useParams()
   const [memberName, setMemberName] = useState("")
+  const [memberDebt, setMemberDebt] = useState("")
   const [currency, setCurrency] = useState<string>("")
   const [profilePicture, setProfilePicture] = useState("")
   const [loading, setLoading] = useState(false)
+  const [showEmailInput, setShowEmailInput] = useState(false)
+  const [memberEmail, setMemberEmail] = useState("")
+  const [memberEmailFetch, setMemberEmailFetch] = useState("")
+  const [showSuccessMessage, setShowSuccessMessage] = useState(false)
+  const [showErrorMessage, setShowErrorMessage] = useState(false)
 
   useEffect(() => {
     const hash = window.location.hash
@@ -34,6 +40,41 @@ const EditMemberPage = () => {
       setCurrency(decodeURIComponent(currencyParam))
     }
   }, [])
+
+  const validateEmail = (email: string) => {
+    const re = /\S+@\S+\.\S+/
+    return re.test(email)
+  }
+
+  const handleAddEmail = async () => {
+    if (memberId && memberEmail && validateEmail(memberEmail)) {
+      try {
+        const memberDocRef = doc(db, "groups", groupId, "members", memberId)
+        const memberDocSnapshot = await getDoc(memberDocRef)
+
+        if (memberDocSnapshot.exists()) {
+          const memberData = memberDocSnapshot.data()
+          memberData.email = memberEmail
+
+          await updateDoc(memberDocRef, memberData)
+          setShowSuccessMessage(true)
+          setTimeout(() => {
+            setShowSuccessMessage(false)
+          }, 3000)
+        } else {
+          console.error("Member document does not exist.")
+        }
+      } catch (error) {
+        console.error("Error adding member's email:", error)
+      }
+    } else {
+      setShowErrorMessage(true)
+      setTimeout(() => {
+        setShowErrorMessage(false)
+      }, 3000)
+    }
+    setShowEmailInput(false)
+  }
 
   const handleUpdateMemberName = async () => {
     try {
@@ -216,42 +257,140 @@ const EditMemberPage = () => {
       }
     }
   }
+  const handleCancelEmail = () => {
+    setShowEmailInput(false)
+  }
+
+  const fetchMemberDebts = async () => {
+    if (!groupId || !memberId) {
+      console.error("groupId or memberId is undefined")
+      return
+    }
+
+    try {
+      // We need to fetch the member's debt from Firestore so we can send him the email
+      const memberDocRef = doc(db, "groups", groupId)
+      const memberDocSnapshot = await getDoc(memberDocRef)
+
+      if (memberDocSnapshot.exists()) {
+        const groupData = memberDocSnapshot.data()
+
+        const memberDebtsArray = groupData.debtsArray || []
+
+        memberDebtsArray.forEach(async (debt) => {
+          if (debt.member === memberName) {
+            setMemberDebt(debt.totalDebt)
+          }
+        })
+      } else {
+        console.error("Group document does not exist.")
+      }
+    } catch (error) {
+      console.error("Error fetching member debts:", error)
+    }
+  }
+
+  const fetchMemberEmail = async () => {
+    if (!groupId || !memberId) {
+      console.error("groupId or memberId is undefined")
+      return
+    }
+
+    try {
+      const memberDocRef = doc(db, "groups", groupId, "members", memberId)
+      const memberDocSnapshot = await getDoc(memberDocRef)
+
+      if (memberDocSnapshot.exists()) {
+        const memberData = memberDocSnapshot.data()
+
+        const memberEmailFetchData = memberData.email || []
+
+        setMemberEmailFetch(memberEmailFetchData)
+      } else {
+        console.error("Group document does not exist.")
+      }
+    } catch (error) {
+      console.error("Error fetching member debts:", error)
+    }
+  }
+
+  useEffect(() => {
+    fetchMemberDebts()
+    fetchMemberEmail()
+  })
 
   return (
-    <div>
-      {loading ? (
-        <LoadingSpinner />
-      ) : (
-        <>
-          <SendMail />
-          <h2 className="group-title">{memberName}</h2>
-
-          <button
-            style={{ backgroundColor: "#ff0000bd" }}
-            onClick={() => memberId && handleDeleteMember(memberId)}
-          >
-            Delete member
-          </button>
-          <h3>Edit member info</h3>
-          <div>
-            <img src={profilePicture} alt="Profile" className="rounded-image" />
-          </div>
-
-          <label className="custom-upload-button">
-            <span>Upload profile picture</span>
-            <input
-              type="file"
-              accept="image/*"
-              id="fileInput"
-              style={{ display: "none" }}
-              onChange={handleUploadImage}
-            />
-          </label>
-
-          <button onClick={handleUpdateMemberName}>Save</button>
-        </>
-      )}
-    </div>
+    <>
+      <div>
+        {loading ? (
+          <LoadingSpinner />
+        ) : (
+          <>
+            <h2 className="group-title">{memberName}</h2>
+            <p>
+              Total debt to the squad: {parseFloat(memberDebt).toFixed(2)}{" "}
+              {currency}
+            </p>
+            <button
+              style={{ backgroundColor: "#ff0000bd" }}
+              onClick={() => memberId && handleDeleteMember(memberId)}
+            >
+              Delete member
+            </button>
+            <h3>Edit member info</h3>
+            <div>
+              <img
+                src={profilePicture}
+                alt="Profile"
+                className="rounded-image"
+              />
+            </div>
+            <label className="custom-upload-button">
+              <span>Upload profile picture</span>
+              <input
+                type="file"
+                accept="image/*"
+                id="fileInput"
+                style={{ display: "none" }}
+                onChange={handleUploadImage}
+              />
+            </label>
+            <>
+              {showEmailInput ? (
+                <div>
+                  <input
+                    type="text"
+                    value={memberEmail}
+                    onChange={(e) => setMemberEmail(e.target.value)}
+                    placeholder="Enter member's email"
+                  />
+                  <button onClick={handleAddEmail}>Add/Update Email</button>
+                  <button onClick={handleCancelEmail}>Cancel</button>
+                </div>
+              ) : (
+                <button onClick={() => setShowEmailInput(true)}>
+                  Email address
+                </button>
+              )}
+              {showErrorMessage && (
+                <p style={{ color: "#ff0000bd" }}>
+                  Please enter a valid email address.
+                </p>
+              )}
+              {showSuccessMessage && <p>Email added successfully!</p>}
+              <SendMail
+                memberName={memberName}
+                memberDebt={parseFloat(memberDebt).toFixed(2)}
+                memberEmail={memberEmailFetch}
+                currency={currency}
+              />
+              <br />
+              <button onClick={handleUpdateMemberName}>Save changes</button>
+            </>
+          </>
+        )}
+      </div>
+    </>
   )
 }
 

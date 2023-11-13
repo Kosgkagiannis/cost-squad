@@ -1,45 +1,67 @@
-import React, { useState } from "react"
+import React from "react"
 
-const SendMail = () => {
-  const [formState, setFormState] = useState({})
+interface SendMailProps {
+  memberName: string
+  memberDebt: string
+  memberEmail: string
+  currency: string
+}
 
-  const changeHandler = (event) => {
-    setFormState({ ...formState, [event.target.name]: event.target.value })
-  }
+const SendMail = ({
+  memberName,
+  memberDebt,
+  memberEmail,
+  currency,
+}: SendMailProps) => {
+  const handleSubmit = (e) => {
+    e.preventDefault()
 
-  const submitHandler = (event) => {
-    event.preventDefault()
-    const config = {
+    let ebody = `
+      <div style="font-family: Arial, sans-serif;">
+        <h2 style="color: #333;">Dear ${memberName},</h2>
+        <p>
+          We hope this message finds you well. This is a notification regarding your financial status in the CostSquad application.
+        </p>
+        <p>
+          As of the latest update, your total debt with the group is ${memberDebt} ${currency}.
+        </p>
+        <p>
+          To further discuss or clarify this matter, feel free to reach out with the owner of your squad.
+        </p>
+        <p>
+          Sincerely, <br />
+          CostSquad
+        </p>
+      </div>
+    `
+
+    window.Email.send({
       SecureToken: "22702cec-d366-41e2-9ad3-2b3cf6c6f560",
-      To: "kosgkagiannis@gmail.com",
-      From: formState.email,
-      Subject: "This is the subject",
-      Body: "And this is the body",
-    }
-    if (window.Email) {
-      window.Email.send(config).then(() => alert("email sent successfully"))
-    }
+      To: memberEmail,
+      From: "costsquad@gmail.com",
+      Subject: "CostSquad - Debts Notification",
+      Body: ebody,
+    }).then((message) =>
+      alert(
+        "Email sent successfully. If the member can't find the email, kindly check the spam folder."
+      )
+    )
   }
 
   return (
     <div>
-      <form onSubmit={submitHandler}>
-        <input
-          type="text"
-          placeholder="Your Name"
-          name="name"
-          value={formState.name || ""}
-          onChange={changeHandler}
-        />
-        <input
-          type="email"
-          name="email"
-          value={formState.email || ""}
-          placeholder="Your email"
-          onChange={changeHandler}
-        />
-        <input type="submit" value="Send Email" />
-      </form>
+      {memberEmail.length > 0 ? (
+        <form id="submit" onSubmit={handleSubmit}>
+          <p>Email address: {memberEmail}</p>
+          <input type="submit" value="Send email" />
+        </form>
+      ) : (
+        <p>
+          In order to notify this member about their debts, please add an email
+          address.
+        </p>
+      )}
+      <script src="https://smtpjs.com/v3/smtp.js"></script>
     </div>
   )
 }
