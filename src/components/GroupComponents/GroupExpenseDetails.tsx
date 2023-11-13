@@ -8,6 +8,8 @@ import {
   collection,
   getDocs,
   writeBatch,
+  Timestamp,
+  addDoc,
 } from "firebase/firestore"
 import {
   getStorage,
@@ -33,9 +35,11 @@ const GroupExpenseDetails = () => {
   const [modalImageUrl, setModalImageUrl] = useState("")
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [commentInput, setCommentInput] = useState("")
+  const [payerName, setPayerName] = useState("")
   const [currency, setCurrency] = useState<string>("")
   const navigate = useNavigate()
   const [expenseData, setExpenseData] = useState<{
+    addedBy: string
     description: string
     amount: number
     timestamp: Date | null
@@ -44,6 +48,7 @@ const GroupExpenseDetails = () => {
     imageUrls: string[]
     comments: string[]
   }>({
+    addedBy: "",
     description: "",
     amount: 0,
     timestamp: null,
@@ -100,6 +105,18 @@ const GroupExpenseDetails = () => {
         await deleteDoc(expenseRef)
         // need to delete firestore document too with this
         await deleteDoc(expenseRef)
+
+        const activityLogRef = collection(db, "activityLogs")
+        const logData = {
+          action: "ExpenseDeleted",
+          timestamp: Timestamp.now(),
+          expenseId: expenseId,
+          payerName: payerName,
+          deletedBy: auth.currentUser.email,
+          groupId: groupId,
+        }
+
+        await addDoc(activityLogRef, logData)
         navigate(`/edit-group/${groupId}?currency=${currency}`)
       } catch (error) {
         console.error("Error deleting expense:", error)
@@ -233,6 +250,7 @@ const GroupExpenseDetails = () => {
         if (expenseDocSnapshot.exists()) {
           const expenseData = expenseDocSnapshot.data()
           setExpenseData({
+            addedBy: expenseData.addedBy,
             description: expenseData.description,
             amount: expenseData.amount,
             timestamp: expenseData.timestamp.toDate(),
@@ -241,6 +259,7 @@ const GroupExpenseDetails = () => {
             imageUrls: expenseData.imageUrls || [],
             comments: expenseData.comments || [],
           })
+          setPayerName(expenseData.payerName)
         } else {
           console.error("Expense document does not exist.")
         }
@@ -285,6 +304,9 @@ const GroupExpenseDetails = () => {
           <button style={{ background: "#ff0000bd" }} onClick={deleteExpense}>
             Delete Expense
           </button>
+          <p style={{ wordBreak: "break-word" }}>
+            Added by: {expenseData.addedBy}
+          </p>
           <p style={{ wordBreak: "break-word" }}>
             Description: {expenseData.description}
           </p>

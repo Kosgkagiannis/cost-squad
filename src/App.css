@@ -944,3 +944,29 @@ expense-item-squads p {
   align-items: center;
   margin-block: 5rem;
 }
+
+.modal-activity-log {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.6);
+  z-index: 1000;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.modal-activity-log-main {
+  position: fixed;
+  background: rgba(0, 0, 0, 0.6);
+  width: 60%;
+  max-width: 600px;
+  padding: 20px;
+  border-radius: 8px;
+  text-align: center;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+}
+
+

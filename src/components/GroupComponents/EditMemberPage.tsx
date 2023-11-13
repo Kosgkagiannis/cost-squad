@@ -8,6 +8,8 @@ import {
   query,
   deleteDoc,
   getDocs,
+  Timestamp,
+  addDoc,
 } from "firebase/firestore"
 import { auth, db } from "../../config/firebase"
 import { useNavigate } from "react-router-dom"
@@ -214,7 +216,7 @@ const EditMemberPage = () => {
     fetchMemberData()
   }, [groupId, memberId])
 
-  const handleDeleteMember = async (memberId: string) => {
+  const handleDeleteMember = async (memberId: string, memberName: string) => {
     const confirmed = window.confirm(
       "Are you sure you want to delete this member?\nNote: All debts from and to this member will also be cleared."
     )
@@ -256,6 +258,16 @@ const EditMemberPage = () => {
             }
           })
         })
+        const activityLogRef = collection(db, "activityLogs")
+        const logData = {
+          action: "MemberDeleted",
+          memberName: memberName,
+          timestamp: Timestamp.now(),
+          deletedBy: auth.currentUser.email,
+          groupId: groupId,
+        }
+
+        await addDoc(activityLogRef, logData)
 
         navigate(`/edit-group/${groupId}?currency=${currency}`)
       } catch (error) {
@@ -335,7 +347,9 @@ const EditMemberPage = () => {
             <h2 className="group-title">{memberName}</h2>
             <button
               style={{ backgroundColor: "#ff0000bd" }}
-              onClick={() => memberId && handleDeleteMember(memberId)}
+              onClick={() =>
+                memberId && handleDeleteMember(memberId, memberName)
+              }
             >
               Delete member
             </button>

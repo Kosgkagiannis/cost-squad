@@ -154,6 +154,17 @@ const EditGroupPage = () => {
           }
         )
 
+        const activityLogRef = collection(db, "activityLogs")
+        const logData = {
+          action: "MemberAdded",
+          memberName: newMember,
+          timestamp: Timestamp.now(),
+          addedBy: auth.currentUser.email,
+          groupId: groupId,
+        }
+
+        await addDoc(activityLogRef, logData)
+
         const memberDocSnapshot = await getDoc(memberDocRef)
         if (memberDocSnapshot.exists()) {
           const memberData = memberDocSnapshot.data()
@@ -331,6 +342,7 @@ const EditGroupPage = () => {
       }
 
       const newExpenseData = {
+        addedBy: auth.currentUser.email,
         expenseId,
         description,
         amount: parseFloat(amount),
@@ -395,6 +407,19 @@ const EditGroupPage = () => {
           })
         }
       })
+
+      const activityLogRef = collection(db, "activityLogs")
+      const logData = {
+        action: "ExpenseAdded",
+        payerName: selectedMember,
+        timestamp: Timestamp.now(),
+        expenseId: expenseId,
+        addedBy: auth.currentUser.email,
+        groupId: groupId,
+        amount: parseFloat(amount),
+      }
+
+      await addDoc(activityLogRef, logData)
 
       setDebts(updatedDebts)
       setDescription("")
