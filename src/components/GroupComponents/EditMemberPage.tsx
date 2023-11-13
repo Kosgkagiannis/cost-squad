@@ -13,6 +13,7 @@ import { auth, db } from "../../config/firebase"
 import { useNavigate } from "react-router-dom"
 import { ref, uploadBytes, getDownloadURL, getStorage } from "firebase/storage"
 import LoadingSpinner from "../GlobalComponents/LoadingSpinner"
+import LoadingAnimation from "../../images/loading2.gif"
 import { onAuthStateChanged } from "firebase/auth"
 import SendMail from "./SendMail"
 
@@ -25,6 +26,7 @@ const EditMemberPage = () => {
   const [currency, setCurrency] = useState<string>("")
   const [profilePicture, setProfilePicture] = useState("")
   const [loading, setLoading] = useState(false)
+  const [loadingImage, setLoadingImage] = useState(false)
   const [showEmailInput, setShowEmailInput] = useState(false)
   const [memberEmail, setMemberEmail] = useState("")
   const [memberEmailFetch, setMemberEmailFetch] = useState("")
@@ -138,6 +140,7 @@ const EditMemberPage = () => {
   const handleUploadImage = async (e) => {
     if (e.target.files && e.target.files.length > 0) {
       const file = e.target.files[0]
+      setLoadingImage(true)
 
       if (!groupId || !memberId) {
         console.error("groupId or memberId is undefined")
@@ -160,6 +163,9 @@ const EditMemberPage = () => {
 
           await updateDoc(memberDocRef, memberData)
           setProfilePicture(imageUrl)
+          setTimeout(() => {
+            setLoadingImage(false)
+          }, 1500)
         } else {
           console.error("Member document does not exist.")
         }
@@ -327,34 +333,53 @@ const EditMemberPage = () => {
         ) : (
           <>
             <h2 className="group-title">{memberName}</h2>
-            <p>
-              Total debt to the squad: {parseFloat(memberDebt).toFixed(2)}{" "}
-              {currency}
-            </p>
             <button
               style={{ backgroundColor: "#ff0000bd" }}
               onClick={() => memberId && handleDeleteMember(memberId)}
             >
               Delete member
             </button>
-            <h3>Edit member info</h3>
-            <div>
-              <img
-                src={profilePicture}
-                alt="Profile"
-                className="rounded-image"
-              />
+            <div className="upload-image-container">
+              <div style={{ position: "absolute" }}>
+                <img
+                  src={profilePicture}
+                  alt="Profile"
+                  className="rounded-image"
+                />
+                <label className="upload-profile-image" htmlFor="fileInput">
+                  +
+                  <input
+                    type="file"
+                    accept="image/*"
+                    id="fileInput"
+                    style={{ display: "none" }}
+                    onChange={handleUploadImage}
+                  />
+                </label>
+              </div>
             </div>
-            <label className="custom-upload-button">
-              <span>Upload profile picture</span>
-              <input
-                type="file"
-                accept="image/*"
-                id="fileInput"
-                style={{ display: "none" }}
-                onChange={handleUploadImage}
-              />
-            </label>
+            {loadingImage && (
+              <>
+                <img
+                  src={LoadingAnimation}
+                  width={48}
+                  height={48}
+                  alt="Loading"
+                />
+                <br />
+              </>
+            )}
+
+            <div className="divider" />
+            <h3>Member info</h3>
+            {parseFloat(memberDebt) > 0 ? (
+              <p>
+                Total debt to the squad: {parseFloat(memberDebt).toFixed(2)}{" "}
+                {currency}
+              </p>
+            ) : (
+              <p>Member has no debts in the squad.</p>
+            )}
             <>
               {showEmailInput ? (
                 <div>
@@ -364,12 +389,12 @@ const EditMemberPage = () => {
                     onChange={(e) => setMemberEmail(e.target.value)}
                     placeholder="Enter member's email"
                   />
-                  <button onClick={handleAddEmail}>Add/Update Email</button>
+                  <button onClick={handleAddEmail}>Save email</button>
                   <button onClick={handleCancelEmail}>Cancel</button>
                 </div>
               ) : (
                 <button onClick={() => setShowEmailInput(true)}>
-                  Email address
+                  Add/Update Email
                 </button>
               )}
               {showErrorMessage && (
@@ -377,7 +402,9 @@ const EditMemberPage = () => {
                   Please enter a valid email address.
                 </p>
               )}
-              {showSuccessMessage && <p>Email added successfully!</p>}
+              {showSuccessMessage && (
+                <p style={{ color: "#00ed2d" }}>Email added successfully!</p>
+              )}
               <SendMail
                 memberName={memberName}
                 memberDebt={parseFloat(memberDebt).toFixed(2)}

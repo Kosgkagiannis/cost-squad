@@ -5,6 +5,7 @@ interface GroupHeaderProps {
   groupTitle: string | null
   originalGroupName?: string
   newGroupName: string
+  groupId: string
   onGroupNameChange: (e: React.ChangeEvent<HTMLInputElement>) => void
   handleUpdateGroupName: () => void
   onDeleteGroup: () => void
@@ -14,6 +15,7 @@ const GroupHeader: React.FC<GroupHeaderProps> = ({
   groupTitle,
   originalGroupName,
   newGroupName,
+  groupId,
   onGroupNameChange,
   handleUpdateGroupName,
   onDeleteGroup,
@@ -53,12 +55,8 @@ const GroupHeader: React.FC<GroupHeaderProps> = ({
           />
           {showMenu && (
             <div className="menu-dropdown" onClick={stopPropagation}>
-              <button
-                onClick={onDeleteGroup}
-                style={{ backgroundColor: "#ff0000bd", color: "#ffffffed" }}
-              >
-                Delete Squad
-              </button>
+              <p>Squad ID: {groupId}</p>
+
               {isEditingGroupName ? (
                 <>
                   <h2 style={{ marginInline: "0.2rem" }}>Edit Squad Name</h2>
@@ -90,6 +88,12 @@ const GroupHeader: React.FC<GroupHeaderProps> = ({
                   Edit Squad Name
                 </button>
               )}
+              <button
+                onClick={onDeleteGroup}
+                style={{ backgroundColor: "#ff0000bd", color: "#ffffffed" }}
+              >
+                Delete Squad
+              </button>
             </div>
           )}
         </div>

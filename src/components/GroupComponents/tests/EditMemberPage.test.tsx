@@ -26,10 +26,9 @@ test("renders EditMemberPage component", async () => {
   const { getByText, getByAltText } = render(<EditMemberPage />)
 
   await waitFor(() => {
-    expect(getByText("Edit Member Info")).toBeInTheDocument()
-    expect(getByText("Delete")).toBeInTheDocument()
-    expect(getByText("Upload Image")).toBeInTheDocument()
-    expect(getByText("Save")).toBeInTheDocument()
+    expect(getByText("Member info")).toBeInTheDocument()
+    expect(getByText("Delete member")).toBeInTheDocument()
+    expect(getByText("Save changes")).toBeInTheDocument()
     const profileImage = getByAltText("Profile")
     expect(profileImage).toBeInTheDocument()
   })

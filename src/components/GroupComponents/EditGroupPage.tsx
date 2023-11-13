@@ -48,6 +48,7 @@ const EditGroupPage = () => {
   const [imageFileName, setImageFileName] = useState<string | null>(null)
   const [imageFile, setImageFile] = useState<null | File>(null)
   const [loading, setLoading] = useState(true)
+  const [groupOwner, setGroupOwner] = useState<string>("")
   const navigate = useNavigate()
   const storage = getStorage()
 
@@ -407,6 +408,28 @@ const EditGroupPage = () => {
     }
   }
 
+  useEffect(() => {
+    const fetchGroupDetails = async () => {
+      if (!groupId) {
+        console.error("groupId is undefined")
+        return
+      }
+
+      const groupDocRef = doc(db, "groups", groupId)
+      const groupDocSnapshot = await getDoc(groupDocRef)
+
+      if (groupDocSnapshot.exists()) {
+        const groupData = groupDocSnapshot.data()
+        if (groupData) {
+          const { userId } = groupData
+          setGroupOwner(userId[0]) // Set the first userId as the group owner
+        }
+      }
+    }
+
+    fetchGroupDetails()
+  }, [groupId])
+
   const onDeleteGroup = async () => {
     try {
       if (!groupId) {
@@ -415,10 +438,10 @@ const EditGroupPage = () => {
       }
 
       const confirmed = window.confirm(
-        "Are you sure you want to delete this group?"
+        "Are you sure you want to delete this squad?"
       )
-
-      if (confirmed) {
+      const user = auth.currentUser
+      if (confirmed && user?.uid === groupOwner) {
         const groupDocRef = doc(db, "groups", groupId)
 
         const expensesCollectionRef = collection(groupDocRef, "expenses")
@@ -440,6 +463,8 @@ const EditGroupPage = () => {
         await deleteDoc(groupDocRef)
 
         navigate("/create-group")
+      } else {
+        window.alert("Only the person who created the squad can delete it.")
       }
     } catch (error) {
       console.error("Error deleting group:", error)
@@ -538,13 +563,16 @@ const EditGroupPage = () => {
       ) : (
         <>
           <Suspense fallback={<LoadingSpinner />}>
-            <GroupHeader
-              groupTitle={groupTitle}
-              newGroupName={newGroupName}
-              onGroupNameChange={handleGroupNameChange}
-              handleUpdateGroupName={handleUpdateGroupName}
-              onDeleteGroup={onDeleteGroup}
-            />
+            {groupId && (
+              <GroupHeader
+                groupTitle={groupTitle}
+                newGroupName={newGroupName}
+                onGroupNameChange={handleGroupNameChange}
+                handleUpdateGroupName={handleUpdateGroupName}
+                onDeleteGroup={onDeleteGroup}
+                groupId={groupId}
+              />
+            )}
           </Suspense>
           {groupId && (
             <Suspense fallback={<LoadingSpinner />}>
