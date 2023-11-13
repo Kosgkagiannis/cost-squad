@@ -36,6 +36,7 @@ const GroupExpenseDetails = () => {
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [commentInput, setCommentInput] = useState("")
   const [payerName, setPayerName] = useState("")
+  const [amountFetch, setAmountFetch] = useState("")
   const [currency, setCurrency] = useState<string>("")
   const navigate = useNavigate()
   const [expenseData, setExpenseData] = useState<{
@@ -112,6 +113,7 @@ const GroupExpenseDetails = () => {
           timestamp: Timestamp.now(),
           expenseId: expenseId,
           payerName: payerName,
+          amount: amountFetch,
           deletedBy: auth.currentUser.email,
           groupId: groupId,
         }
@@ -260,6 +262,7 @@ const GroupExpenseDetails = () => {
             comments: expenseData.comments || [],
           })
           setPayerName(expenseData.payerName)
+          setAmountFetch(expenseData.amount)
         } else {
           console.error("Expense document does not exist.")
         }

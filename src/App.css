@@ -938,8 +938,8 @@ expense-item-squads p {
   cursor: pointer;
 }
 
-.upload-image-container{
-  display:flex;
+.upload-image-container {
+  display: flex;
   justify-content: center;
   align-items: center;
   margin-block: 5rem;
@@ -961,7 +961,12 @@ expense-item-squads p {
 .modal-activity-log-main {
   position: fixed;
   background: rgba(0, 0, 0, 0.6);
-  width: 60%;
+  width: 80%;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  max-height: 90%;
+  overflow-y: auto;
   max-width: 600px;
   padding: 20px;
   border-radius: 8px;
@@ -969,4 +974,6 @@ expense-item-squads p {
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
 }
 
-
+.no-scroll {
+  overflow: hidden;
+}
