@@ -385,7 +385,7 @@ const EditMemberPage = () => {
             )}
 
             <div className="divider" />
-            <h3>Member info</h3>
+            <h3>Debts</h3>
             {parseFloat(memberDebt) > 0 ? (
               <p>
                 Total debt to the squad: {parseFloat(memberDebt).toFixed(2)}{" "}
@@ -395,6 +395,10 @@ const EditMemberPage = () => {
               <p>Member has no debts in the squad.</p>
             )}
             <>
+              <div className="divider" />
+              <h3>
+                Notify this member about their debts by sending them an email.
+              </h3>
               {showEmailInput ? (
                 <div>
                   <input
@@ -419,6 +423,7 @@ const EditMemberPage = () => {
               {showSuccessMessage && (
                 <p style={{ color: "#00ed2d" }}>Email added successfully!</p>
               )}
+
               <SendMail
                 memberName={memberName}
                 memberDebt={parseFloat(memberDebt).toFixed(2)}

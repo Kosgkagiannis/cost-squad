@@ -23,7 +23,7 @@ const SendMail = ({
           We hope this message finds you well. This is a notification regarding your financial status in the CostSquad application.
         </p>
         <p>
-          As of the latest update, your total debt with the group is ${memberDebt} ${currency}.
+          As of the latest update, your total debt with the squad is ${memberDebt} ${currency}.
         </p>
         <p>
           To further discuss or clarify this matter, feel free to reach out with the owner of your squad.

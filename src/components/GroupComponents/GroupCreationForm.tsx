@@ -281,7 +281,7 @@ const GroupCreationForm = () => {
                 to={`/edit-group/${group.id}?currency=${group.currency}`}
                 className="edit-button"
               >
-                Edit
+                View
               </Link>
               {group.userId[0] !== auth.currentUser.uid && (
                 <button onClick={() => handleLeaveGroup(group.id)}>

@@ -30,6 +30,7 @@ const QuickExpenseDetails = () => {
     person1: string
     person2: string
     amount: number
+    description: string
     currency: string
     timestamp: Date | null
     shared: boolean
@@ -40,6 +41,7 @@ const QuickExpenseDetails = () => {
     person2: "",
     amount: 0,
     currency: "",
+    description: "",
     timestamp: null,
     shared: false,
     imageUrls: [],
@@ -195,6 +197,7 @@ const QuickExpenseDetails = () => {
             person2: expenseData.person2,
             amount: expenseData.amount,
             currency: expenseData.currency,
+            description: expenseData.description,
             timestamp: expenseData.timestamp.toDate(),
             shared: expenseData.shared,
             imageUrls: expenseData.imageUrls || [],
@@ -247,11 +250,11 @@ const QuickExpenseDetails = () => {
           >
             Delete Expense
           </button>
-          <p>Person 1: {expenseData.person1}</p>
-          <p>Person 2: {expenseData.person2}</p>
           <p>
-            Amount: {expenseData.amount} {expenseData.currency}
+            {expenseData.person1} owes {expenseData.person2}{" "}
+            {expenseData.amount} {expenseData.currency}
           </p>
+          <p>Description: {expenseData.description}</p>
           <p>
             Date and Time:{" "}
             {expenseData.timestamp

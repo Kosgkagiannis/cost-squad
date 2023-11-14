@@ -163,7 +163,7 @@ const GroupHeader: React.FC<GroupHeaderProps> = ({
                   <h2 style={{ marginInline: "0.2rem" }}>Edit Squad Name</h2>
                   <input
                     type="text"
-                    placeholder="Enter New Group Name"
+                    placeholder="Enter New Squad Name"
                     data-testid="group-name-input"
                     value={
                       isEditingGroupName ? newGroupName : originalGroupName
