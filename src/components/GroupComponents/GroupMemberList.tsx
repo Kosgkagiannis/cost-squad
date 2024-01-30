@@ -61,6 +61,7 @@ const GroupMemberList: React.FC<GroupMemberListProps> = ({
             type="text"
             placeholder="Enter Member's Name"
             value={newMember}
+            className="fadeIn"
             onChange={onMemberInputChange}
             maxLength={15}
             data-testid="new-member-input"
@@ -81,6 +82,7 @@ const GroupMemberList: React.FC<GroupMemberListProps> = ({
       ) : (
         <div className="delete-button">
           <button
+            className="pulse"
             data-testid="add-member-button"
             onClick={() => setIsAddingMembers(true)}
           >
@@ -93,7 +95,7 @@ const GroupMemberList: React.FC<GroupMemberListProps> = ({
       )}
       <div className="divider" />
       <div className="title-and-animation">
-        <h2>{groupMembers.length > 0 ? "Members" : ""}</h2>
+        <h2 className="pulse">{groupMembers.length > 0 ? "Members" : ""}</h2>
         {groupMembers.length > 0 && (
           <img
             src={MembersAnimation}
@@ -109,7 +111,7 @@ const GroupMemberList: React.FC<GroupMemberListProps> = ({
           .slice(startIndex, endIndex)
           .map((member) => (
             <div key={member.id} className="mobile-profile member-list-item">
-              <div className="member-box">
+              <div className="member-box scaleIn">
                 <img
                   src={member.profilePicture}
                   alt={member.name}

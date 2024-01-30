@@ -30,6 +30,7 @@ const QuickExpenseDetails = () => {
     person1: string
     person2: string
     amount: number
+    description: string
     currency: string
     timestamp: Date | null
     shared: boolean
@@ -40,6 +41,7 @@ const QuickExpenseDetails = () => {
     person2: "",
     amount: 0,
     currency: "",
+    description: "",
     timestamp: null,
     shared: false,
     imageUrls: [],
@@ -195,6 +197,7 @@ const QuickExpenseDetails = () => {
             person2: expenseData.person2,
             amount: expenseData.amount,
             currency: expenseData.currency,
+            description: expenseData.description,
             timestamp: expenseData.timestamp.toDate(),
             shared: expenseData.shared,
             imageUrls: expenseData.imageUrls || [],
@@ -239,7 +242,7 @@ const QuickExpenseDetails = () => {
       {isLoading ? (
         <LoadingSpinner />
       ) : (
-        <>
+        <div className="slideIn">
           <h2 className="group-title">Expense Details</h2>
           <button
             style={{ background: "#ff0000bd" }}
@@ -247,13 +250,20 @@ const QuickExpenseDetails = () => {
           >
             Delete Expense
           </button>
-          <p>Person 1: {expenseData.person1}</p>
-          <p>Person 2: {expenseData.person2}</p>
           <p>
-            Amount: {expenseData.amount} {expenseData.currency}
+            <span style={{ fontWeight: "bold" }}>{expenseData.person1} </span>
+            owes{" "}
+            <span style={{ fontWeight: "bold" }}>
+              {expenseData.person2}
+            </span>{" "}
+            {expenseData.amount} {expenseData.currency}
           </p>
           <p>
-            Date and Time:{" "}
+            <span style={{ fontWeight: "bold" }}>Description:</span>{" "}
+            {expenseData.description}
+          </p>
+          <p>
+            <span style={{ fontWeight: "bold" }}>Date and Time: </span>
             {expenseData.timestamp
               ? (expenseData.timestamp as Date).toLocaleString()
               : "N/A"}
@@ -268,14 +278,11 @@ const QuickExpenseDetails = () => {
             <h2>Comments</h2>
             <ul>
               {expenseData.comments.map((comment, index) => (
-                <li
-                  style={{ wordBreak: "break-word", marginBlockStart: "1rem" }}
-                  key={index}
-                >
-                  <span>
+                <li key={index} className="comment-item scaleIn">
+                  <div className="comment-column">
                     {comment}
                     <button onClick={() => deleteComment(index)}>Delete</button>
-                  </span>
+                  </div>
                 </li>
               ))}
             </ul>
@@ -285,6 +292,7 @@ const QuickExpenseDetails = () => {
             <>
               <input
                 type="text"
+                className="scaleIn"
                 placeholder="Add a comment"
                 value={commentInput}
                 onChange={(e) => setCommentInput(e.target.value)}
@@ -325,6 +333,7 @@ const QuickExpenseDetails = () => {
           )}
           {isModalOpen && (
             <ImageModal
+              className="slideIn"
               imageUrl={modalImageUrl}
               closeModal={closeModal}
               deleteImage={() => deleteImage(modalImageUrl)}
@@ -333,7 +342,7 @@ const QuickExpenseDetails = () => {
           {expenseData.imageUrls.length > 0 && (
             <div className="image-gallery">
               {expenseData.imageUrls.map((imageUrl, index) => (
-                <div key={index} className="image-item">
+                <div key={index} className="image-item fadeIn">
                   <img
                     src={imageUrl}
                     alt={`Gallery`}
@@ -343,7 +352,7 @@ const QuickExpenseDetails = () => {
               ))}
             </div>
           )}
-        </>
+        </div>
       )}
     </div>
   )

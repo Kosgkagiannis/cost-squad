@@ -31,6 +31,10 @@ function App() {
   const [loading, setLoading] = useState(true)
   const [showCarousel, setShowCarousel] = useState(true)
   const [showModal, setShowModal] = useState(true)
+  const [animateItems, setAnimateItems] = useState(false)
+  useEffect(() => {
+    setAnimateItems(true)
+  }, [])
 
   const userPreferencesCollection = collection(db, "user_preferences")
 
@@ -139,7 +143,11 @@ function App() {
                         />
                       )}
                       <div className="questions-form">
-                        <div className="home-items">
+                        <div
+                          className={`home-items ${
+                            animateItems ? "animate" : ""
+                          }`}
+                        >
                           <h2 className="questions">
                             Want to add an expense between multiple people?
                           </h2>
@@ -152,14 +160,18 @@ function App() {
                           />
                           <Link
                             to="/create-group"
-                            style={{ textDecoration: "none" }}
+                            className="link-no-decoration"
                           >
                             <button className="button-content">
                               Go to Squads
                             </button>
                           </Link>
                         </div>
-                        <div className="home-items">
+                        <div
+                          className={`home-items ${
+                            animateItems ? "animate" : ""
+                          }`}
+                        >
                           <h2 className="questions">
                             Want to add an expense between 2 people?
                           </h2>
@@ -171,7 +183,7 @@ function App() {
                           />
                           <Link
                             to="/quick-expense"
-                            style={{ textDecoration: "none" }}
+                            className="link-no-decoration"
                           >
                             <button className="button-content">
                               Go to Quick Expense

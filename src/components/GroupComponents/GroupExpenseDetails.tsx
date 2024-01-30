@@ -302,28 +302,33 @@ const GroupExpenseDetails = () => {
       {isLoading ? (
         <LoadingSpinner />
       ) : (
-        <>
+        <div className="slideIn">
           <h2 className="group-title">Expense Details</h2>
           <button style={{ background: "#ff0000bd" }} onClick={deleteExpense}>
             Delete Expense
           </button>
           <p style={{ wordBreak: "break-word" }}>
-            Added by: {expenseData.addedBy}
+            <span style={{ fontWeight: "bold" }}>Added by:</span>{" "}
+            {expenseData.addedBy}
           </p>
           <p style={{ wordBreak: "break-word" }}>
-            Description: {expenseData.description}
+            <span style={{ fontWeight: "bold" }}>Description: </span>{" "}
+            {expenseData.description}
           </p>
           <p>
-            Amount:{" "}
+            <span style={{ fontWeight: "bold" }}> Amount:</span>{" "}
             {new Intl.NumberFormat(undefined, {
               minimumFractionDigits: 0,
               maximumFractionDigits: 3,
             }).format(expenseData.amount)}{" "}
             {currency}
           </p>
-          <p>Paid by: {expenseData.payerName}</p>
           <p>
-            Date and Time:{" "}
+            <span style={{ fontWeight: "bold" }}>Paid by:</span>{" "}
+            {expenseData.payerName}
+          </p>
+          <p>
+            <span style={{ fontWeight: "bold" }}>Date and Time: </span>
             {expenseData.timestamp
               ? (expenseData.timestamp as Date).toLocaleString()
               : "N/A"}
@@ -337,12 +342,11 @@ const GroupExpenseDetails = () => {
             <h2>Comments</h2>
             <ul>
               {expenseData.comments.map((comment, index) => (
-                <li
-                  style={{ wordBreak: "break-word", marginBlockStart: "1rem" }}
-                  key={index}
-                >
-                  {comment}
-                  <button onClick={() => deleteComment(index)}>Delete</button>
+                <li key={index} className="comment-item scaleIn">
+                  <div className="comment-column">
+                    {comment}
+                    <button onClick={() => deleteComment(index)}>Delete</button>
+                  </div>
                 </li>
               ))}
             </ul>
@@ -351,6 +355,7 @@ const GroupExpenseDetails = () => {
             <>
               <input
                 type="text"
+                className="scaleIn"
                 placeholder="Add a comment"
                 value={commentInput}
                 onChange={(e) => setCommentInput(e.target.value)}
@@ -392,6 +397,7 @@ const GroupExpenseDetails = () => {
           )}
           {isModalOpen && (
             <ImageModal
+              className="slideIn"
               imageUrl={modalImageUrl}
               closeModal={closeModal}
               deleteImage={() => deleteImage(modalImageUrl)}
@@ -400,7 +406,7 @@ const GroupExpenseDetails = () => {
           {expenseData.imageUrls.length > 0 && (
             <div className="image-gallery">
               {expenseData.imageUrls.map((imageUrl, index) => (
-                <div key={index} className="image-item">
+                <div key={index} className="image-item fadeIn">
                   <img
                     src={imageUrl}
                     alt={`Gallery`}
@@ -410,7 +416,7 @@ const GroupExpenseDetails = () => {
               ))}
             </div>
           )}
-        </>
+        </div>
       )}
     </div>
   )

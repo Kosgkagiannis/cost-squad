@@ -343,8 +343,10 @@ const EditMemberPage = () => {
         {loading ? (
           <LoadingSpinner />
         ) : (
-          <>
+          <div className="slideIn">
             <h2 className="group-title">{memberName}</h2>
+            <button onClick={handleUpdateMemberName}>Save changes</button>
+
             <button
               style={{ backgroundColor: "#ff0000bd" }}
               onClick={() =>
@@ -385,7 +387,7 @@ const EditMemberPage = () => {
             )}
 
             <div className="divider" />
-            <h3>Member info</h3>
+            <h3>Debts</h3>
             {parseFloat(memberDebt) > 0 ? (
               <p>
                 Total debt to the squad: {parseFloat(memberDebt).toFixed(2)}{" "}
@@ -395,10 +397,15 @@ const EditMemberPage = () => {
               <p>Member has no debts in the squad.</p>
             )}
             <>
+              <div className="divider" />
+              <h3>
+                Notify this member about their debts by sending them an email.
+              </h3>
               {showEmailInput ? (
                 <div>
                   <input
                     type="text"
+                    className="fadeIn"
                     value={memberEmail}
                     onChange={(e) => setMemberEmail(e.target.value)}
                     placeholder="Enter member's email"
@@ -412,13 +419,16 @@ const EditMemberPage = () => {
                 </button>
               )}
               {showErrorMessage && (
-                <p style={{ color: "#ff0000bd" }}>
+                <p className="bounce" style={{ color: "#ff0000bd" }}>
                   Please enter a valid email address.
                 </p>
               )}
               {showSuccessMessage && (
-                <p style={{ color: "#00ed2d" }}>Email added successfully!</p>
+                <p className="fadeIn" style={{ color: "#00ed2d" }}>
+                  Email added successfully!
+                </p>
               )}
+
               <SendMail
                 memberName={memberName}
                 memberDebt={parseFloat(memberDebt).toFixed(2)}
@@ -426,9 +436,8 @@ const EditMemberPage = () => {
                 currency={currency}
               />
               <br />
-              <button onClick={handleUpdateMemberName}>Save changes</button>
             </>
-          </>
+          </div>
         )}
       </div>
     </>

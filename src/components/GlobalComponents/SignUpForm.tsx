@@ -47,7 +47,16 @@ const SignupForm: React.FC<SignupFormProps> = ({
   const signUpWithEmail = async () => {
     try {
       clearError()
+      if (!email.includes("@") || !email.includes(".")) {
+        throw new Error("Invalid email format.")
+      }
 
+      if (!password) {
+      }
+
+      if (password.length < 6) {
+        throw new Error("Password should be at least 6 characters.")
+      }
       if (await checkEmailExists(email)) {
         setError("Email already exists. Please use a different email.")
       } else {
@@ -70,7 +79,7 @@ const SignupForm: React.FC<SignupFormProps> = ({
 
   return (
     <div className="modal">
-      <div className="modal-content">
+      <div className="modal-content scaleIn">
         <span className="close" onClick={onClose}>
           &times;
         </span>

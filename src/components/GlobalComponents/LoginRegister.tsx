@@ -69,7 +69,15 @@ const LoginRegister: React.FC<LoginRegisterProps> = ({ onUserLogin }) => {
       await signInWithEmailAndPassword(auth, email, password)
       onUserLogin()
     } catch (err: any) {
-      setError(err.message)
+      if (err.code === "auth/invalid-email") {
+        setError("Invalid email address. Please enter a valid email.")
+      } else if (err.code === "auth/user-not-found") {
+        setError(
+          "No user found with this email address. Please check your email or sign up for an account."
+        )
+      } else {
+        setError(err.message)
+      }
     }
   }
 
@@ -93,12 +101,18 @@ const LoginRegister: React.FC<LoginRegisterProps> = ({ onUserLogin }) => {
     <div className="login-content">
       <div className="header">
         <div className="logo">
-          <img src={LogoHeader} height={48} width={64} alt="Logo" />
+          <img
+            className="titleZoomIn"
+            src={LogoHeader}
+            height={48}
+            width={64}
+            alt="Logo"
+          />
           <h1 className="header-title">CostSquad</h1>
         </div>{" "}
       </div>
-      <h2>Log In</h2>
-      <div className="password-input">
+      <h2 className="titleZoomIn">Log In</h2>
+      <div className="password-input scaleIn">
         <input
           className="login-input"
           placeholder="Email..."
@@ -106,7 +120,7 @@ const LoginRegister: React.FC<LoginRegisterProps> = ({ onUserLogin }) => {
           onChange={(e) => setEmail(e.target.value)}
         />
       </div>
-      <div className="password-input">
+      <div className="password-input scaleIn">
         <input
           className="login-input"
           placeholder="Password..."
@@ -119,7 +133,7 @@ const LoginRegister: React.FC<LoginRegisterProps> = ({ onUserLogin }) => {
         </span>
       </div>
 
-      <div className="forgot-password">
+      <div className="forgot-password titleZoomIn">
         <span
           onClick={toggleResetPasswordModal}
           style={{ cursor: "pointer", color: "#0051ff" }}
@@ -130,29 +144,33 @@ const LoginRegister: React.FC<LoginRegisterProps> = ({ onUserLogin }) => {
       {showNotification && <p>{notificationMessage}</p>}
 
       {resetPasswordModal && (
-        <div className="password-reset-modal">
+        <div className="password-reset-modal scaleIn">
           <input
             className="login-input"
             placeholder="Enter your email"
             value={resetEmail}
             onChange={(e) => setResetEmail(e.target.value)}
           />
-          <button onClick={sendResetPasswordEmail}>
-            Send password reset link
-          </button>
-          <button onClick={toggleResetPasswordModal}>Close</button>
+          <div className="login-content">
+            <button onClick={sendResetPasswordEmail}>
+              Send password reset link
+            </button>
+            <button onClick={toggleResetPasswordModal}>Close</button>
+          </div>
         </div>
       )}
 
-      <button onClick={signInWithEmail}>Log in</button>
+      <button className="scaleIn" onClick={signInWithEmail}>
+        Log in
+      </button>
       {error && <p className="error-message">{error}</p>}
-      <h2>Or Log in with Google</h2>
+      <h2 className="titleZoomIn">Or Log in with Google</h2>
       <div className="google-signup">
-        <button onClick={signInWithGoogle}>
+        <button className="scaleIn" onClick={signInWithGoogle}>
           <img src={googleIcon} alt="Google Icon" /> Log In With Google
         </button>
       </div>
-      <p style={{ marginBlockStart: "40px" }}>
+      <p className="titleZoomIn" style={{ marginBlockStart: "40px" }}>
         Don't have an account? Sign up{" "}
         <span
           className="signup-link"

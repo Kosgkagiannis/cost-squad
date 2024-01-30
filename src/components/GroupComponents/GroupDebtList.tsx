@@ -155,7 +155,7 @@ const GroupDebtList: React.FC<DebtListProps> = ({
         <div>
           <div className="divider" />
           <div className="title-and-animation">
-            <h2>Total Debts Graph</h2>
+            <h2 className="pulse">Total Debts Graph</h2>
             <img
               src={GraphAnimation}
               alt="Total Debts Graph"
@@ -236,7 +236,7 @@ const GroupDebtList: React.FC<DebtListProps> = ({
           <div className="divider" />
 
           <div className="title-and-animation">
-            <h2>Net Debts</h2>
+            <h2 className="pulse">Net Debts</h2>
 
             <img
               src={NetDebtsAnimation}

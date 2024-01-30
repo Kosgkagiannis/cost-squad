@@ -69,7 +69,7 @@ const GroupExpenseForm: React.FC<GroupExpenseFormProps> = ({
         <div>
           <div className="divider" />
           <div className="title-and-animation">
-            <h2>Add expense</h2>
+            <h2 className="pulse">Add expense</h2>
             <img
               src={AddExpenseAnimation}
               alt="Add expense animation"
@@ -143,7 +143,7 @@ const GroupExpenseForm: React.FC<GroupExpenseFormProps> = ({
               <>
                 <div className="divider" />
                 <div className="title-and-animation">
-                  <h2>Expenses History</h2>
+                  <h2 className="pulse">Expenses History</h2>
                   <img
                     src={ExpensesHistory}
                     alt="Expenses History"

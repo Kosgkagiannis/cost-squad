@@ -217,7 +217,7 @@ const GroupCreationForm = () => {
   return loading ? (
     <LoadingSpinner />
   ) : (
-    <div>
+    <div className="slideIn">
       <h2 className="group-title">Create a New Squad</h2>
       <input
         type="text"
@@ -244,12 +244,11 @@ const GroupCreationForm = () => {
           ))}
         </select>
       </div>
-
       {error && <p style={{ color: "#ff0000bd" }}>{error}</p>}
-
       <button onClick={handleCreateGroup}>Create squad</button>
-      <div className="divider" />
-      <h3>Join another person's squad</h3>
+      <div className="divider slideIn" />
+      <h3 className="scaleIn">Join another person's squad</h3>
+
       <input
         type="text"
         placeholder="Enter squad ID to join"
@@ -258,12 +257,11 @@ const GroupCreationForm = () => {
       />
       <button onClick={handleJoinGroup}>Join squad</button>
       {joinError && <p style={{ color: "#ff0000bd" }}>{joinError}</p>}
-      <div>
-        <div className="divider" />
-
+      <div className="slideIn">
+        <div className="divider slideIn" />
         {userGroups.length > 0 && (
           <div className="title-and-animation">
-            <h2>Your Squads</h2>
+            <h3 className="scaleIn">Your Squads</h3>
             <img
               src={MembersAnimation}
               alt="Members animation"
@@ -281,7 +279,7 @@ const GroupCreationForm = () => {
                 to={`/edit-group/${group.id}?currency=${group.currency}`}
                 className="edit-button"
               >
-                Edit
+                View
               </Link>
               {group.userId[0] !== auth.currentUser.uid && (
                 <button onClick={() => handleLeaveGroup(group.id)}>

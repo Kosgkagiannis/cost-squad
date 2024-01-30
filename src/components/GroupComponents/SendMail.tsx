@@ -16,6 +16,14 @@ const SendMail = ({
   const handleSubmit = (e) => {
     e.preventDefault()
 
+    const confirmed = window.confirm(
+      "Are you sure you want to notify this member about their debts?"
+    )
+
+    if (!confirmed) {
+      return
+    }
+
     let ebody = `
       <div style="font-family: Arial, sans-serif;">
         <h2 style="color: #333;">Dear ${memberName},</h2>
@@ -23,7 +31,7 @@ const SendMail = ({
           We hope this message finds you well. This is a notification regarding your financial status in the CostSquad application.
         </p>
         <p>
-          As of the latest update, your total debt with the group is ${memberDebt} ${currency}.
+          As of the latest update, your total debt with the squad is ${memberDebt} ${currency}.
         </p>
         <p>
           To further discuss or clarify this matter, feel free to reach out with the owner of your squad.

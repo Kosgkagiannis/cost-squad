@@ -270,8 +270,8 @@ const QuickExpense: React.FC = () => {
         <LoadingSpinner />
       ) : (
         <>
-          <h1 className="group-title">Quick Expense</h1>
-          <div>
+          <h1 className="group-title slideIn">Quick Expense</h1>
+          <div className="slideIn">
             <br />
             <div
               style={{
@@ -387,7 +387,7 @@ const QuickExpense: React.FC = () => {
                 <>
                   <div className="divider" />
 
-                  <div>
+                  <div className="rotate-scale">
                     <div className="title-and-animation">
                       <h2>Net Debts</h2>
                       <img
@@ -437,7 +437,7 @@ const QuickExpense: React.FC = () => {
                     </div>
                   </div>
 
-                  <div>
+                  <div className="rotate-scale">
                     <div className="divider" />
                     <div className="title-and-animation">
                       <h2>Expenses History</h2>

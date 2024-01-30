@@ -586,7 +586,7 @@ const EditGroupPage = () => {
       {loading ? (
         <LoadingSpinner />
       ) : (
-        <>
+        <div className="edit-group-page-container">
           <Suspense fallback={<LoadingSpinner />}>
             {groupId && (
               <GroupHeader
@@ -641,7 +641,7 @@ const EditGroupPage = () => {
               groupMembers={groupMembers}
             />
           )}
-        </>
+        </div>
       )}
     </div>
   )

@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react"
 import { query, where, collection, getDocs } from "firebase/firestore"
 import { db } from "../../config/firebase"
-
 import SettingsIcon from "../../images/settings.png"
 
 interface GroupHeaderProps {
@@ -109,14 +108,14 @@ const GroupHeader: React.FC<GroupHeaderProps> = ({
   }
 
   return (
-    <div>
+    <div className="pulse">
       <div className="top-delete-button">
         <h1 data-testid="group-name-title" className="group-title">
           {groupTitle || "Group Name"}
         </h1>
 
         {showActivityLogs && (
-          <div className="modal-activity-log">
+          <div className="modal-activity-log fadeIn">
             <div className="modal-activity-log-main">
               <button
                 style={{ position: "absolute", right: "5px", top: "-10px" }}
@@ -163,7 +162,7 @@ const GroupHeader: React.FC<GroupHeaderProps> = ({
                   <h2 style={{ marginInline: "0.2rem" }}>Edit Squad Name</h2>
                   <input
                     type="text"
-                    placeholder="Enter New Group Name"
+                    placeholder="Enter New Squad Name"
                     data-testid="group-name-input"
                     value={
                       isEditingGroupName ? newGroupName : originalGroupName

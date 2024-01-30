@@ -13,11 +13,7 @@ const ImageModal = ({ imageUrl, closeModal, deleteImage }: ImageModalProps) => {
         <span className="close" onClick={closeModal}>
           &times;
         </span>
-        <img
-          src={imageUrl}
-          alt="Fullscreen"
-          style={{ maxWidth: "100%", maxHeight: "100%" }}
-        />
+        <img src={imageUrl} alt="Fullscreen" className="image-modal-opener" />
         <div className="delete-button">
           <button onClick={deleteImage}>Delete</button>
         </div>
