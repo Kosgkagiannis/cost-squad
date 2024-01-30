@@ -2,6 +2,8 @@
 
 CostSquad is a simple and efficient expense sharing app that allows you to keep track of expenses between individuals and within groups. Whether you're splitting the bill with a friend or managing expenses within a shared household or team, CostSquad has you covered.
 
+URL: www.costsquad.pro
+
 **Table of Contents**
 
 Features
