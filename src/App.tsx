@@ -62,8 +62,9 @@ function App() {
   }
 
   const handleCarouselComplete = async () => {
-    setShowModal(false)
-
+    setTimeout(() => {
+      setShowModal(false)
+    }, 100)
     const userDocRef = doc(userPreferencesCollection, user.uid)
     const userDocSnapshot = await getDoc(userDocRef)
 
